@@ -1,0 +1,29 @@
+{
+  "whatsapp_keys": {
+    "whatsapp_invoice_sent_success": "Invoice sent via WhatsApp to {{count}} number(s)",
+    "whatsapp_opening_additional": "Opening WhatsApp for {{count}} additional number(s)",
+    "whatsapp_send_error": "Error sending invoice via WhatsApp: {{error}}",
+    "whatsapp_no_numbers_configured": "No WhatsApp numbers configured",
+    "whatsapp_send_invoice_tooltip": "Send invoice via WhatsApp to {{count}} number(s)",
+    "whatsapp_sending": "Sending...",
+    "WhatsApp messages sent to {{count}} contact(s)": "WhatsApp messages sent to {{count}} contact(s)",
+    "Failed to send {{count}} WhatsApp message(s)": "Failed to send {{count}} WhatsApp message(s)",
+    "Error sending WhatsApp messages: {{error}}": "Error sending WhatsApp messages: {{error}}",
+    "No WhatsApp contacts": "No WhatsApp contacts",
+    "Opening WhatsApp...": "Opening WhatsApp...",
+    "Send via WhatsApp": "Send via WhatsApp",
+    "Send \"{{templateName}}\" via WhatsApp?": "Send \"{{templateName}}\" via WhatsApp?",
+    "Template": "Template",
+    "Recipients": "Recipients",
+    "WhatsApp will open in new tabs for each contact": "WhatsApp will open in new tabs for each contact",
+    "Invoice": "Invoice",
+    "Monthly rent invoice": "Monthly rent invoice",
+    "First payment notice": "First payment notice",
+    "Initial payment reminder": "Initial payment reminder",
+    "Second payment notice": "Second payment notice",
+    "Follow-up payment reminder": "Follow-up payment reminder",
+    "Last payment notice": "Last payment notice",
+    "Final payment notice": "Final payment notice",
+    "WhatsApp message": "WhatsApp message"
+  }
+}

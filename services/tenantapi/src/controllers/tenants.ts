@@ -8,6 +8,44 @@ import {
 } from '@microrealestate/types';
 import moment from 'moment';
 
+// Email validation regex - RFC 5322 compliant, stricter version
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+/**
+ * Validates and sanitizes email input to prevent injection attacks
+ * @param email - The email string to validate
+ * @returns Sanitized email or throws error if invalid
+ */
+function validateAndSanitizeEmail(email: string): string {
+  if (!email || typeof email !== 'string') {
+    throw new ServiceError('Invalid email format', 400);
+  }
+
+  // Trim and convert to lowercase
+  const sanitizedEmail = email.trim().toLowerCase();
+  
+  // Check for maximum length to prevent DoS
+  if (sanitizedEmail.length > 254) {
+    throw new ServiceError('Email too long', 400);
+  }
+
+  // Additional security checks for malformed emails
+  if (sanitizedEmail.includes('..') || 
+      sanitizedEmail.startsWith('.') || 
+      sanitizedEmail.endsWith('.') ||
+      sanitizedEmail.includes('@.') ||
+      sanitizedEmail.includes('.@')) {
+    throw new ServiceError('Invalid email format', 400);
+  }
+
+  // Validate email format with regex
+  if (!EMAIL_REGEX.test(sanitizedEmail)) {
+    throw new ServiceError('Invalid email format', 400);
+  }
+
+  return sanitizedEmail;
+}
+
 export async function getOneTenant(
   request: Express.Request,
   response: Express.Response
@@ -19,13 +57,23 @@ export async function getOneTenant(
     logger.error('missing email field');
     throw new ServiceError('unauthorized', 401);
   }
+  
+  // Validate and sanitize email to prevent injection
+  const sanitizedEmail = validateAndSanitizeEmail(email);
+  
   const tenantId = req.params.tenantId;
 
+  // Validate tenantId format (MongoDB ObjectId)
+  if (!tenantId || !/^[0-9a-fA-F]{24}$/.test(tenantId)) {
+    throw new ServiceError('Invalid tenant ID format', 400);
+  }
+
+  // Use exact email match instead of regex to prevent injection
   const dbTenant = await Collections.Tenant.findOne<
     MongooseDocument<CollectionTypes.Tenant>
   >({
     _id: tenantId,
-    'contacts.email': { $regex: new RegExp(email, 'i') }
+    'contacts.email': sanitizedEmail
   }).populate<{
     realmId: CollectionTypes.Realm;
     leaseId: CollectionTypes.Lease;
@@ -55,15 +103,26 @@ export async function getAllTenants(
     throw new ServiceError('unauthorized', 401);
   }
 
-  // find tenants from mongo which has a given email contact
+  // Validate and sanitize email to prevent injection
+  const sanitizedEmail = validateAndSanitizeEmail(email);
+
+  // Use exact email match instead of regex to prevent injection
   const dbTenants = await Collections.Tenant.find<
     MongooseDocument<CollectionTypes.Tenant>
   >({
-    'contacts.email': { $regex: new RegExp(email, 'i') }
+    'contacts.email': sanitizedEmail
   }).populate<{
     realmId: CollectionTypes.Realm;
     leaseId: CollectionTypes.Lease;
   }>(['realmId', 'leaseId']);
+
+  // If no tenants found or no lease associated, return a specific response
+  if (!dbTenants.length || dbTenants.some(tenant => !tenant.leaseId)) {
+    return res.status(404).json({
+      status: 'no_contract',
+      message: 'No contract associated with this account'
+    });
+  }
 
   // the last term considering the current date
   const lastTerm = Number(moment().format('YYYYMMDDHH'));
@@ -83,10 +142,15 @@ function _toTenantResponse(
   const totalChargesAmount = firstRent?.total.charges || 0;
   const totalVatAmount = firstRent?.total.vat || 0;
   const totalAmount = totalPreTaxAmount + totalChargesAmount + totalVatAmount;
-  const { remainingIterations, remainingIterationsToPay } =
-    _computeRemainingIterations(tenant, lastTerm, totalAmount);
-  const landlord = tenant.realmId as CollectionTypes.Realm;
+  
+  // Check if lease exists before computing remaining iterations
   const lease = tenant.leaseId as CollectionTypes.Lease;
+  const { remainingIterations, remainingIterationsToPay } = lease 
+    ? _computeRemainingIterations(tenant, lastTerm, totalAmount)
+    : { remainingIterations: 0, remainingIterationsToPay: 0 };
+    
+  const landlord = tenant.realmId as CollectionTypes.Realm;
+  
   return {
     tenant: {
       id: tenant._id,
@@ -108,18 +172,18 @@ function _toTenantResponse(
       ]
     },
     landlord: {
-      name: landlord.name,
-      addresses: landlord.addresses,
-      contacts: landlord.contacts,
-      currency: landlord.currency,
-      locale: landlord.locale
+      name: landlord?.name || '',
+      addresses: landlord?.addresses || [],
+      contacts: landlord?.contacts || [],
+      currency: landlord?.currency || 'USD',
+      locale: landlord?.locale || 'en'
     },
     lease: {
-      name: lease.name,
+      name: lease?.name || 'No contract',
       beginDate: tenant.beginDate,
       endDate: tenant.endDate,
       terminationDate: tenant.terminationDate,
-      timeRange: lease.timeRange,
+      timeRange: lease?.timeRange || 'month',
       status: tenant.terminationDate
         ? 'terminated'
         : moment(tenant.endDate, 'YYYY-MM-DD').isBefore(now)
@@ -185,7 +249,14 @@ function _computeRemainingIterations(
   lastTerm: number,
   rentAmount: number
 ) {
-  const timeRange = (tenant.leaseId as CollectionTypes.Lease).timeRange;
+  // Check if leaseId exists and has timeRange property
+  const lease = tenant.leaseId as CollectionTypes.Lease;
+  if (!lease || !lease.timeRange) {
+    logger.error('Lease or timeRange is undefined for tenant', tenant._id);
+    return { remainingIterations: 0, remainingIterationsToPay: 0 };
+  }
+  
+  const timeRange = lease.timeRange;
   const remainingIterations = Math.ceil(
     moment(tenant.terminationDate || tenant.endDate).diff(
       moment(lastTerm, 'YYYYMMDDHH').startOf(timeRange),

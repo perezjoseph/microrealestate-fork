@@ -36,7 +36,8 @@ export async function build(
     templateName,
     recordId,
     params,
-    filename
+    filename,
+    locale
   );
   const data = fs.readFileSync(filePath);
   return {

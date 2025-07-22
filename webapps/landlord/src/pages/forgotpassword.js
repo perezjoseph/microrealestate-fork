@@ -11,28 +11,42 @@ import { TextField } from '../components/formfields/TextField';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import { getLocalizedValidationSchema } from '../utils/validation';
 
 const initialValues = {
   email: ''
 };
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email().required()
-});
-
 export default function ForgotPassword() {
   const { t } = useTranslation('common');
   const store = useContext(StoreContext);
+  
+  // Create localized validation schema
+  const validationSchema = getLocalizedValidationSchema(t).forgotPassword;
   const [emailSent, setEmailSent] = useState('');
   const router = useRouter();
 
   const forgotPassword = async ({ email }) => {
     try {
-      const status = await store.user.forgotPassword(email);
-      if (status !== 200) {
-        switch (status) {
+      const result = await store.user.forgotPassword(email);
+      if (result.status !== 200) {
+        switch (result.status) {
           case 422:
             toast.error(t('Some fields are missing'));
+            return;
+          case 429:
+            // Handle rate limiting with detailed message
+            const waitTime = result.retryAfterMinutes || 60;
+            toast.error(
+              t('Password reset rate limit exceeded', {
+                waitTime: waitTime,
+                details: result.details || t('Too many password reset attempts')
+              }),
+              {
+                duration: 8000, // Show longer for rate limit messages
+                description: result.details
+              }
+            );
             return;
           default:
             toast.error(t('Something went wrong'));

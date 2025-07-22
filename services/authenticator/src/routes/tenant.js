@@ -5,6 +5,17 @@ import {
   Service,
   ServiceError
 } from '@microrealestate/common';
+import {
+  authRateLimit,
+  authSlowDown,
+  createAccountSpecificRateLimit,
+  tokenRefreshRateLimit
+} from '../middleware/rateLimiting.js';
+import {
+  securityMonitoring,
+  suspiciousActivityDetector,
+  trackFailedAttempts
+} from '../middleware/securityMonitoring.js';
 import axios from 'axios';
 import { customAlphabet } from 'nanoid';
 import express from 'express';
@@ -21,8 +32,16 @@ export default function () {
   } = Service.getInstance().envConfig.getValues();
   const tenantRouter = express.Router();
 
+  // Add security monitoring middleware
+  tenantRouter.use(securityMonitoring);
+  tenantRouter.use(suspiciousActivityDetector);
+  tenantRouter.use(trackFailedAttempts);
+
   tenantRouter.post(
     '/signin',
+    authRateLimit, // Rate limit authentication attempts
+    authSlowDown, // Progressive delay for repeated attempts
+    createAccountSpecificRateLimit(15 * 60 * 1000, 5), // 5 attempts per 15 minutes per email
     Middlewares.asyncWrapper(async (req, res) => {
       let { email } = req.body;
       email = email?.trim().toLowerCase();
@@ -97,6 +116,7 @@ export default function () {
 
   tenantRouter.get(
     '/signedin',
+    authRateLimit, // Rate limit OTP verification attempts
     Middlewares.asyncWrapper(async (req, res) => {
       const { otp } = req.query;
       if (!otp) {

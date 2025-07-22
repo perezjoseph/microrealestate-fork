@@ -11,6 +11,7 @@ import { TextField } from '../components/formfields/TextField';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import { getLocalizedValidationSchema } from '../utils/validation';
 
 const initialValues = {
   firstName: '',
@@ -19,15 +20,11 @@ const initialValues = {
   password: ''
 };
 
-const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required(),
-  lastName: Yup.string().required(),
-  email: Yup.string().email().required(),
-  password: Yup.string().required()
-});
-
 export default function SignUp() {
   const { t } = useTranslation('common');
+  
+  // Create localized validation schema
+  const validationSchema = getLocalizedValidationSchema(t).signUp;
   const store = useContext(StoreContext);
   const router = useRouter();
 
@@ -37,19 +34,33 @@ export default function SignUp() {
 
   const signUp = async ({ firstName, lastName, email, password }) => {
     try {
-      const status = await store.user.signUp(
+      const result = await store.user.signUp(
         firstName,
         lastName,
         email,
         password
       );
-      if (status !== 200) {
-        switch (status) {
+      if (result.status !== 200) {
+        switch (result.status) {
           case 422:
             toast.error(t('Some fields are missing'));
             return;
           case 409:
             toast.error(t('This user is already registered'));
+            return;
+          case 429:
+            // Handle rate limiting with detailed message
+            const waitTime = result.retryAfterMinutes || 60;
+            toast.error(
+              t('Account creation rate limit exceeded', {
+                waitTime: waitTime,
+                details: result.details || t('Too many account creation attempts')
+              }),
+              {
+                duration: 8000, // Show longer for rate limit messages
+                description: result.details
+              }
+            );
             return;
           default:
             toast.error(t('Something went wrong'));

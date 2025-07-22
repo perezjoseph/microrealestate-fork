@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import cors from 'cors';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import rateLimit from 'express-rate-limit';
 
 Main();
 
@@ -17,6 +18,7 @@ async function onStartUp(application: Express.Application) {
   exposeHealthCheck(application);
   exposeFrontends(application);
   configureCORS(application);
+  configureRateLimiting(application);
   exposeServices(application);
 }
 
@@ -31,6 +33,7 @@ async function Main() {
         API_URL: process.env.API_URL,
         PDFGENERATOR_URL: process.env.PDFGENERATOR_URL,
         EMAILER_URL: process.env.EMAILER_URL,
+        WHATSAPP_URL: process.env.WHATSAPP_URL,
         RESETSERVICE_URL: process.env.RESETSERVICE_URL,
         LANDLORD_FRONTEND_URL: process.env.LANDLORD_FRONTEND_URL,
         LANDLORD_BASE_PATH: process.env.LANDLORD_BASE_PATH,
@@ -53,6 +56,55 @@ async function Main() {
     logger.error(String(error));
     service?.shutDown(-1);
   }
+}
+
+function configureRateLimiting(application: Express.Application) {
+  // General API rate limiting
+  const generalApiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 1000, // Limit each IP to 1000 requests per windowMs
+    message: {
+      error: 'Too many requests from this IP, please try again later.',
+      retryAfter: 15 * 60
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+      logger.warn(`General API rate limit exceeded for IP: ${req.ip} on ${req.path}`);
+      res.status(429).json({
+        error: 'Too many requests from this IP, please try again later.',
+        retryAfter: 15 * 60
+      });
+    },
+    skip: (req) => {
+      // Skip rate limiting for health checks
+      return req.path === '/health';
+    }
+  });
+
+  // Stricter rate limiting for authentication endpoints
+  const authApiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50, // Limit each IP to 50 auth requests per windowMs
+    message: {
+      error: 'Too many authentication requests from this IP, please try again later.',
+      retryAfter: 15 * 60
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+      logger.warn(`Auth API rate limit exceeded for IP: ${req.ip} on ${req.path}`);
+      res.status(429).json({
+        error: 'Too many authentication requests from this IP, please try again later.',
+        retryAfter: 15 * 60
+      });
+    }
+  });
+
+  // Apply rate limiting
+  application.use('/api', generalApiLimiter);
+  application.use('/tenantapi', generalApiLimiter);
+  application.use('/api/v2/authenticator', authApiLimiter);
 }
 
 function configureCORS(application: Express.Application) {
@@ -129,6 +181,15 @@ function exposeServices(application: Express.Application) {
     })
   );
 
+  // WhatsApp service route - MUST come before the catch-all /api/v2 route
+  application.use(
+    '/api/v2/whatsapp',
+    createProxyMiddleware({
+      target: config.WHATSAPP_URL,
+      pathRewrite: { '^/api/v2/whatsapp': '' }
+    })
+  );
+
   application.use(
     '/api/v2',
     createProxyMiddleware({
@@ -168,7 +229,8 @@ function exposeHealthCheck(application: Express.Application) {
         config.API_URL,
         config.TENANTAPI_URL,
         config.PDFGENERATOR_URL,
-        config.EMAILER_URL
+        config.EMAILER_URL,
+        config.WHATSAPP_URL
       ];
 
       if (!config.PRODUCTION) {

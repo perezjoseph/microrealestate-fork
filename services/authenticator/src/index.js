@@ -4,7 +4,15 @@ import routes from './routes/index.js';
 Main();
 
 async function onStartUp(express) {
-  express.use(routes());
+  console.log('🔧 Setting up routes in onStartUp...');
+  try {
+    const routerInstance = routes();
+    console.log('✅ Routes created successfully, type:', typeof routerInstance);
+    express.use(routerInstance);
+    console.log('✅ Routes applied to express app');
+  } catch (error) {
+    console.error('❌ Error setting up routes:', error);
+  }
 }
 
 async function Main() {

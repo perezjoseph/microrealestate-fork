@@ -49,8 +49,32 @@ function getRequestLocale(request: NextRequest) {
   request.headers.forEach((value, key) => {
     requestHeaders[key] = value;
   });
-  const languages = new Negotiator({ headers: requestHeaders }).languages();
-  return match(languages, LOCALES, DEFAULT_LOCALE) as Locale;
+  
+  // Get languages from request headers
+  let languages = new Negotiator({ headers: requestHeaders }).languages();
+  
+  // Debug logging to help diagnose issues
+  console.debug('Available locales:', LOCALES);
+  console.debug('Browser languages:', languages);
+  
+  // Filter out invalid language values
+  languages = languages.filter(lang => lang !== '*' && lang !== undefined && lang !== null);
+  
+  // If no valid languages, use default
+  if (!languages.length) {
+    console.debug('No valid languages found, using default:', DEFAULT_LOCALE);
+    return DEFAULT_LOCALE;
+  }
+  
+  try {
+    // Try to match the browser language to our available locales
+    const matchedLocale = match(languages, LOCALES, DEFAULT_LOCALE) as Locale;
+    console.debug('Matched locale:', matchedLocale);
+    return matchedLocale;
+  } catch (error) {
+    console.error('Error matching locale:', error);
+    return DEFAULT_LOCALE;
+  }
 }
 
 function injectLocale(request: NextRequest) {
@@ -59,9 +83,20 @@ function injectLocale(request: NextRequest) {
   const pathnameLocale = getLocaleFromPathname(pathname);
   const locale = pathnameLocale || requestLocale;
 
+  // If no locale in pathname, redirect to include the locale
   if (!pathnameLocale) {
-    request.nextUrl.pathname = `/${locale}${pathname}`;
+    // Handle root path specially
+    const newPath = pathname === '/' ? `/${locale}` : `/${locale}${pathname}`;
+    request.nextUrl.pathname = newPath;
     console.debug('====>', pathname, 'redirected to', request.nextUrl.pathname);
+    return NextResponse.redirect(request.nextUrl);
+  }
+  
+  // If the locale in the pathname is not valid, redirect to the default locale
+  if (pathnameLocale && !LOCALES.includes(pathnameLocale as any)) {
+    const newPath = pathname.replace(`/${pathnameLocale}`, `/${DEFAULT_LOCALE}`);
+    request.nextUrl.pathname = newPath;
+    console.debug('Invalid locale redirect:', pathname, 'to', request.nextUrl.pathname);
     return NextResponse.redirect(request.nextUrl);
   }
 }

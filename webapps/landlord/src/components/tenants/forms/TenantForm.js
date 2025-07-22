@@ -15,44 +15,50 @@ import { Section } from '../../formfields/Section';
 import { StoreContext } from '../../../store';
 import useTranslation from 'next-translate/useTranslation';
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required(),
-  isCompany: Yup.string().required(),
-  legalRepresentative: Yup.mixed().when('isCompany', {
+const createValidationSchema = (t) => Yup.object().shape({
+  name: Yup.string().required(t('This field is required')),
+  isCompany: Yup.string().required(t('This field is required')),
+  legalRepresentative: Yup.string().when('isCompany', {
     is: 'true',
-    then: Yup.string().required()
+    then: (schema) => schema.required(t('This field is required')),
+    otherwise: (schema) => schema
   }),
-  legalStructure: Yup.mixed().when('isCompany', {
+  legalStructure: Yup.string().when('isCompany', {
     is: 'true',
-    then: Yup.string().required()
+    then: (schema) => schema.required(t('This field is required')),
+    otherwise: (schema) => schema
   }),
-  ein: Yup.mixed().when('isCompany', {
+  ein: Yup.string().when('isCompany', {
     is: 'true',
-    then: Yup.string().required()
+    then: (schema) => schema.required(t('This field is required')),
+    otherwise: (schema) => schema
   }),
-  dos: Yup.mixed().when('isCompany', {
+  dos: Yup.string().when('isCompany', {
     is: 'true',
-    then: Yup.string()
+    then: (schema) => schema,
+    otherwise: (schema) => schema
   }),
   contacts: Yup.array().of(
     Yup.object().shape({
-      contact: Yup.string().required(),
-      email: Yup.string().email().required(),
+      contact: Yup.string().required(t('This field is required')),
+      email: Yup.string().email(t('Please enter a valid email address')).required(t('This field is required')),
       phone1: Yup.string(),
-      phone2: Yup.string()
+      phone2: Yup.string(),
+      whatsapp1: Yup.boolean(),
+      whatsapp2: Yup.boolean()
     })
   ),
   address: Yup.object().shape({
-    street1: Yup.string().required(),
+    street1: Yup.string().required(t('This field is required')),
     street2: Yup.string(),
-    city: Yup.string().required(),
-    zipCode: Yup.string().required(),
+    city: Yup.string().required(t('This field is required')),
+    zipCode: Yup.string().required(t('This field is required')),
     state: Yup.string(),
-    country: Yup.string().required()
+    country: Yup.string().required(t('This field is required'))
   })
 });
 
-const emptyContact = { contact: '', email: '', phone1: '', phone2: '' };
+const emptyContact = { contact: '', email: '', phone1: '', phone2: '', whatsapp1: false, whatsapp2: false };
 
 const initValues = (tenant) => {
   return {
@@ -64,11 +70,13 @@ const initValues = (tenant) => {
     dos: tenant?.rcs || '',
     capital: tenant?.capital || '',
     contacts: tenant?.contacts?.length
-      ? tenant.contacts.map(({ contact, email, phone, phone1, phone2 }) => ({
+      ? tenant.contacts.map(({ contact, email, phone, phone1, phone2, whatsapp1, whatsapp2 }) => ({
           contact,
           email,
           phone1: phone1 || phone,
-          phone2: phone2 || ''
+          phone2: phone2 || '',
+          whatsapp1: whatsapp1 || false,
+          whatsapp2: whatsapp2 || false
         }))
       : [emptyContact],
     address: {
@@ -82,8 +90,8 @@ const initValues = (tenant) => {
   };
 };
 
-export const validate = (tenant) => {
-  return validationSchema.validate(initValues(tenant));
+export const validate = (tenant, t) => {
+  return createValidationSchema(t).validate(initValues(tenant));
 };
 
 const TenantForm = observer(({ readOnly, onSubmit }) => {
@@ -93,6 +101,11 @@ const TenantForm = observer(({ readOnly, onSubmit }) => {
   const initialValues = useMemo(
     () => initValues(store.tenant?.selected),
     [store.tenant?.selected]
+  );
+
+  const validationSchema = useMemo(
+    () => createValidationSchema(t),
+    [t]
   );
 
   const _onSubmit = async (tenant) => {
@@ -114,12 +127,14 @@ const TenantForm = observer(({ readOnly, onSubmit }) => {
       country: tenant.address.country,
       contacts: tenant.contacts
         .filter(({ contact }) => !!contact)
-        .map(({ contact, email, phone1, phone2 }) => {
+        .map(({ contact, email, phone1, phone2, whatsapp1, whatsapp2 }) => {
           return {
             contact,
             email,
             phone1,
-            phone2
+            phone2,
+            whatsapp1: whatsapp1 || false,
+            whatsapp2: whatsapp2 || false
           };
         })
     });
@@ -211,6 +226,8 @@ const TenantForm = observer(({ readOnly, onSubmit }) => {
                     emailName={`contacts[${index}].email`}
                     phone1Name={`contacts[${index}].phone1`}
                     phone2Name={`contacts[${index}].phone2`}
+                    whatsapp1Name={`contacts[${index}].whatsapp1`}
+                    whatsapp2Name={`contacts[${index}].whatsapp2`}
                     disabled={readOnly}
                   />
                 )}

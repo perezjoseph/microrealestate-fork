@@ -52,12 +52,17 @@ export async function generate(documentId, params) {
 
   return await mutex.runExclusive(async () => {
     const data = await dataPicker(documentId, params);
+    
+    // Prioritize Dominican Spanish for this organization
+    // Use landlord locale if it's es-DO, otherwise use params locale, then fallback
+    const locale = (data.landlord.locale === 'es-DO') ? 'es-DO' : (params.locale || data.landlord.locale || 'en-US');
+    
     const html = await settings['view engine'](
       templateFile,
       {
         ...data,
         _: templateFunctions({
-          locale: data.landlord.locale,
+          locale: locale,
           currency: data.landlord.currency
         })
       },

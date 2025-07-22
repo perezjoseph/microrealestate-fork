@@ -11,22 +11,21 @@ import { TextField } from '../components/formfields/TextField';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import { getLocalizedValidationSchema } from '../utils/validation';
 
 const defaultValues = {
   email: '',
   password: ''
 };
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email().required(),
-  password: Yup.string().required()
-});
-
 export default function SignIn() {
   const { t } = useTranslation('common');
   const store = useContext(StoreContext);
   const [initialValues, setInitialValues] = useState(defaultValues);
   const router = useRouter();
+
+  // Create localized validation schema
+  const validationSchema = getLocalizedValidationSchema(t).signIn;
 
   useEffect(() => {
     if (config.DEMO_MODE) {
@@ -40,14 +39,29 @@ export default function SignIn() {
   const signIn = useCallback(
     async ({ email, password }) => {
       try {
-        const status = await store.user.signIn(email, password);
-        if (status !== 200) {
-          switch (status) {
+        const result = await store.user.signIn(email, password);
+        
+        if (result.status !== 200) {
+          switch (result.status) {
             case 422:
               toast.error(t('Some fields are missing'));
               return;
             case 401:
               toast.error(t('Incorrect email or password'));
+              return;
+            case 429:
+              // Handle rate limiting with detailed message
+              const waitTime = result.retryAfterMinutes || 15;
+              toast.error(
+                t('Rate limit exceeded', {
+                  waitTime: waitTime,
+                  details: result.details || t('Too many login attempts')
+                }),
+                {
+                  duration: 8000, // Show longer for rate limit messages
+                  description: result.details
+                }
+              );
               return;
             default:
               toast.error(t('Something went wrong'));

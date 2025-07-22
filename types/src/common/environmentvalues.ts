@@ -26,6 +26,7 @@ export type EnvironmentValues = {
   CORS_ENABLED?: boolean;
   TENANTAPI_URL?: string;
   EMAILER_URL?: string;
+  WHATSAPP_URL?: string;
   DATA_DIRECTORY?: string;
   TEMPLATES_DIRECTORY?: string;
   TEMPORARY_DIRECTORY?: string;

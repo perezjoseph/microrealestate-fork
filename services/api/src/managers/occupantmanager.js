@@ -37,6 +37,24 @@ function _formatTenant(tenant) {
     reference: tenant.reference || nanoid()
   };
 
+  // Convert frontend contact format to database format
+  if (formattedTenant.contacts) {
+    formattedTenant.contacts = formattedTenant.contacts.map((contact) => {
+      // Handle both old and new contact formats
+      const dbContact = {
+        contact: contact.contact,
+        email: contact.email,
+        phone: contact.phone1 || contact.phone || '', // Keep phone for backward compatibility
+        phone1: contact.phone1 || contact.phone || '',
+        phone2: contact.phone2 || '',
+        whatsapp1: Boolean(contact.whatsapp1),
+        whatsapp2: Boolean(contact.whatsapp2)
+      };
+      
+      return dbContact;
+    });
+  }
+
   if (!formattedTenant.isCompany) {
     formattedTenant.company = null;
     formattedTenant.legalForm = null;

@@ -2,8 +2,8 @@
 // to get the locales from commonui package so far
 // https://github.com/aralroca/next-translate/issues/851#issuecomment-1173611946
 module.exports = {
-  locales: ['en', 'fr-FR', 'pt-BR', 'de-DE', 'es-CO'],
-  defaultLocale: 'en',
+  locales: ['en', 'fr-FR', 'pt-BR', 'de-DE', 'es-CO', 'es-DO'],
+  defaultLocale: 'es-DO',
   pages: {
     '*': ['common']
   },

@@ -9,6 +9,7 @@ import {
 import { useCallback, useState } from 'react';
 import { useField, useFormikContext } from 'formik';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
+import useTranslation from 'next-translate/useTranslation';
 
 export function InputField({
   label,
@@ -16,6 +17,7 @@ export function InputField({
   showHidePassword = true,
   ...props
 }) {
+  const { t } = useTranslation('common');
   const [displayPassword, showPassword] = useState(false);
   const [field, meta] = useField(props);
   const { isSubmitting } = useFormikContext();
@@ -28,6 +30,15 @@ export function InputField({
   const handleMouseDownPassword = useCallback((event) => {
     event.preventDefault();
   }, []);
+
+  // Try to translate the error message, fallback to original if translation doesn't exist
+  const getErrorMessage = (error) => {
+    if (!error) return '';
+    
+    // Check if the error message has a translation
+    const translatedError = t(error, { fallback: error });
+    return translatedError;
+  };
 
   return (
     <FormControl margin="normal" fullWidth>
@@ -61,7 +72,9 @@ export function InputField({
         }
       />
       {hasError && (
-        <FormHelperText error={hasError}>{meta.error}</FormHelperText>
+        <FormHelperText error={hasError}>
+          {getErrorMessage(meta.error)}
+        </FormHelperText>
       )}
     </FormControl>
   );

@@ -44,39 +44,92 @@ export function getFormatTimeRange(locale: Locale, timeRange: LeaseTimeRange) {
 }
 
 export function toUILease(tenant: TenantAPI.TenantDataType): Lease {
-  return {
-    landlord: tenant.landlord,
-    tenant: tenant.tenant,
-    name: tenant.lease.name,
-    beginDate: tenant.lease.beginDate
-      ? new Date(tenant.lease.beginDate)
-      : undefined,
-    endDate: tenant.lease.endDate ? new Date(tenant.lease.endDate) : undefined,
-    terminationDate: tenant.lease.terminationDate
-      ? new Date(tenant.lease.terminationDate)
-      : undefined,
-    timeRange: tenant.lease.timeRange,
-    status: tenant.lease.status,
-    rent: tenant.lease.rent,
-    remainingIterations: tenant.lease.remainingIterations,
-    remainingIterationsToPay: tenant.lease.remainingIterationsToPay,
-    properties: tenant.lease.properties.map((property) => ({
-      id: property.id,
-      name: property.name,
-      description: property.description,
-      type: property.type
-    })),
-    balance: tenant.lease.balance,
-    deposit: tenant.lease.deposit,
-    invoices: tenant.lease.invoices.map((invoice) => ({
-      id: String(invoice.term),
-      term: invoice.term,
-      grandTotal: invoice.grandTotal,
-      payment: invoice.payment,
-      status: invoice.status,
-      methods: invoice.methods
-    })),
-    documents: []
-    //documents: tenant.lease.documents.map((document) => ({}))
-  };
+  try {
+    return {
+      landlord: tenant.landlord || {
+        name: '',
+        addresses: [],
+        contacts: [],
+        currency: 'USD',
+        locale: 'en'
+      },
+      tenant: tenant.tenant || {
+        id: '',
+        name: '',
+        contacts: [],
+        addresses: []
+      },
+      name: tenant.lease?.name || 'No contract',
+      beginDate: tenant.lease?.beginDate
+        ? new Date(tenant.lease.beginDate)
+        : undefined,
+      endDate: tenant.lease?.endDate ? new Date(tenant.lease.endDate) : undefined,
+      terminationDate: tenant.lease?.terminationDate
+        ? new Date(tenant.lease.terminationDate)
+        : undefined,
+      timeRange: tenant.lease?.timeRange || 'months',
+      status: tenant.lease?.status || 'active',
+      rent: tenant.lease?.rent || {
+        totalPreTaxAmount: 0,
+        totalChargesAmount: 0,
+        totalVatAmount: 0,
+        totalAmount: 0
+      },
+      remainingIterations: tenant.lease?.remainingIterations || 0,
+      remainingIterationsToPay: tenant.lease?.remainingIterationsToPay || 0,
+      properties: tenant.lease?.properties?.map((property) => ({
+        id: property.id || '',
+        name: property.name || '',
+        description: property.description || '',
+        type: property.type || ''
+      })) || [],
+      balance: tenant.lease?.balance || 0,
+      deposit: tenant.lease?.deposit || 0,
+      invoices: tenant.lease?.invoices?.map((invoice) => ({
+        id: String(invoice.term || ''),
+        term: invoice.term || 0,
+        grandTotal: invoice.grandTotal || 0,
+        payment: invoice.payment || 0,
+        status: invoice.status || 'unpaid',
+        methods: invoice.methods || []
+      })) || [],
+      documents: []
+    };
+  } catch (error) {
+    console.error('Error in toUILease:', error);
+    // Return a minimal valid lease object
+    return {
+      landlord: {
+        name: '',
+        addresses: [],
+        contacts: [],
+        currency: 'USD',
+        locale: 'en'
+      },
+      tenant: {
+        id: '',
+        name: '',
+        contacts: [],
+        addresses: []
+      },
+      name: 'No contract',
+      beginDate: new Date(),
+      endDate: new Date(),
+      timeRange: 'months',
+      status: 'active',
+      rent: {
+        totalPreTaxAmount: 0,
+        totalChargesAmount: 0,
+        totalVatAmount: 0,
+        totalAmount: 0
+      },
+      remainingIterations: 0,
+      remainingIterationsToPay: 0,
+      properties: [],
+      balance: 0,
+      deposit: 0,
+      invoices: [],
+      documents: []
+    };
+  }
 }

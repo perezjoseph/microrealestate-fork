@@ -17,6 +17,7 @@ import UserAvatar from './user-avatar';
 import useSession from '@/utils/session/client/usesession';
 import { useToast } from '@/components/ui/use-toast';
 import useTranslation from '@/utils/i18n/client/useTranslation';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 export default function UserMenu() {
   const apiFetcher = useApiFetcher();
@@ -55,6 +56,11 @@ export default function UserMenu() {
         <SheetHeader className="flex flex-row items-center">
           <SheetTitle>{session?.email || ''}</SheetTitle>
         </SheetHeader>
+        <Separator className="bg-secondary-foreground/25" />
+        <div className="py-4">
+          <div className="mb-3 text-sm font-medium text-foreground">{t('Language')}</div>
+          <LanguageSwitcher />
+        </div>
         <Separator className="bg-secondary-foreground/25" />
         <div>
           <SheetClose asChild>

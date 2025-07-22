@@ -243,7 +243,12 @@ export default function () {
     Middlewares.asyncWrapper(async (req, res) => {
       try {
         logger.debug(`generate pdf file for ${JSON.stringify(req.params)}`);
-        const pdfFile = await pdf.generate(req.params.document, req.params);
+        // Pass the locale from the request to the PDF generator
+        const locale = req.locale || req.headers['accept-language'] || 'en-US';
+        const pdfFile = await pdf.generate(req.params.document, {
+          ...req.params,
+          locale: locale
+        });
         return res.download(pdfFile);
       } catch (error) {
         throw new ServiceError(error, 404);

@@ -10,15 +10,20 @@ export async function fetchOneTenant(tenantId: string): Promise<Lease | null> {
   if (getServerEnv('DEMO_MODE') === 'true') {
     data = Mocks.getOneTenant;
   } else {
-    const response = await getApiFetcher().get<TenantAPI.GetOneTenant.Response>(
-      `/tenantapi/tenant/${tenantId}`
-    );
-    data = response.data;
+    try {
+      const response = await getApiFetcher().get<TenantAPI.GetOneTenant.Response>(
+        `/tenantapi/tenant/${tenantId}`
+      );
+      data = response.data;
+    } catch (error) {
+      console.error('Error fetching tenant:', error);
+      return null;
+    }
   }
 
   if (data.error) {
     console.error(data.error);
-    throw new Error(data.error);
+    return null;
   }
 
   if (!data.results?.length) {
@@ -33,23 +38,37 @@ export async function fetchAllTenants(): Promise<Lease[]> {
   if (getServerEnv('DEMO_MODE') === 'true') {
     data = Mocks.getAllTenants;
   } else {
-    const response =
-      await getApiFetcher().get<TenantAPI.GetAllTenants.Response>(
+    try {
+      const response = await getApiFetcher().get<TenantAPI.GetAllTenants.Response>(
         `/tenantapi/tenants`
       );
-    data = response.data;
+      data = response.data;
+      
+      // Check if the response indicates no contract
+      if (data.status === 'no_contract') {
+        console.log('No contract associated with this account');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching tenants:', error);
+      return [];
+    }
   }
 
   if (data.error) {
     console.error(data.error);
-    throw new Error(data.error);
+    return [];
   }
 
   if (!data.results) {
     return [];
   }
 
-  const leases: Lease[] = data.results.map(toUILease) || [];
-
-  return leases;
+  try {
+    const leases: Lease[] = data.results.map(toUILease) || [];
+    return leases;
+  } catch (error) {
+    console.error('Error processing tenant data:', error);
+    return [];
+  }
 }

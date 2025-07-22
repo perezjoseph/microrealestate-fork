@@ -9,7 +9,8 @@ export default function (
   templateName,
   recordId,
   params,
-  filename
+  filename,
+  locale = 'en-US'
 ) {
   const { PDFGENERATOR_URL, TEMPORARY_DIRECTORY } =
     Service.getInstance().envConfig.getValues();
@@ -26,7 +27,8 @@ export default function (
       responseType: 'stream',
       headers: {
         authorization: authorizationHeader,
-        organizationid: organizationId
+        organizationid: organizationId,
+        'Accept-Language': locale
       }
     })
     .then((response) => {

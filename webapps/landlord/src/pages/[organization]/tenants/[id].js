@@ -19,6 +19,7 @@ import { StoreContext } from '../../../store';
 import TenantStepper from '../../../components/tenants/TenantStepper';
 import TenantTabs from '../../../components/tenants/TenantTabs';
 import TerminateLeaseDialog from '../../../components/tenants/TerminateLeaseDialog';
+import WhatsAppInvoiceButton from '../../../components/tenants/WhatsAppInvoiceButton';
 import { toast } from 'sonner';
 import { toJS } from 'mobx';
 import useFillStore from '../../../hooks/useFillStore';

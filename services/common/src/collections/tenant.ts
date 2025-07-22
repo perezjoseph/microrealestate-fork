@@ -31,7 +31,11 @@ const TenantSchema = new mongoose.Schema<CollectionTypes.Tenant>({
   contacts: [
     {
       contact: String,
-      phone: String,
+      phone: String, // Keep for backward compatibility
+      phone1: String,
+      phone2: String,
+      whatsapp1: Boolean,
+      whatsapp2: Boolean,
       email: String
     }
   ],

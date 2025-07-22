@@ -70,9 +70,23 @@ export default class User {
         email,
         password
       });
-      return 200;
+      return { status: 200 };
     } catch (error) {
-      return error.response.status;
+      const status = error.response?.status;
+      const data = error.response?.data;
+      
+      // Return detailed error information for rate limiting
+      if (status === 429 && data) {
+        return {
+          status: 429,
+          error: data.error,
+          details: data.details,
+          retryAfterMinutes: data.retryAfterMinutes,
+          type: data.type
+        };
+      }
+      
+      return { status };
     }
   }
 
@@ -87,9 +101,23 @@ export default class User {
       );
       const { accessToken } = response.data;
       this.setUserFromToken(accessToken);
-      return 200;
+      return { status: 200 };
     } catch (error) {
-      return error.response.status;
+      const status = error.response?.status;
+      const data = error.response?.data;
+      
+      // Return detailed error information for rate limiting
+      if (status === 429 && data) {
+        return {
+          status: 429,
+          error: data.error,
+          details: data.details,
+          retryAfterMinutes: data.retryAfterMinutes,
+          type: data.type
+        };
+      }
+      
+      return { status };
     }
   }
 
@@ -155,9 +183,23 @@ export default class User {
       yield apiFetcher().post('/authenticator/landlord/forgotpassword', {
         email
       });
-      return 200;
+      return { status: 200 };
     } catch (error) {
-      return error.response.status;
+      const status = error.response?.status;
+      const data = error.response?.data;
+      
+      // Return detailed error information for rate limiting
+      if (status === 429 && data) {
+        return {
+          status: 429,
+          error: data.error,
+          details: data.details,
+          retryAfterMinutes: data.retryAfterMinutes,
+          type: data.type
+        };
+      }
+      
+      return { status };
     }
   }
 

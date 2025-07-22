@@ -9,21 +9,18 @@ import { TextField } from '../../components/formfields/TextField';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import { getLocalizedValidationSchema } from '../../utils/validation';
 
 const initialValues = {
   password: '',
   confirmationPassword: ''
 };
 
-const validationSchema = Yup.object().shape({
-  password: Yup.string().required(),
-  confirmationPassword: Yup.string()
-    .required()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match') // TODO translate this
-});
-
 export default function ResetPassword() {
   const { t } = useTranslation('common');
+  
+  // Create localized validation schema
+  const validationSchema = getLocalizedValidationSchema(t).resetPassword;
   const store = useContext(StoreContext);
   const router = useRouter();
 

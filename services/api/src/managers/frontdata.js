@@ -277,6 +277,18 @@ export function toOccupantData(inputOccupant) {
         }, [])
       : [];
 
+  // Transform contacts to frontend format
+  if (occupant.contacts) {
+    occupant.contacts = occupant.contacts.map((contact) => ({
+      contact: contact.contact,
+      email: contact.email,
+      phone1: contact.phone1 || contact.phone || '', // Use phone1 if available, fallback to phone for backward compatibility
+      phone2: contact.phone2 || '',
+      whatsapp1: Boolean(contact.whatsapp1),
+      whatsapp2: Boolean(contact.whatsapp2)
+    }));
+  }
+
   occupant.hasContactEmails = occupant.contactEmails.length > 0;
 
   // Compute if contract is completed
