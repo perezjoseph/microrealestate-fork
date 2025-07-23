@@ -120,28 +120,3 @@ Where mredb-XXXX.dump is the archive file you selected.
 
 Again, replace "mredb" with the name of your database (see .env file). By default, the database name is "mredb".
 
-
-## Developers
-
-To run the application in development mode, follow the steps outlined in the documentation available [here](./documentation/DEVELOPER.md)
-
-## Donate
-
-Thank you for your interest in supporting MicroRealEstate.
-Every contribution will help us pay our ongoing maintenance and development costs 🙏
-
-[![Donate](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/camelaissani)
-
-## Contact
-
-LinkedIn: [www.linkedin.com/in/caissani](https://www.linkedin.com/in/caissani/)
-
-X: [@camelaissani](https://x.com/camelaissani)
-
-## License
-
-The project is licensed under the MIT License. To view the license details, please follow the link below:
-
-[MIT License](./LICENSE)
-
-Feel free to review the license terms and conditions to understand the permissions and restrictions associated with the project.
