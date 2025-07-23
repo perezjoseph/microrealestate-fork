@@ -3,8 +3,8 @@ FROM node:20-bookworm-slim AS base
 FROM base AS deps
 WORKDIR /usr/app
 ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm ci && npm cache clean --force
+COPY webapps/tenant/package*.json ./
+RUN npm install && npm cache clean --force
 
 FROM base AS build
 WORKDIR /usr/app
@@ -12,19 +12,19 @@ ENV BASE_PATH=/__MRE_BASE_PATH__
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy package files and install all dependencies (including dev)
-COPY package*.json ./
-RUN npm ci
+COPY webapps/tenant/package*.json ./
+RUN npm install
 
 # Copy source code and configuration files
-COPY .eslintrc.json ./
-COPY components.json ./
-COPY next.config.js ./
-COPY postcss.config.js ./
-COPY tailwind.config.ts ./
-COPY tsconfig.json ./
-COPY locales ./locales
-COPY public ./public
-COPY src ./src
+COPY webapps/tenant/.eslintrc.json ./
+COPY webapps/tenant/components.json ./
+COPY webapps/tenant/next.config.js ./
+COPY webapps/tenant/postcss.config.js ./
+COPY webapps/tenant/tailwind.config.ts ./
+COPY webapps/tenant/tsconfig.json ./
+COPY webapps/tenant/locales ./locales
+COPY webapps/tenant/public ./public
+COPY webapps/tenant/src ./src
 
 # Build the application
 RUN npm run build

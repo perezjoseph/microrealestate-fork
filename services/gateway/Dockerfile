@@ -4,19 +4,23 @@ FROM base AS build
 WORKDIR /usr/app
 
 # Copy package files and install dependencies
-COPY package*.json ./
-RUN npm ci
+COPY services/gateway/package*.json ./
+RUN npm install
+
+# Copy shared dependencies
+COPY types ./types
+COPY services/common ./services/common
 
 # Copy source code and build
-COPY src ./src
-COPY tsconfig.json ./
+COPY services/gateway/src ./src
+COPY services/gateway/tsconfig.json ./
 RUN npm run build
 
 FROM base AS deps
 WORKDIR /usr/app
 ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm ci && npm cache clean --force
+COPY services/gateway/package*.json ./
+RUN npm install && npm cache clean --force
 
 FROM gcr.io/distroless/nodejs20-debian12
 ENV NODE_ENV=production

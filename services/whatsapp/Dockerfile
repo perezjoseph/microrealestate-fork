@@ -5,7 +5,7 @@ WORKDIR /usr/app
 # Copy package files and install dependencies
 ENV NODE_ENV=production
 COPY package*.json ./
-RUN npm ci && npm cache clean --force
+RUN npm install && npm cache clean --force
 
 # Copy source code
 COPY src/ ./src/
