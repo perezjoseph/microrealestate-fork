@@ -2,48 +2,45 @@ FROM node:20-bookworm-slim AS base
 
 FROM base AS deps
 WORKDIR /usr/app
-COPY package.json .
-COPY .yarnrc.yml .
-COPY yarn.lock .
-COPY .yarn/plugins .yarn/plugins
-COPY .yarn/releases .yarn/releases
-COPY types/package.json types/package.json
-COPY webapps/tenant/package.json webapps/tenant/package.json
-RUN --mount=type=cache,id=node_modules,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn \
-    yarn workspaces focus @microrealestate/tenant
+COPY webapps/tenant/package*.json ./
+RUN npm ci --only=production && npm cache clean --force
 
 FROM base AS build
 WORKDIR /usr/app
 ENV BASE_PATH=/__MRE_BASE_PATH__
 ENV NEXT_TELEMETRY_DISABLED=1
-COPY --from=deps /usr/app ./
-COPY types types
-COPY webapps/commonui/scripts webapps/commonui/scripts
-COPY webapps/tenant/.eslintrc.json webapps/tenant
-COPY webapps/tenant/components.json webapps/tenant
-COPY webapps/tenant/next.config.js webapps/tenant
-COPY webapps/tenant/package.json webapps/tenant
-COPY webapps/tenant/postcss.config.js webapps/tenant
-COPY webapps/tenant/tailwind.config.ts webapps/tenant
-COPY webapps/tenant/tsconfig.json webapps/tenant
-COPY webapps/tenant/locales webapps/tenant/locales
-COPY webapps/tenant/public webapps/tenant/public
-COPY webapps/tenant/src webapps/tenant/src
-RUN yarn workspace @microrealestate/types run build && \
-    yarn workspace @microrealestate/tenant run build
-# following lines needed to be able to run webapps/commonui/scripts at container runtime
-RUN chown -R 1000 /usr/app/webapps/tenant/.next && \
-    chown -R 1000 /usr/app/webapps/tenant/public
+
+# Copy package files and install all dependencies (including dev)
+COPY webapps/tenant/package*.json ./
+RUN npm ci
+
+# Copy source code and configuration files
+COPY webapps/tenant/.eslintrc.json ./
+COPY webapps/tenant/components.json ./
+COPY webapps/tenant/next.config.js ./
+COPY webapps/tenant/postcss.config.js ./
+COPY webapps/tenant/tailwind.config.ts ./
+COPY webapps/tenant/tsconfig.json ./
+COPY webapps/tenant/locales ./locales
+COPY webapps/tenant/public ./public
+COPY webapps/tenant/src ./src
+
+# Build the application
+RUN npm run build
+
+# Set proper permissions
+RUN chown -R 1000 ./.next && \
+    chown -R 1000 ./public
 
 FROM gcr.io/distroless/nodejs20-debian12
 WORKDIR /usr/app
 ENV NEXT_TELEMETRY_DISABLED=1
-COPY --from=build /usr/app/webapps/tenant/public ./public
-COPY --from=build /usr/app/webapps/tenant/.next/standalone/node_modules ./node_modules
-COPY --from=build /usr/app/webapps/tenant/.next/standalone/webapps/tenant ./
-COPY --from=build /usr/app/webapps/tenant/.next/static ./.next/static
-COPY --from=build /usr/app/webapps/commonui/scripts/replacebasepath.js ./
-COPY --from=build /usr/app/webapps/commonui/scripts/runner.js ./
+
+# Copy built application
+COPY --from=build /usr/app/public ./public
+COPY --from=build /usr/app/.next/standalone/node_modules ./node_modules
+COPY --from=build /usr/app/.next/standalone ./
+COPY --from=build /usr/app/.next/static ./.next/static
 
 USER 1000
-CMD ["runner.js"]
+CMD ["server.js"]

@@ -1,13 +1,10 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /usr/app
 
-# Copy package files
+# Copy package files and install dependencies
 COPY services/whatsapp/package*.json ./
-COPY services/whatsapp/yarn.lock* ./
-
-# Install dependencies
-RUN yarn install --frozen-lockfile
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy source code
 COPY services/whatsapp/src/ ./src/

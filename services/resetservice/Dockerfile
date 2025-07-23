@@ -1,40 +1,18 @@
 FROM node:20-bookworm-slim AS base
 
-FROM base AS build
-WORKDIR /usr/app
-COPY package.json .
-COPY .yarnrc.yml .
-COPY yarn.lock .
-COPY .yarn/plugins .yarn/plugins
-COPY .yarn/releases .yarn/releases
-COPY types types
-COPY services/common services/common
-COPY services/resetservice services/resetservice
-RUN --mount=type=cache,id=node_modules,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn \
-    yarn workspaces focus @microrealestate/resetservice && \
-    yarn workspace @microrealestate/types run build && \
-    yarn workspace @microrealestate/common run build && \
-    yarn workspace @microrealestate/resetservice run build
-
 FROM base AS deps
 WORKDIR /usr/app
-COPY --from=build /usr/app/package.json .
-COPY --from=build /usr/app/.yarnrc.yml .
-COPY --from=build /usr/app/yarn.lock .
-COPY --from=build /usr/app/.yarn/plugins .yarn/plugins
-COPY --from=build /usr/app/.yarn/releases .yarn/releases
-COPY --from=build /usr/app/types/package.json types/package.json
-COPY --from=build /usr/app/services/common/package.json ./services/common/package.json
-COPY --from=build /usr/app/services/resetservice/package.json ./services/resetservice/package.json
-COPY --from=build /usr/app/services/common/dist ./services/common/dist
-COPY --from=build /usr/app/services/resetservice/dist ./services/resetservice/dist
-RUN --mount=type=cache,id=node_modules,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn \
-    yarn workspaces focus --production @microrealestate/resetservice
+COPY services/resetservice/package*.json ./
+RUN npm ci --only=production && npm cache clean --force
 
-FROM gcr.io/distroless/nodejs20-debian12
+FROM base
 ENV NODE_ENV production
 WORKDIR /usr/app
-COPY --from=deps /usr/app ./
+
+# Copy production dependencies and source code
+COPY --from=deps /usr/app/node_modules ./node_modules
+COPY services/resetservice/src ./src
+COPY services/resetservice/package*.json ./
 
 USER 1000
-CMD ["services/resetservice/dist/index.js"]
+CMD ["node", "src/index.js"]
