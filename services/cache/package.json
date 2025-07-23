@@ -1,0 +1,30 @@
+{
+  "name": "@microrealestate/cache",
+  "version": "1.0.0",
+  "description": "Valkey/Redis cache service for MicroRealEstate",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "build": "echo \"Cache service - no build required\" && exit 0",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "cache",
+    "redis",
+    "valkey",
+    "microrealestate"
+  ],
+  "author": "MicroRealEstate Team",
+  "license": "MIT",
+  "dependencies": {
+    "redis": "^4.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=22.17.1"
+  }
+}

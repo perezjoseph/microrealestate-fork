@@ -17,6 +17,7 @@
     "react-dom": "18.2.0"
   },
   "scripts": {
+    "build": "echo \"CommonUI - no build required, used as dependency\" && exit 0",
     "lint": "eslint .",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css}'",
     "generateStrings": "node scripts/extractlocalizedstrings.js"
@@ -31,5 +32,8 @@
     "next-translate-plugin": "2.6.2",
     "prop-types": "15.8.1",
     "require-from-string": "2.0.2"
+  },
+  "engines": {
+    "node": ">=22.17.1"
   }
 }
