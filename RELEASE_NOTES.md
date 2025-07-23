@@ -140,7 +140,7 @@ This is the first production-ready release of MicroRealEstate, representing a co
 #### **Quick Start**
 ```bash
 # Clone the repository
-git clone https://github.com/microrealestate/microrealestate.git
+git clone https://github.com/perezjoseph/microrealestate-whatsapp.git
 cd microrealestate
 
 # Run the complete stack builder
@@ -216,7 +216,7 @@ docker compose build --no-cache [service-name]
 ### 📞 Support & Community
 
 - **Documentation**: [docs.microrealestate.com](https://docs.microrealestate.com)
-- **GitHub**: [github.com/microrealestate/microrealestate](https://github.com/microrealestate/microrealestate)
+- **GitHub**: [github.com/perezjoseph/microrealestate-whatsapp](https://github.com/perezjoseph/microrealestate-whatsapp)
 - **Issues**: Report bugs and request features on GitHub
 - **Community**: Join our community discussions
 

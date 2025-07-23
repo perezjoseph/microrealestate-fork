@@ -1,34 +1,18 @@
 # MicroRealEstate
 
-[![Continuous Integration](https://github.com/microrealestate/microrealestate/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/microrealestate/microrealestate/actions/workflows/ci.yml)
+[![Continuous Integration](https://github.com/perezjoseph/microrealestate-whatsapp/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/perezjoseph/microrealestate-whatsapp/actions/workflows/ci.yml)
 
-MicroRealEstate is an open-source application designed to assist landlords in managing their properties and rentals. MicroRealEstate (MRE) serves as a centralized platform for landlords to streamline their property management tasks with modern features including WhatsApp integration and multi-language support.
+MicroRealEstate is an open-source property management platform designed to help landlords efficiently manage their properties, tenants, and rental operations.
 
-## Key Features
+## Features
 
-### Core Property Management
-- **Centralized Property and Tenant Information**: Store all property and tenant details in one convenient location, from property specifications to tenant records and contact information.
-- **Rent Lease Creation**: Simplify the process of creating rent leases with customizable templates that enable landlords to generate professional lease agreements.
-- **Rent Payment Tracking**: Comprehensive system for tracking rent payments, helping landlords stay updated on transactions and promptly address any overdue payments.
-- **Custom Document Generation**: Create custom documents for effective communication with tenants. Generate personalized letters, notices, and announcements for clear and consistent correspondence.
-- **Collaboration**: Support for independent landlords or real estate businesses with multiple collaborators, facilitating task coordination within teams.
-
-### Communication & Notifications
-- **WhatsApp Integration**: Send rent invoices, payment reminders, and notifications directly via WhatsApp using customizable templates.
-- **WhatsApp OTP Authentication**: Secure tenant login using WhatsApp OTP verification as an alternative to email-based authentication.
-- **Email Notifications**: Traditional email-based communication system with customizable templates.
-- **Multi-language Support**: Full internationalization with support for English, Spanish, French, German, and Portuguese.
-
-### Security & Authentication
-- **Enhanced Security**: Advanced rate limiting, JWT token improvements, and NoSQL injection protection.
-- **Dual Authentication Methods**: Support for both email OTP and WhatsApp OTP authentication for tenants.
-- **Role-based Access Control**: Separate interfaces and permissions for landlords and tenants.
-
-### Technical Features
-- **Microservices Architecture**: Scalable architecture with dedicated services for different functionalities.
-- **Modern Tech Stack**: Built with Node.js, React, Next.js, MongoDB, and Redis.
-- **Docker Support**: Complete containerization for easy deployment and scaling.
-- **Professional Codebase**: Clean, emoji-free codebase suitable for business environments.
+- **Property & Tenant Management** - Centralized database for properties, tenants, and lease agreements
+- **Rent Tracking & Invoicing** - Automated rent collection with payment tracking and reminders
+- **WhatsApp Integration** - Send invoices and notifications via WhatsApp with OTP authentication
+- **Multi-language Support** - Available in English, Spanish, French, German, and Portuguese
+- **Document Generation** - Create custom leases, notices, and rental documents
+- **Team Collaboration** - Multi-user support for property management teams
+- **Modern Architecture** - Microservices-based with Docker containerization
 
 ## Screenshots
 
@@ -40,10 +24,6 @@ MicroRealEstate is an open-source application designed to assist landlords in ma
 |    [<img src="./documentation/pictures/tenants.png" alt="drawing" width="200"/>](./documentation/pictures/tenants.png)    | [<img src="./documentation/pictures/tenantcontract.png" alt="drawing" width="200"/>](./documentation/pictures/tenantcontract.png) |                                                                                                                                       |
 |                                                    **Properties page**                                                    |                                                       **Property details**                                                        |                                                                                                                                       |
 | [<img src="./documentation/pictures/properties.png" alt="drawing" width="200"/>](./documentation/pictures/properties.png) |       [<img src="./documentation/pictures/property.png" alt="drawing" width="200"/>](./documentation/pictures/property.png)       |                                                                                                                                       |
-|                                                     **Landlord page**                                                     |                                                        **Template leases**                                                        |                                                         **Author a contract**                                                         |
-|   [<img src="./documentation/pictures/landlord.png" alt="drawing" width="200"/>](./documentation/pictures/landlord.png)   |         [<img src="./documentation/pictures/leases.png" alt="drawing" width="200"/>](./documentation/pictures/leases.png)         | [<img src="./documentation/pictures/contracttemplate.png" alt="drawing" width="200"/>](./documentation/pictures/contracttemplate.png) |
-|                                                        **Members**                                                        |                                                                                                                                   |
-|    [<img src="./documentation/pictures/members.png" alt="drawing" width="200"/>](./documentation/pictures/members.png)    |                                                                                                                                   |
 
 ## Quick Start
 
@@ -127,7 +107,7 @@ The application will be available on:
 - **Landlord Interface**: https://app.example.com/landlord
 - **Tenant Interface**: https://app.example.com/tenant
 
-## WhatsApp Integration Setup
+## WhatsApp Integration
 
 ### Prerequisites
 1. **WhatsApp Business API Account**: Set up through Meta Business
@@ -185,7 +165,6 @@ Where mredb-XXXX.dump is the archive file you selected.
 
 Again, replace "mredb" with the name of your database (see .env file). By default, the database name is "mredb".
 
-<<<<<<< HEAD
 ## Architecture
 
 MicroRealEstate follows a microservices architecture with the following components:
@@ -209,37 +188,6 @@ MicroRealEstate follows a microservices architecture with the following componen
 - **MongoDB**: Primary database for application data
 - **Redis**: Caching and session management
 
-## Security Features
-
-- **Rate Limiting**: Advanced rate limiting to prevent abuse
-- **JWT Authentication**: Secure token-based authentication
-- **NoSQL Injection Protection**: Protection against database injection attacks
-- **OTP Verification**: Two-factor authentication via email and WhatsApp
-- **Role-based Access Control**: Separate permissions for landlords and tenants
-
-## Internationalization
-
-Full multi-language support with translations for:
-- English (en)
-- Spanish (es-CO, es-DO)
-- French (fr-FR)
-- German (de-DE)
-- Portuguese (pt-BR)
-
-## API Documentation
-
-### Main Endpoints
-- **Authentication**: `/api/v2/authenticator/`
-- **Properties**: `/api/v2/properties/`
-- **Tenants**: `/api/v2/tenants/`
-- **Rents**: `/api/v2/rents/`
-- **WhatsApp**: `/api/v2/whatsapp/`
-
-### Tenant Portal API
-- **Tenant Data**: `/tenantapi/tenant/`
-- **Rent Information**: `/tenantapi/rents/`
-- **Documents**: `/tenantapi/documents/`
-
 ## Development
 
 To run the application in development mode, follow the steps outlined in the documentation available [here](./documentation/DEVELOPER.md)
@@ -247,8 +195,8 @@ To run the application in development mode, follow the steps outlined in the doc
 ### Quick Development Setup
 ```shell
 # Clone the repository
-git clone https://github.com/microrealestate/microrealestate.git
-cd microrealestate
+git clone https://github.com/perezjoseph/microrealestate-whatsapp.git
+cd microrealestate-whatsapp
 
 # Start development environment
 npm run dev
@@ -281,13 +229,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and version histor
 Thank you for your interest in supporting MicroRealEstate.
 Every contribution will help us pay our ongoing maintenance and development costs 
 
-[![Donate](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/camelaissani)
-
-## Contact
-
-LinkedIn: [www.linkedin.com/in/caissani](https://www.linkedin.com/in/caissani/)
-
-X: [@camelaissani](https://x.com/camelaissani)
+[![Donate](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/perezjoseph)
 
 ## License
 
@@ -296,5 +238,3 @@ The project is licensed under the GNU Affero General Public License (AGPL) v3. T
 [GNU Affero General Public License v3](./LICENSE)
 
 The AGPL is a copyleft license that ensures the software remains free and open source, even when used in network services. If you modify this software and provide it as a network service, you must make the source code available to users of that service.
-=======
->>>>>>> whatsapp/master

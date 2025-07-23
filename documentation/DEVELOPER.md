@@ -29,7 +29,7 @@ Here is a diagram showcasing the microservices on the backend and the two fronte
 #### Clone the GitHub repository
 
 ```shell
-git clone https://github.com/microrealestate/microrealestate.git
+git clone https://github.com/perezjoseph/microrealestate-whatsapp.git
 cd microrealestate
 ```
 
