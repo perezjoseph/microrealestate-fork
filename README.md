@@ -185,6 +185,7 @@ Where mredb-XXXX.dump is the archive file you selected.
 
 Again, replace "mredb" with the name of your database (see .env file). By default, the database name is "mredb".
 
+<<<<<<< HEAD
 ## Architecture
 
 MicroRealEstate follows a microservices architecture with the following components:
@@ -295,3 +296,5 @@ The project is licensed under the GNU Affero General Public License (AGPL) v3. T
 [GNU Affero General Public License v3](./LICENSE)
 
 The AGPL is a copyleft license that ensures the software remains free and open source, even when used in network services. If you modify this software and provide it as a network service, you must make the source code available to users of that service.
+=======
+>>>>>>> whatsapp/master
