@@ -2,7 +2,7 @@ FROM node:20-bookworm-slim AS base
 
 FROM base AS deps
 WORKDIR /usr/app
-COPY webapps/landlord/package*.json ./
+COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
 FROM base AS build
@@ -11,19 +11,19 @@ ENV BASE_PATH=/__MRE_BASE_PATH__
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy package files and install all dependencies (including dev)
-COPY webapps/landlord/package*.json ./
+COPY package*.json ./
 RUN npm ci
 
 # Copy source code and configuration files
-COPY webapps/landlord/.eslintrc.json ./
-COPY webapps/landlord/locales ./locales
-COPY webapps/landlord/public ./public
-COPY webapps/landlord/src ./src
-COPY webapps/landlord/i18n.js ./
-COPY webapps/landlord/next.config.js ./
-COPY webapps/landlord/postcss.config.js ./
-COPY webapps/landlord/tailwind.config.js ./
-COPY webapps/landlord/tsconfig.json ./
+COPY .eslintrc.json ./
+COPY locales ./locales
+COPY public ./public
+COPY src ./src
+COPY i18n.js ./
+COPY next.config.js ./
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
+COPY tsconfig.json ./
 
 # Build the application
 RUN npm run build

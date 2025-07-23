@@ -5,26 +5,26 @@ RUN apk --no-cache add build-base python3
 WORKDIR /usr/app
 
 # Copy package files and install dependencies
-COPY services/api/package*.json ./
+COPY package*.json ./
 RUN npm ci
 
 # Copy source code
-COPY services/api/src ./src
+COPY src ./src
 
 FROM base AS deps
 WORKDIR /usr/app
-COPY services/api/package*.json ./
+COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 
 FROM base
-ENV NODE_ENV production
+ENV NODE_ENV=production
 RUN apk --no-cache add mongodb-tools
 WORKDIR /usr/app
 
 # Copy production dependencies and source code
 COPY --from=deps /usr/app/node_modules ./node_modules
-COPY services/api/src ./src
-COPY services/api/package*.json ./
+COPY src ./src
+COPY package*.json ./
 
 USER 1000
 CMD ["node", "src/index.js"]
