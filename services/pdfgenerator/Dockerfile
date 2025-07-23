@@ -2,8 +2,9 @@ FROM node:20-bookworm-slim AS base
 
 FROM base AS deps
 WORKDIR /usr/app
+ENV NODE_ENV=production
 COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 FROM base
 ENV NODE_ENV=production
