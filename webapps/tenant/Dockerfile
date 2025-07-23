@@ -3,7 +3,7 @@ FROM node:20-bookworm-slim AS base
 FROM base AS deps
 WORKDIR /usr/app
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 FROM base AS build
 WORKDIR /usr/app
