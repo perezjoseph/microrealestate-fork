@@ -1,19 +1,22 @@
-FROM node:20-bookworm-slim AS base
+FROM node:22-bookworm-slim AS base
 
-FROM base AS deps
+FROM base AS workspace-deps
 WORKDIR /usr/app
-ENV NODE_ENV=production
-COPY services/resetservice/package*.json ./
-RUN npm install && npm cache clean --force
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn ./.yarn
+COPY types ./types
+COPY services/common ./services/common
+COPY services/resetservice/package.json ./services/resetservice/
+RUN yarn workspaces focus @microrealestate/resetservice --production
 
 FROM base
 ENV NODE_ENV=production
 WORKDIR /usr/app
 
-# Copy production dependencies and source code
-COPY --from=deps /usr/app/node_modules ./node_modules
-COPY services/resetservice/src ./src
-COPY services/resetservice/package*.json ./
+# Copy workspace dependencies and source code
+COPY --from=workspace-deps /usr/app ./
+COPY services/resetservice/src ./services/resetservice/src
 
+WORKDIR /usr/app/services/resetservice
 USER 1000
 CMD ["node", "src/index.js"]
