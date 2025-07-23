@@ -5,7 +5,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/microrealestate/microrealestate.git"
+    "url": "git+https://github.com/perezjoseph/microrealestate-whatsapp.git"
   },
   "keywords": [
     "property management",
@@ -13,14 +13,16 @@
     "rents",
     "tenants",
     "landlord",
-    "open-source"
+    "open-source",
+    "whatsapp",
+    "payment-notices"
   ],
-  "author": "Camel Aissani",
-  "license": "MIT",
+  "author": "Joseph Pérez",
+  "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/microrealestate/microrealestate/issues"
+    "url": "https://github.com/perezjoseph/microrealestate-whatsapp/issues"
   },
-  "homepage": "https://github.com/microrealestate/microrealestate#readme",
+  "homepage": "https://github.com/perezjoseph/microrealestate-whatsapp#readme",
   "workspaces": [
     "cli",
     "e2e",
