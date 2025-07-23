@@ -1,0 +1,263 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    strategy:
+      matrix:
+        service:
+          - api
+          - authenticator
+          - emailer
+          - gateway
+          - landlord-frontend
+          - pdfgenerator
+          - tenant-frontend
+          - tenantapi
+          - whatsapp
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Check if service has package.json
+      id: check-package
+      run: |
+        if [ -f services/${{ matrix.service }}/package.json ]; then
+          echo "has-package=true" >> $GITHUB_OUTPUT
+        else
+          echo "has-package=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update dependencies
+      if: steps.check-package.outputs.has-package == 'true'
+      run: |
+        cd services/${{ matrix.service }}
+        
+        # Install npm-check-updates if not present
+        npm install -g npm-check-updates
+        
+        # Check for updates
+        ncu -u
+        
+        # Install updated dependencies
+        npm install
+        
+        # Run tests if available
+        npm test --if-present
+
+    - name: Check for changes
+      if: steps.check-package.outputs.has-package == 'true'
+      id: changes
+      run: |
+        if git diff --quiet services/${{ matrix.service }}/package.json; then
+          echo "has-changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "has-changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create Pull Request
+      if: steps.changes.outputs.has-changes == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore(${{ matrix.service }}): update dependencies"
+        title: "chore(${{ matrix.service }}): update dependencies"
+        body: |
+          ## Dependency Updates for ${{ matrix.service }}
+          
+          This PR updates the dependencies for the ${{ matrix.service }} service.
+          
+          ### Changes
+          - Updated npm dependencies to latest versions
+          - Ran tests to ensure compatibility
+          
+          ### Verification
+          - [ ] All tests pass
+          - [ ] Service builds successfully
+          - [ ] No breaking changes detected
+          
+          This PR was automatically created by the dependency update workflow.
+        branch: dependency-updates/${{ matrix.service }}
+        delete-branch: true
+
+  update-docker-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check for Docker base image updates
+      id: docker-updates
+      run: |
+        # Check current base images
+        echo "Checking for Docker base image updates..."
+        
+        # Extract base images from Dockerfiles
+        BASE_IMAGES=$(find services -name "Dockerfile" -exec grep -H "^FROM" {} \; | sort -u)
+        echo "Current base images:"
+        echo "$BASE_IMAGES"
+        
+        # Create a summary of potential updates
+        cat > docker-update-summary.md << EOF
+        # Docker Base Image Update Check
+        
+        ## Current Base Images
+        
+        \`\`\`
+        $BASE_IMAGES
+        \`\`\`
+        
+        ## Recommendations
+        
+        - Consider updating Node.js base images to latest LTS versions
+        - Check for security updates in base images
+        - Verify compatibility with current application code
+        
+        ## Next Steps
+        
+        1. Review the current base images
+        2. Test with updated base images in development
+        3. Update Dockerfiles if compatible
+        4. Rebuild and test all services
+        EOF
+
+    - name: Create Docker update issue
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "docs: add docker base image update summary"
+        title: "chore: review docker base image updates"
+        body-path: docker-update-summary.md
+        branch: docker-updates/review
+        delete-branch: true
+
+  security-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    strategy:
+      matrix:
+        service:
+          - api
+          - authenticator
+          - emailer
+          - gateway
+          - landlord-frontend
+          - pdfgenerator
+          - tenant-frontend
+          - tenantapi
+          - whatsapp
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Check if service has package.json
+      id: check-package
+      run: |
+        if [ -f services/${{ matrix.service }}/package.json ]; then
+          echo "has-package=true" >> $GITHUB_OUTPUT
+        else
+          echo "has-package=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Run security audit
+      if: steps.check-package.outputs.has-package == 'true'
+      run: |
+        cd services/${{ matrix.service }}
+        
+        # Run npm audit
+        npm audit --audit-level=moderate || true
+        
+        # Generate audit report
+        npm audit --json > audit-report.json || true
+        
+        # Check if there are vulnerabilities
+        if [ -f audit-report.json ]; then
+          VULNERABILITIES=$(cat audit-report.json | jq '.metadata.vulnerabilities.total // 0')
+          echo "Found $VULNERABILITIES vulnerabilities in ${{ matrix.service }}"
+          
+          if [ "$VULNERABILITIES" -gt 0 ]; then
+            echo "vulnerability-found=true" >> $GITHUB_OUTPUT
+            
+            # Try to fix automatically
+            npm audit fix --force || true
+          else
+            echo "vulnerability-found=false" >> $GITHUB_OUTPUT
+          fi
+        fi
+
+    - name: Create security fix PR
+      if: steps.check-package.outputs.has-package == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "security(${{ matrix.service }}): fix security vulnerabilities"
+        title: "security(${{ matrix.service }}): fix security vulnerabilities"
+        body: |
+          ## Security Fixes for ${{ matrix.service }}
+          
+          This PR addresses security vulnerabilities found in the ${{ matrix.service }} service.
+          
+          ### Changes
+          - Applied automatic security fixes using `npm audit fix`
+          - Updated vulnerable dependencies to secure versions
+          
+          ### Verification Required
+          - [ ] All tests pass
+          - [ ] Service functionality remains intact
+          - [ ] No breaking changes introduced
+          
+          **⚠️ Important**: Please review these changes carefully as automatic fixes may introduce breaking changes.
+          
+          This PR was automatically created by the security audit workflow.
+        branch: security-fixes/${{ matrix.service }}
+        delete-branch: true
+
+  summary:
+    needs: [update-dependencies, update-docker-images, security-audit]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Dependency Update Summary
+      run: |
+        echo "🔄 Dependency Update Workflow Completed"
+        echo ""
+        echo "✅ Checked all microservices for dependency updates"
+        echo "🐳 Reviewed Docker base image updates"
+        echo "🔒 Performed security audit on all services"
+        echo ""
+        echo "📋 Check for new pull requests with dependency updates and security fixes"
+        echo "🔍 Review any issues created for Docker base image updates"

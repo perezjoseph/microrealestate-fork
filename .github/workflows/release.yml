@@ -1,116 +1,272 @@
 name: Release
 
-on: 
-  release:
-    types: [published]
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.2.3)'
+        required: true
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  
-  build-upload-commands:
+  create-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
     steps:
-      - name: Get tag
-        run: |
-         TAG=${{ github.event.release.tag_name }}
-         echo "RELEASE_TAG=${TAG#v}" >> $GITHUB_ENV
-    
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: install node v20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+    - name: Get version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION=${GITHUB_REF#refs/tags/}
+        fi
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "Version: ${VERSION}"
 
-      - name: Build
-        run: |
-         npm install -g @yao-pkg/pkg
-         yarn workspaces focus @microrealestate/cli
-         pkg cli/package.json --compress Brotli --output mre
-         mv mre-linux mre
-         mv mre-win.exe mre.exe
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Generate changelog from git commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        if [ -n "$LAST_TAG" ]; then
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" ${LAST_TAG}..HEAD)
+        else
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --max-count=20)
+        fi
+        
+        # Save changelog to file
+        cat > CHANGELOG.md << EOF
+        # Release ${{ steps.version.outputs.version }}
+        
+        ## What's Changed
+        
+        ${CHANGELOG}
+        
+        ## Docker Images
+        
+        All microservices are available as Docker images:
+        
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-authenticator:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-emailer:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-landlord-frontend:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-pdfgenerator:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-tenant-frontend:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-tenantapi:${{ steps.version.outputs.version }}\`
+        - \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-whatsapp:${{ steps.version.outputs.version }}\`
+        
+        ## Installation
+        
+        \`\`\`bash
+        # Download the latest docker-compose.yml
+        curl -O https://raw.githubusercontent.com/${{ github.repository }}/${{ steps.version.outputs.version }}/docker-compose.yml
+        
+        # Start the application
+        docker compose --profile local up -d
+        \`\`\`
+        
+        ## Features
+        
+        - 🏠 Complete property management system
+        - 📱 WhatsApp integration for notifications and OTP authentication
+        - 🌍 Multi-language support (EN, ES, FR, DE, PT)
+        - 🔐 Enhanced security with JWT and rate limiting
+        - 📊 Modern UI with shadcn/ui components
+        - 🐳 Full Docker containerization
+        - 🏗️ Microservices architecture
+        EOF
 
-      - name: Compress
-        run: |
-         tar -zczf mre-linux-x64.tar.gz backup base.env docker-compose.microservices.base.yml docker-compose.microservices.prod.yml mre
-         tar -zczf mre-macos-x64.tar.gz backup base.env docker-compose.microservices.base.yml docker-compose.microservices.prod.yml mre-macos
-         zip mre-win-x64.zip backup base.env docker-compose.microservices.base.yml docker-compose.microservices.prod.yml mre.exe
-    
-      - name: Upload commands in release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.event.release.tag_name }}
-          name: ${{ github.event.release.tag_name }}
-          files: |
-           ./mre-linux-x64.tar.gz
-           ./mre-macos-x64.tar.gz
-           ./mre-win-x64.zip
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: MicroRealEstate ${{ steps.version.outputs.version }}
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: false
 
-
-  build-push-images:
+  build-release-images:
+    needs: create-release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     strategy:
       matrix:
-        include:
-            - appname: gateway
-              image: ghcr.io/${{ github.repository }}/gateway
-              dockerfile: services/gateway/Dockerfile
-            - appname: api
-              image: ghcr.io/${{ github.repository }}/api
-              dockerfile: services/api/Dockerfile
-            - appname: tenantapi
-              image: ghcr.io/${{ github.repository }}/tenantapi
-              dockerfile: services/tenantapi/Dockerfile
-            - appname: authenticator
-              image: ghcr.io/${{ github.repository }}/authenticator
-              dockerfile: services/authenticator/Dockerfile
-            - appname: pdfgenerator
-              image: ghcr.io/${{ github.repository }}/pdfgenerator
-              dockerfile: services/pdfgenerator/Dockerfile
-            - appname: emailer
-              image: ghcr.io/${{ github.repository }}/emailer
-              dockerfile: services/emailer/Dockerfile
-            - appname: resetservice
-              image: ghcr.io/${{ github.repository }}/resetservice
-              dockerfile: services/resetservice/Dockerfile
-            - appname: landlord-frontend
-              image: ghcr.io/${{ github.repository }}/landlord-frontend
-              dockerfile: webapps/landlord/Dockerfile
-            - appname: tenant-frontend
-              image: ghcr.io/${{ github.repository }}/tenant-frontend
-              dockerfile: webapps/tenant/Dockerfile
+        service:
+          - api
+          - authenticator
+          - emailer
+          - gateway
+          - landlord-frontend
+          - pdfgenerator
+          - tenant-frontend
+          - tenantapi
+          - whatsapp
 
     steps:
-        - name: Get tag
-          run: |
-           TAG=${{ github.event.release.tag_name }}
-           echo "RELEASE_TAG=${TAG#v}" >> $GITHUB_ENV
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-        - name: Checkout
-          uses: actions/checkout@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-        - name: Login to GitHub Container Registry
-          uses: docker/login-action@v2
-          with:
-            registry: ghcr.io
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-        - name: Extract metadata (tags, labels) for Docker
-          id: meta
-          uses: docker/metadata-action@v4
-          with:
-            images: ${{ matrix.image }}
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.service }}
+        tags: |
+          type=raw,value=latest
+          type=raw,value=${{ needs.create-release.outputs.version }}
+          type=semver,pattern={{version}},value=${{ needs.create-release.outputs.version }}
+          type=semver,pattern={{major}}.{{minor}},value=${{ needs.create-release.outputs.version }}
+          type=semver,pattern={{major}},value=${{ needs.create-release.outputs.version }}
 
-        - name: Build and push to GitHub Container Registry
-          uses: docker/build-push-action@v4
-          with:
-            context: .
-            file: ${{ matrix.dockerfile }}
-            push: true
-            tags: '${{ matrix.image }}:${{ env.RELEASE_TAG }},${{ matrix.image }}:latest'
-            labels: ${{ steps.meta.outputs.labels }}
+    - name: Build and push release image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/${{ matrix.service }}
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: |
+          ${{ steps.meta.outputs.labels }}
+          org.opencontainers.image.title=MicroRealEstate ${{ matrix.service }}
+          org.opencontainers.image.description=MicroRealEstate ${{ matrix.service }} service
+          org.opencontainers.image.version=${{ needs.create-release.outputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-     
+  create-deployment-package:
+    needs: [create-release, build-release-images]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create deployment package
+      run: |
+        mkdir -p deployment-package
+        
+        # Copy essential files
+        cp docker-compose.yml deployment-package/
+        cp .env.domain deployment-package/.env.example
+        cp README.md deployment-package/
+        
+        # Create installation script
+        cat > deployment-package/install.sh << 'EOF'
+        #!/bin/bash
+        set -e
+        
+        echo "🚀 Installing MicroRealEstate ${{ needs.create-release.outputs.version }}"
+        echo ""
+        
+        # Check if Docker is installed
+        if ! command -v docker &> /dev/null; then
+            echo "❌ Docker is not installed. Please install Docker first."
+            exit 1
+        fi
+        
+        # Check if Docker Compose is installed
+        if ! command -v docker compose &> /dev/null; then
+            echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+            exit 1
+        fi
+        
+        # Create .env file if it doesn't exist
+        if [ ! -f .env ]; then
+            echo "📝 Creating .env file from template..."
+            cp .env.example .env
+            echo "⚠️  Please edit the .env file and configure your secrets and tokens!"
+            echo "   Required: JWT_SECRET, CIPHER_KEY, CIPHER_IV_KEY"
+            echo "   Optional: WhatsApp, Email, and other service configurations"
+            echo ""
+        fi
+        
+        echo "🐳 Starting MicroRealEstate..."
+        docker compose --profile local up -d
+        
+        echo ""
+        echo "✅ MicroRealEstate is starting up!"
+        echo ""
+        echo "🌐 Access your application at:"
+        echo "   Landlord Interface: http://localhost:8080/landlord"
+        echo "   Tenant Interface: http://localhost:8080/tenant"
+        echo ""
+        echo "📋 Check status with: docker compose --profile local ps"
+        echo "📊 View logs with: docker compose --profile local logs -f"
+        EOF
+        
+        chmod +x deployment-package/install.sh
+        
+        # Create archive
+        tar -czf microrealestate-${{ needs.create-release.outputs.version }}.tar.gz -C deployment-package .
+
+    - name: Upload deployment package
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./microrealestate-${{ needs.create-release.outputs.version }}.tar.gz
+        asset_name: microrealestate-${{ needs.create-release.outputs.version }}.tar.gz
+        asset_content_type: application/gzip
+
+  notify-completion:
+    needs: [create-release, build-release-images, create-deployment-package]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Release Summary
+      run: |
+        echo "🎉 Release ${{ needs.create-release.outputs.version }} completed successfully!"
+        echo ""
+        echo "📦 Docker Images Published:"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-authenticator:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-emailer:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-gateway:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-landlord-frontend:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-pdfgenerator:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-tenant-frontend:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-tenantapi:${{ needs.create-release.outputs.version }}"
+        echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-whatsapp:${{ needs.create-release.outputs.version }}"
+        echo ""
+        echo "📋 Deployment package: microrealestate-${{ needs.create-release.outputs.version }}.tar.gz"
+        echo ""
+        echo "🚀 Ready for production deployment!"
