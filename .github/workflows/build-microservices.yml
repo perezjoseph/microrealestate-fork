@@ -20,16 +20,27 @@ jobs:
 
     strategy:
       matrix:
-        service:
-          - api
-          - authenticator
-          - emailer
-          - gateway
-          - landlord-frontend
-          - pdfgenerator
-          - tenant-frontend
-          - tenantapi
-          - whatsapp
+        include:
+          - service: api
+            path: services/api
+          - service: authenticator
+            path: services/authenticator
+          - service: emailer
+            path: services/emailer
+          - service: gateway
+            path: services/gateway
+          - service: landlord-frontend
+            path: webapps/landlord
+          - service: pdfgenerator
+            path: services/pdfgenerator
+          - service: resetservice
+            path: services/resetservice
+          - service: tenant-frontend
+            path: webapps/tenant
+          - service: tenantapi
+            path: services/tenantapi
+          - service: whatsapp
+            path: services/whatsapp
 
     steps:
     - name: Checkout repository
@@ -59,7 +70,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./services/${{ matrix.service }}
+        context: ./${{ matrix.path }}
         platforms: linux/amd64,linux/arm64
         push: true
         tags: ${{ steps.meta.outputs.tags }}
@@ -74,5 +85,5 @@ jobs:
     - name: Build Summary
       run: |
         echo "✅ All microservices built successfully!"
-        echo "Built services: api, authenticator, emailer, gateway, landlord-frontend, pdfgenerator, tenant-frontend, tenantapi, whatsapp"
+        echo "Built services: api, authenticator, emailer, gateway, landlord-frontend, pdfgenerator, resetservice, tenant-frontend, tenantapi, whatsapp"
         echo "Images pushed to: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-[service]"

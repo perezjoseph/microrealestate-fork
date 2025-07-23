@@ -224,13 +224,6 @@ For support and questions:
 
 See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and version history.
 
-## Donate
-
-Thank you for your interest in supporting MicroRealEstate.
-Every contribution will help us pay our ongoing maintenance and development costs 
-
-[![Donate](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub)](https://github.com/sponsors/perezjoseph)
-
 ## License
 
 The project is licensed under the GNU Affero General Public License (AGPL) v3. To view the license details, please follow the link below:
