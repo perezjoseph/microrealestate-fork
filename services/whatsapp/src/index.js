@@ -10,11 +10,19 @@ app.use(express.json());
 const WHATSAPP_API_URL = process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0';
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
-const WHATSAPP_TEMPLATE_NAME = process.env.WHATSAPP_TEMPLATE_NAME || 'factura2';
+
+// Template configuration - now supports multiple templates
+const WHATSAPP_INVOICE_TEMPLATE = process.env.WHATSAPP_INVOICE_TEMPLATE || 'factura2';
+const WHATSAPP_PAYMENT_NOTICE_TEMPLATE = process.env.WHATSAPP_PAYMENT_NOTICE_TEMPLATE || 'payment_notice';
+const WHATSAPP_PAYMENT_REMINDER_TEMPLATE = process.env.WHATSAPP_PAYMENT_REMINDER_TEMPLATE || 'payment_reminder';
+const WHATSAPP_FINAL_NOTICE_TEMPLATE = process.env.WHATSAPP_FINAL_NOTICE_TEMPLATE || 'final_notice';
 const WHATSAPP_TEMPLATE_LANGUAGE = process.env.WHATSAPP_TEMPLATE_LANGUAGE || 'es';
 
-console.log(`🔧 WhatsApp Template Configuration:`);
-console.log(`   Template Name: ${WHATSAPP_TEMPLATE_NAME}`);
+console.log(`WhatsApp Template Configuration:`);
+console.log(`   Invoice Template: ${WHATSAPP_INVOICE_TEMPLATE}`);
+console.log(`   Payment Notice Template: ${WHATSAPP_PAYMENT_NOTICE_TEMPLATE}`);
+console.log(`   Payment Reminder Template: ${WHATSAPP_PAYMENT_REMINDER_TEMPLATE}`);
+console.log(`   Final Notice Template: ${WHATSAPP_FINAL_NOTICE_TEMPLATE}`);
 console.log(`   Template Language: ${WHATSAPP_TEMPLATE_LANGUAGE}`);
 
 // Template parameter mapping for the approved Meta template
@@ -22,7 +30,7 @@ function buildTemplateParameters(data) {
   const { tenantName, invoicePeriod, totalAmount, currency, dueDate, invoiceUrl } = data;
   
   // Debug logging to identify the issue
-  console.log('🔍 Template data received:', {
+  console.log('Template data received:', {
     tenantName,
     invoicePeriod,
     totalAmount,
@@ -43,7 +51,7 @@ function buildTemplateParameters(data) {
     }
   }
   
-  console.log('🔍 Amount processing:', {
+  console.log('Amount processing:', {
     originalAmount: totalAmount,
     processedAmount: safeAmount
   });
@@ -54,7 +62,7 @@ function buildTemplateParameters(data) {
   // Format the due date in Spanish format
   const formattedDueDate = dueDate || 'Por definir';
   
-  console.log('🔍 Final template parameters:', {
+  console.log(' Final template parameters:', {
     tenantName: tenantName || 'Cliente',
     invoicePeriod: invoicePeriod || 'Período actual',
     formattedAmount,
@@ -66,9 +74,124 @@ function buildTemplateParameters(data) {
     { type: 'text', text: tenantName || 'Cliente' },           // {{1}} - Tenant name
     { type: 'text', text: invoicePeriod || 'Período actual' }, // {{2}} - Period
     { type: 'text', text: formattedAmount },                   // {{3}} - Amount with currency
-    { type: 'text', text: formattedDueDate },                  // {{4}} - Due date
-    { type: 'text', text: invoiceUrl || '#' }                  // {{5}} - Invoice URL
   ];
+}
+
+// Template mapping based on message type
+function getTemplateNameForType(templateType) {
+  const templateMap = {
+    'invoice': WHATSAPP_INVOICE_TEMPLATE,
+    'rentcall': WHATSAPP_PAYMENT_NOTICE_TEMPLATE,
+    'rentcall_reminder': WHATSAPP_PAYMENT_REMINDER_TEMPLATE,
+    'rentcall_last_reminder': WHATSAPP_FINAL_NOTICE_TEMPLATE,
+    'payment_notice': WHATSAPP_PAYMENT_NOTICE_TEMPLATE,
+    'payment_reminder': WHATSAPP_PAYMENT_REMINDER_TEMPLATE,
+    'final_notice': WHATSAPP_FINAL_NOTICE_TEMPLATE
+  };
+  
+  return templateMap[templateType] || WHATSAPP_INVOICE_TEMPLATE;
+}
+
+// Enhanced template parameter mapping for different template types
+function buildEnhancedTemplateParameters(data, templateType = 'invoice') {
+  const { tenantName, invoicePeriod, totalAmount, currency, dueDate, invoiceUrl, daysOverdue } = data;
+  
+  // Debug logging to identify the issue
+  console.log('Enhanced template data received:', {
+    templateType,
+    tenantName,
+    invoicePeriod,
+    totalAmount,
+    totalAmountType: typeof totalAmount,
+    currency,
+    dueDate,
+    invoiceUrl,
+    daysOverdue
+  });
+  
+  // Comprehensive amount handling with multiple fallbacks
+  let safeAmount = '0.00';
+  
+  if (totalAmount !== undefined && totalAmount !== null && totalAmount !== '') {
+    // Convert to string and handle various formats
+    const amountStr = String(totalAmount);
+    if (amountStr !== 'undefined' && amountStr !== 'null' && !isNaN(parseFloat(amountStr))) {
+      safeAmount = parseFloat(amountStr).toFixed(2);
+    }
+  }
+  
+  console.log('Enhanced amount processing:', {
+    originalAmount: totalAmount,
+    processedAmount: safeAmount
+  });
+  
+  // Format the amount with currency
+  const formattedAmount = `${currency} ${safeAmount}`;
+  
+  // Format the due date in Spanish format
+  const formattedDueDate = dueDate || 'Por definir';
+  
+  // Build parameters based on template type
+  let parameters;
+  
+  switch (templateType) {
+    case 'payment_notice':
+    case 'rentcall':
+      // Payment notice template: {{1}} name, {{2}} period, {{3}} amount, {{4}} due date, {{5}} URL
+      parameters = [
+        { type: 'text', text: tenantName || 'Cliente' },
+        { type: 'text', text: invoicePeriod || 'Período actual' },
+        { type: 'text', text: formattedAmount },
+        { type: 'text', text: formattedDueDate },
+        { type: 'text', text: invoiceUrl || '#' }
+      ];
+      break;
+      
+    case 'payment_reminder':
+    case 'rentcall_reminder':
+      // Payment reminder template: {{1}} name, {{2}} period, {{3}} amount, {{4}} due date, {{5}} days overdue, {{6}} URL
+      parameters = [
+        { type: 'text', text: tenantName || 'Cliente' },
+        { type: 'text', text: invoicePeriod || 'Período actual' },
+        { type: 'text', text: formattedAmount },
+        { type: 'text', text: formattedDueDate },
+        { type: 'text', text: String(daysOverdue || 0) },
+        { type: 'text', text: invoiceUrl || '#' }
+      ];
+      break;
+      
+    case 'final_notice':
+    case 'rentcall_last_reminder':
+      // Final notice template: {{1}} name, {{2}} period, {{3}} amount, {{4}} due date, {{5}} days overdue, {{6}} URL
+      parameters = [
+        { type: 'text', text: tenantName || 'Cliente' },
+        { type: 'text', text: invoicePeriod || 'Período actual' },
+        { type: 'text', text: formattedAmount },
+        { type: 'text', text: formattedDueDate },
+        { type: 'text', text: String(daysOverdue || 0) },
+        { type: 'text', text: invoiceUrl || '#' }
+      ];
+      break;
+      
+    case 'invoice':
+    default:
+      // Invoice template: {{1}} name, {{2}} period, {{3}} amount, {{4}} due date, {{5}} URL
+      parameters = [
+        { type: 'text', text: tenantName || 'Cliente' },
+        { type: 'text', text: invoicePeriod || 'Período actual' },
+        { type: 'text', text: formattedAmount },
+        { type: 'text', text: formattedDueDate },
+        { type: 'text', text: invoiceUrl || '#' }
+      ];
+      break;
+  }
+  
+  console.log('Enhanced template parameters for', templateType, ':', {
+    templateName: getTemplateNameForType(templateType),
+    parameters: parameters.map(p => p.text)
+  });
+  
+  return parameters;
 }
 
 // WhatsApp message templates with locale support
@@ -79,7 +202,7 @@ const MESSAGE_TEMPLATES = {
 
 Your invoice for period ${data.invoicePeriod} is ready.
 
-💰 Total: ${data.currency} ${data.totalAmount}
+ Total: ${data.currency} ${data.totalAmount}
 
 ${data.invoiceUrl ? `📄 View invoice: ${data.invoiceUrl}` : ''}
 
@@ -92,7 +215,7 @@ ${data.organizationName}`,
 
 Your rent for period ${data.invoicePeriod} is pending payment.
 
-💰 Amount: ${data.currency} ${data.totalAmount}
+ Amount: ${data.currency} ${data.totalAmount}
 📅 Due date: ${data.dueDate}
 
 ${data.invoiceUrl ? `📄 View invoice: ${data.invoiceUrl}` : ''}
@@ -103,11 +226,11 @@ ${data.organizationName}`,
 
     rentcall_reminder: (data) => `Dear ${data.tenantName},
 
-⚠️ SECOND NOTICE - PAYMENT PENDING
+ SECOND NOTICE - PAYMENT PENDING
 
 Your rent for period ${data.invoicePeriod} remains pending.
 
-💰 Amount: ${data.currency} ${data.totalAmount}
+ Amount: ${data.currency} ${data.totalAmount}
 📅 Due date: ${data.dueDate}
 ⏰ Days overdue: ${data.daysOverdue}
 
@@ -119,17 +242,17 @@ ${data.organizationName}`,
 
     rentcall_last_reminder: (data) => `Dear ${data.tenantName},
 
-🚨 FINAL NOTICE - URGENT PAYMENT
+ FINAL NOTICE - URGENT PAYMENT
 
 Your rent for period ${data.invoicePeriod} is in arrears.
 
-💰 Amount: ${data.currency} ${data.totalAmount}
+ Amount: ${data.currency} ${data.totalAmount}
 📅 Due date: ${data.dueDate}
 ⏰ Days overdue: ${data.daysOverdue}
 
 ${data.invoiceUrl ? `📄 View invoice: ${data.invoiceUrl}` : ''}
 
-⚠️ IMPORTANT: If we don't receive your payment within the next 48 hours, we will proceed according to the contract terms.
+ IMPORTANT: If we don't receive your payment within the next 48 hours, we will proceed according to the contract terms.
 
 Please contact us immediately to resolve this situation.
 
@@ -142,7 +265,7 @@ ${data.organizationName}`
 
 Su factura del período ${data.invoicePeriod} está lista.
 
-💰 Saldo pendiente: ${data.currency} ${data.totalAmount}
+ Saldo pendiente: ${data.currency} ${data.totalAmount}
 
 ${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
 
@@ -155,7 +278,7 @@ ${data.organizationName}`,
 
 Su renta del período ${data.invoicePeriod} está pendiente de pago.
 
-💰 Monto: ${data.currency} ${data.totalAmount}
+ Monto: ${data.currency} ${data.totalAmount}
 📅 Fecha límite: ${data.dueDate}
 
 ${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
@@ -166,11 +289,11 @@ ${data.organizationName}`,
 
     rentcall_reminder: (data) => `Estimado/a ${data.tenantName},
 
-⚠️ SEGUNDO AVISO - PAGO PENDIENTE
+ SEGUNDO AVISO - PAGO PENDIENTE
 
 Su renta del período ${data.invoicePeriod} continúa pendiente.
 
-💰 Monto: ${data.currency} ${data.totalAmount}
+ Monto: ${data.currency} ${data.totalAmount}
 📅 Fecha límite: ${data.dueDate}
 ⏰ Días de retraso: ${data.daysOverdue}
 
@@ -182,17 +305,17 @@ ${data.organizationName}`,
 
     rentcall_last_reminder: (data) => `Estimado/a ${data.tenantName},
 
-🚨 ÚLTIMO AVISO - PAGO URGENTE
+ ÚLTIMO AVISO - PAGO URGENTE
 
 Su renta del período ${data.invoicePeriod} está en mora.
 
-💰 Monto: ${data.currency} ${data.totalAmount}
+ Monto: ${data.currency} ${data.totalAmount}
 📅 Fecha límite: ${data.dueDate}
 ⏰ Días de retraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
 
-⚠️ IMPORTANTE: Si no recibimos su pago en las próximas 48 horas, procederemos según los términos del contrato.
+ IMPORTANTE: Si no recibimos su pago en las próximas 48 horas, procederemos según los términos del contrato.
 
 Contacte inmediatamente para resolver esta situación.
 
@@ -205,7 +328,7 @@ ${data.organizationName}`
 
 Votre facture pour la période ${data.invoicePeriod} est prête.
 
-💰 Total: ${data.currency} ${data.totalAmount}
+ Total: ${data.currency} ${data.totalAmount}
 
 ${data.invoiceUrl ? `📄 Voir la facture: ${data.invoiceUrl}` : ''}
 
@@ -218,7 +341,7 @@ ${data.organizationName}`,
 
 Votre loyer pour la période ${data.invoicePeriod} est en attente de paiement.
 
-💰 Montant: ${data.currency} ${data.totalAmount}
+ Montant: ${data.currency} ${data.totalAmount}
 📅 Date limite: ${data.dueDate}
 
 ${data.invoiceUrl ? `📄 Voir la facture: ${data.invoiceUrl}` : ''}
@@ -229,11 +352,11 @@ ${data.organizationName}`,
 
     rentcall_reminder: (data) => `Cher/Chère ${data.tenantName},
 
-⚠️ DEUXIÈME AVIS - PAIEMENT EN ATTENTE
+ DEUXIÈME AVIS - PAIEMENT EN ATTENTE
 
 Votre loyer pour la période ${data.invoicePeriod} reste en attente.
 
-💰 Montant: ${data.currency} ${data.totalAmount}
+ Montant: ${data.currency} ${data.totalAmount}
 📅 Date limite: ${data.dueDate}
 ⏰ Jours de retard: ${data.daysOverdue}
 
@@ -245,17 +368,17 @@ ${data.organizationName}`,
 
     rentcall_last_reminder: (data) => `Cher/Chère ${data.tenantName},
 
-🚨 DERNIER AVIS - PAIEMENT URGENT
+ DERNIER AVIS - PAIEMENT URGENT
 
 Votre loyer pour la période ${data.invoicePeriod} est en retard.
 
-💰 Montant: ${data.currency} ${data.totalAmount}
+ Montant: ${data.currency} ${data.totalAmount}
 📅 Date limite: ${data.dueDate}
 ⏰ Jours de retard: ${data.daysOverdue}
 
 ${data.invoiceUrl ? `📄 Voir la facture: ${data.invoiceUrl}` : ''}
 
-⚠️ IMPORTANT: Si nous ne recevons pas votre paiement dans les 48 heures, nous procéderons selon les termes du contrat.
+ IMPORTANT: Si nous ne recevons pas votre paiement dans les 48 heures, nous procéderons selon les termes du contrat.
 
 Veuillez nous contacter immédiatement pour résoudre cette situation.
 
@@ -268,7 +391,7 @@ ${data.organizationName}`
 
 Ihre Rechnung für den Zeitraum ${data.invoicePeriod} ist bereit.
 
-💰 Gesamt: ${data.currency} ${data.totalAmount}
+ Gesamt: ${data.currency} ${data.totalAmount}
 
 ${data.invoiceUrl ? `📄 Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
@@ -281,7 +404,7 @@ ${data.organizationName}`,
 
 Ihre Miete für den Zeitraum ${data.invoicePeriod} steht noch aus.
 
-💰 Betrag: ${data.currency} ${data.totalAmount}
+ Betrag: ${data.currency} ${data.totalAmount}
 📅 Fälligkeitsdatum: ${data.dueDate}
 
 ${data.invoiceUrl ? `📄 Rechnung anzeigen: ${data.invoiceUrl}` : ''}
@@ -292,11 +415,11 @@ ${data.organizationName}`,
 
     rentcall_reminder: (data) => `Liebe/r ${data.tenantName},
 
-⚠️ ZWEITE MAHNUNG - ZAHLUNG AUSSTEHEND
+ ZWEITE MAHNUNG - ZAHLUNG AUSSTEHEND
 
 Ihre Miete für den Zeitraum ${data.invoicePeriod} ist weiterhin ausstehend.
 
-💰 Betrag: ${data.currency} ${data.totalAmount}
+ Betrag: ${data.currency} ${data.totalAmount}
 📅 Fälligkeitsdatum: ${data.dueDate}
 ⏰ Tage überfällig: ${data.daysOverdue}
 
@@ -308,17 +431,17 @@ ${data.organizationName}`,
 
     rentcall_last_reminder: (data) => `Liebe/r ${data.tenantName},
 
-🚨 LETZTE MAHNUNG - DRINGENDE ZAHLUNG
+ LETZTE MAHNUNG - DRINGENDE ZAHLUNG
 
 Ihre Miete für den Zeitraum ${data.invoicePeriod} ist im Rückstand.
 
-💰 Betrag: ${data.currency} ${data.totalAmount}
+ Betrag: ${data.currency} ${data.totalAmount}
 📅 Fälligkeitsdatum: ${data.dueDate}
 ⏰ Tage überfällig: ${data.daysOverdue}
 
 ${data.invoiceUrl ? `📄 Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
-⚠️ WICHTIG: Wenn wir Ihre Zahlung nicht innerhalb der nächsten 48 Stunden erhalten, werden wir gemäß den Vertragsbedingungen vorgehen.
+ WICHTIG: Wenn wir Ihre Zahlung nicht innerhalb der nächsten 48 Stunden erhalten, werden wir gemäß den Vertragsbedingungen vorgehen.
 
 Bitte kontaktieren Sie uns sofort, um diese Situation zu lösen.
 
@@ -331,7 +454,7 @@ ${data.organizationName}`
 
 Sua fatura do período ${data.invoicePeriod} está pronta.
 
-💰 Total: ${data.currency} ${data.totalAmount}
+ Total: ${data.currency} ${data.totalAmount}
 
 ${data.invoiceUrl ? `📄 Ver fatura: ${data.invoiceUrl}` : ''}
 
@@ -344,7 +467,7 @@ ${data.organizationName}`,
 
 Seu aluguel do período ${data.invoicePeriod} está pendente de pagamento.
 
-💰 Valor: ${data.currency} ${data.totalAmount}
+ Valor: ${data.currency} ${data.totalAmount}
 📅 Data limite: ${data.dueDate}
 
 ${data.invoiceUrl ? `📄 Ver fatura: ${data.invoiceUrl}` : ''}
@@ -355,11 +478,11 @@ ${data.organizationName}`,
 
     rentcall_reminder: (data) => `Caro/a ${data.tenantName},
 
-⚠️ SEGUNDO AVISO - PAGAMENTO PENDENTE
+ SEGUNDO AVISO - PAGAMENTO PENDENTE
 
 Seu aluguel do período ${data.invoicePeriod} continua pendente.
 
-💰 Valor: ${data.currency} ${data.totalAmount}
+ Valor: ${data.currency} ${data.totalAmount}
 📅 Data limite: ${data.dueDate}
 ⏰ Dias em atraso: ${data.daysOverdue}
 
@@ -371,17 +494,17 @@ ${data.organizationName}`,
 
     rentcall_last_reminder: (data) => `Caro/a ${data.tenantName},
 
-🚨 ÚLTIMO AVISO - PAGAMENTO URGENTE
+ ÚLTIMO AVISO - PAGAMENTO URGENTE
 
 Seu aluguel do período ${data.invoicePeriod} está em atraso.
 
-💰 Valor: ${data.currency} ${data.totalAmount}
+ Valor: ${data.currency} ${data.totalAmount}
 📅 Data limite: ${data.dueDate}
 ⏰ Dias em atraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? `📄 Ver fatura: ${data.invoiceUrl}` : ''}
 
-⚠️ IMPORTANTE: Se não recebermos seu pagamento nas próximas 48 horas, procederemos conforme os termos do contrato.
+ IMPORTANTE: Se não recebermos seu pagamento nas próximas 48 horas, procederemos conforme os termos do contrato.
 
 Entre em contato imediatamente para resolver esta situação.
 
@@ -484,10 +607,10 @@ app.post('/send-document', async (req, res) => {
           templateName
         });
         
-        console.log(`✅ ${templateName} URL generated for ${phone}`);
+        console.log(` ${templateName} URL generated for ${phone}`);
         
       } catch (error) {
-        console.error(`❌ Error generating URL for ${phone}:`, error.message);
+        console.error(` Error generating URL for ${phone}:`, error.message);
         
         results.push({
           phoneNumber: phone,
@@ -498,7 +621,7 @@ app.post('/send-document', async (req, res) => {
       }
     }
     
-    console.log(`📊 ${templateName} delivery summary for ${tenantName}: ${results.filter(r => r.success).length} URLs generated`);
+    console.log(` ${templateName} delivery summary for ${tenantName}: ${results.filter(r => r.success).length} URLs generated`);
     
     res.json({
       success: true,
@@ -510,7 +633,7 @@ app.post('/send-document', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Error generating WhatsApp URLs:', error);
+    console.error(' Error generating WhatsApp URLs:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to generate WhatsApp URLs',
@@ -520,22 +643,25 @@ app.post('/send-document', async (req, res) => {
 });
 
 // Send message via WhatsApp Business API using configurable templates
-async function sendWhatsAppTemplateMessage(phoneNumber, templateData) {
+async function sendWhatsAppTemplateMessage(phoneNumber, templateData, templateType = 'invoice') {
   if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID) {
     throw new Error('WhatsApp Business API credentials not configured');
   }
   
   const formattedPhone = formatPhoneNumber(phoneNumber);
   
-  // Build template parameters based on the approved Meta template structure
-  const templateParameters = buildTemplateParameters(templateData);
+  // Get the appropriate template name for the message type
+  const templateName = getTemplateNameForType(templateType);
+  
+  // Build template parameters based on the template type
+  const templateParameters = buildEnhancedTemplateParameters(templateData, templateType);
   
   const payload = {
     messaging_product: 'whatsapp',
     to: formattedPhone,
     type: 'template',
     template: {
-      name: WHATSAPP_TEMPLATE_NAME,
+      name: templateName,
       language: {
         code: WHATSAPP_TEMPLATE_LANGUAGE
       },
@@ -549,8 +675,8 @@ async function sendWhatsAppTemplateMessage(phoneNumber, templateData) {
   };
   
   try {
-    console.log(`📤 Sending template "${WHATSAPP_TEMPLATE_NAME}" to ${formattedPhone}...`);
-    console.log(`📋 Template parameters:`, templateParameters.map(p => p.text).join(', '));
+    console.log(` Sending template "${WHATSAPP_TEMPLATE_NAME}" to ${formattedPhone}...`);
+    console.log(` Template parameters:`, templateParameters.map(p => p.text).join(', '));
     
     const response = await axios.post(
       `${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
@@ -563,7 +689,7 @@ async function sendWhatsAppTemplateMessage(phoneNumber, templateData) {
       }
     );
     
-    console.log(`✅ Template message sent successfully to ${formattedPhone}`);
+    console.log(` Template message sent successfully to ${formattedPhone}`);
     
     // Store message for delivery tracking
     if (response.data.messages && response.data.messages[0]) {
@@ -576,7 +702,7 @@ async function sendWhatsAppTemplateMessage(phoneNumber, templateData) {
         messageType: 'template',
         templateName: WHATSAPP_TEMPLATE_NAME
       });
-      console.log(`📝 Tracking message: ${messageId}`);
+      console.log(` Tracking message: ${messageId}`);
     }
     
     return response.data;
@@ -584,7 +710,7 @@ async function sendWhatsAppTemplateMessage(phoneNumber, templateData) {
     // Enhanced error handling with specific Facebook API errors
     if (error.response?.data?.error) {
       const fbError = error.response.data.error;
-      console.error(`❌ WhatsApp Template API Error for ${formattedPhone}:`, fbError);
+      console.error(` WhatsApp Template API Error for ${formattedPhone}:`, fbError);
       
       // Handle specific error codes
       if (fbError.code === 131030) {
@@ -603,7 +729,7 @@ async function sendWhatsAppTemplateMessage(phoneNumber, templateData) {
 }
 
 // Send message via WhatsApp Business API (template-first approach)
-async function sendWhatsAppMessage(phoneNumber, message, templateData = null) {
+async function sendWhatsAppMessage(phoneNumber, message, templateData = null, templateType = 'invoice') {
   if (!WHATSAPP_ACCESS_TOKEN || !WHATSAPP_PHONE_NUMBER_ID) {
     throw new Error('WhatsApp Business API credentials not configured');
   }
@@ -613,13 +739,13 @@ async function sendWhatsAppMessage(phoneNumber, message, templateData = null) {
   // Try template message first if template data is provided
   if (templateData) {
     try {
-      console.log(`🔄 Trying template message for ${formattedPhone}...`);
-      const templateResponse = await sendWhatsAppTemplateMessage(phoneNumber, templateData);
-      console.log(`✅ Template message sent successfully to ${formattedPhone}`);
+      console.log(` Trying template message for ${formattedPhone}...`);
+      const templateResponse = await sendWhatsAppTemplateMessage(phoneNumber, templateData, templateType);
+      console.log(` Template message sent successfully to ${formattedPhone}`);
       return templateResponse;
     } catch (templateError) {
-      console.log(`⚠️ Template message failed for ${formattedPhone}: ${templateError.message}`);
-      console.log(`🔄 Falling back to text message...`);
+      console.log(` Template message failed for ${formattedPhone}: ${templateError.message}`);
+      console.log(` Falling back to text message...`);
     }
   }
   
@@ -645,7 +771,7 @@ async function sendWhatsAppMessage(phoneNumber, message, templateData = null) {
       }
     );
     
-    console.log(`✅ Text message sent successfully to ${formattedPhone}`);
+    console.log(` Text message sent successfully to ${formattedPhone}`);
     
     // Store message for delivery tracking
     if (response.data.messages && response.data.messages[0]) {
@@ -657,7 +783,7 @@ async function sendWhatsAppMessage(phoneNumber, message, templateData = null) {
         lastUpdated: new Date(),
         messageType: 'text'
       });
-      console.log(`📝 Tracking message: ${messageId}`);
+      console.log(` Tracking message: ${messageId}`);
     }
     
     return response.data;
@@ -665,7 +791,7 @@ async function sendWhatsAppMessage(phoneNumber, message, templateData = null) {
     // Enhanced error handling with specific Facebook API errors
     if (error.response?.data?.error) {
       const fbError = error.response.data.error;
-      console.error(`❌ WhatsApp API Error for ${formattedPhone}:`, fbError);
+      console.error(` WhatsApp API Error for ${formattedPhone}:`, fbError);
       
       // Handle specific error codes
       if (fbError.code === 131030) {
@@ -713,7 +839,7 @@ app.post('/send-message', async (req, res) => {
       // Try to send via WhatsApp Business API first
       const apiResponse = await sendWhatsAppMessage(phoneNumber, message);
       
-      console.log(`✅ WhatsApp message sent via API to ${recipientName || phoneNumber}`);
+      console.log(` WhatsApp message sent via API to ${recipientName || phoneNumber}`);
       
       res.json({
         success: true,
@@ -726,7 +852,7 @@ app.post('/send-message', async (req, res) => {
       });
       
     } catch (apiError) {
-      console.warn(`⚠️ WhatsApp API failed for ${recipientName || phoneNumber}:`, apiError.message);
+      console.warn(` WhatsApp API failed for ${recipientName || phoneNumber}:`, apiError.message);
       
       // Fallback to WhatsApp Web URL
       const whatsappURL = generateWhatsAppURL(phoneNumber, message);
@@ -745,7 +871,7 @@ app.post('/send-message', async (req, res) => {
     }
     
   } catch (error) {
-    console.error('❌ Error sending WhatsApp message:', error);
+    console.error(' Error sending WhatsApp message:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to send WhatsApp message',
@@ -757,7 +883,7 @@ app.post('/send-message', async (req, res) => {
 // Send invoice via WhatsApp Business API (enhanced to support all templates)
 app.post('/send-invoice', async (req, res) => {
   try {
-    console.log('🔍 Raw request body:', JSON.stringify(req.body, null, 2));
+    console.log(' Raw request body:', JSON.stringify(req.body, null, 2));
     
     const { 
       phoneNumbers, 
@@ -774,7 +900,7 @@ app.post('/send-invoice', async (req, res) => {
     } = req.body;
     
     // Comprehensive debugging to identify the issue
-    console.log('🔍 Received request data:', {
+    console.log(' Received request data:', {
       phoneNumbers,
       tenantName,
       invoicePeriod,
@@ -860,7 +986,7 @@ app.post('/send-invoice', async (req, res) => {
     for (const phone of phoneNumbers) {
       try {
         // Try WhatsApp Business API first with template data
-        const apiResponse = await sendWhatsAppMessage(phone, message, templateData);
+        const apiResponse = await sendWhatsAppMessage(phone, message, templateData, templateName);
         
         results.push({
           phoneNumber: phone,
@@ -872,10 +998,10 @@ app.post('/send-invoice', async (req, res) => {
         });
         
         apiSuccessCount++;
-        console.log(`✅ ${templateName} sent via API to ${phone} for ${tenantName}`);
+        console.log(` ${templateName} sent via API to ${phone} for ${tenantName}`);
         
       } catch (apiError) {
-        console.warn(`⚠️ API failed for ${phone}, using fallback:`, apiError.message);
+        console.warn(` API failed for ${phone}, using fallback:`, apiError.message);
         
         // Fallback to WhatsApp Web URL
         const whatsappURL = generateWhatsAppURL(phone, message);
@@ -894,7 +1020,7 @@ app.post('/send-invoice', async (req, res) => {
       }
     }
     
-    console.log(`📊 ${templateName} delivery summary for ${tenantName}: ${apiSuccessCount} via API, ${urlFallbackCount} via URL`);
+    console.log(` ${templateName} delivery summary for ${tenantName}: ${apiSuccessCount} via API, ${urlFallbackCount} via URL`);
     
     res.json({
       success: true,
@@ -911,7 +1037,7 @@ app.post('/send-invoice', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Error sending WhatsApp message:', error);
+    console.error(' Error sending WhatsApp message:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to send WhatsApp message',
@@ -928,7 +1054,7 @@ app.get('/webhook', (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
   
-  console.log(`🔍 Webhook verification attempt:`);
+  console.log(` Webhook verification attempt:`);
   console.log(`   Mode: ${mode}`);
   console.log(`   Received token: ${token}`);
   console.log(`   Expected token: ${VERIFY_TOKEN}`);
@@ -936,14 +1062,14 @@ app.get('/webhook', (req, res) => {
   
   if (mode && token) {
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      console.log('✅ Webhook verified successfully');
+      console.log(' Webhook verified successfully');
       res.status(200).send(challenge);
     } else {
-      console.log('❌ Webhook verification failed - token mismatch');
+      console.log(' Webhook verification failed - token mismatch');
       res.sendStatus(403);
     }
   } else {
-    console.log('❌ Webhook verification failed - missing parameters');
+    console.log(' Webhook verification failed - missing parameters');
     res.sendStatus(400);
   }
 });
@@ -978,12 +1104,12 @@ app.post('/webhook', (req, res) => {
                   lastUpdated: new Date()
                 });
                 
-                console.log(`📊 Message Status Update: ${messageId} -> ${statusType} (${recipientId})`);
+                console.log(` Message Status Update: ${messageId} -> ${statusType} (${recipientId})`);
                 
                 // Handle failed messages
                 if (statusType === 'failed' && status.errors) {
                   status.errors.forEach(error => {
-                    console.error(`❌ Message Failed: ${messageId}`, {
+                    console.error(` Message Failed: ${messageId}`, {
                       code: error.code,
                       title: error.title,
                       message: error.message,
@@ -1007,7 +1133,7 @@ app.post('/webhook', (req, res) => {
     
     res.status(200).send('EVENT_RECEIVED');
   } catch (error) {
-    console.error('❌ Webhook processing error:', error);
+    console.error(' Webhook processing error:', error);
     res.status(500).send('WEBHOOK_ERROR');
   }
 });
@@ -1053,7 +1179,13 @@ app.get('/message-statuses', (req, res) => {
 // Debug endpoint to check environment variables
 app.get('/debug/env', (req, res) => {
   res.json({
+    // Legacy template name (for backward compatibility)
     WHATSAPP_TEMPLATE_NAME: process.env.WHATSAPP_TEMPLATE_NAME,
+    // New configurable template names
+    WHATSAPP_INVOICE_TEMPLATE: process.env.WHATSAPP_INVOICE_TEMPLATE || 'factura2',
+    WHATSAPP_PAYMENT_NOTICE_TEMPLATE: process.env.WHATSAPP_PAYMENT_NOTICE_TEMPLATE || 'payment_notice',
+    WHATSAPP_PAYMENT_REMINDER_TEMPLATE: process.env.WHATSAPP_PAYMENT_REMINDER_TEMPLATE || 'payment_reminder',
+    WHATSAPP_FINAL_NOTICE_TEMPLATE: process.env.WHATSAPP_FINAL_NOTICE_TEMPLATE || 'final_notice',
     WHATSAPP_TEMPLATE_LANGUAGE: process.env.WHATSAPP_TEMPLATE_LANGUAGE,
     WHATSAPP_WEBHOOK_VERIFY_TOKEN: process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN,
     WHATSAPP_ACCESS_TOKEN: process.env.WHATSAPP_ACCESS_TOKEN ? 'SET' : 'NOT_SET',
@@ -1108,10 +1240,10 @@ app.post('/send-template', async (req, res) => {
           response
         });
         
-        console.log(`✅ Template "${templateData.templateName}" sent to ${phoneNumber}`);
+        console.log(` Template "${templateData.templateName}" sent to ${phoneNumber}`);
         
       } catch (error) {
-        console.error(`❌ Template send failed for ${phoneNumber}:`, error.message);
+        console.error(` Template send failed for ${phoneNumber}:`, error.message);
         
         results.push({
           phoneNumber,
@@ -1125,7 +1257,7 @@ app.post('/send-template', async (req, res) => {
     const successCount = results.filter(r => r.success).length;
     const failureCount = results.filter(r => !r.success).length;
     
-    console.log(`📊 Template delivery summary: ${successCount} sent, ${failureCount} failed`);
+    console.log(` Template delivery summary: ${successCount} sent, ${failureCount} failed`);
     
     res.json({
       success: successCount > 0,
@@ -1139,7 +1271,7 @@ app.post('/send-template', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Error sending template messages:', error);
+    console.error(' Error sending template messages:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to send template messages',
@@ -1182,7 +1314,7 @@ async function sendMetaTemplate(phoneNumber, templateData) {
   }
   
   try {
-    console.log(`📤 Sending Meta template "${templateData.templateName}" to ${formattedPhone}...`);
+    console.log(` Sending Meta template "${templateData.templateName}" to ${formattedPhone}...`);
     
     const response = await axios.post(
       `${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
@@ -1195,12 +1327,12 @@ async function sendMetaTemplate(phoneNumber, templateData) {
       }
     );
     
-    console.log(`✅ Meta template sent successfully to ${formattedPhone}`);
+    console.log(` Meta template sent successfully to ${formattedPhone}`);
     return response.data;
   } catch (error) {
     if (error.response?.data?.error) {
       const fbError = error.response.data.error;
-      console.error(`❌ Meta Template API Error for ${formattedPhone}:`, fbError);
+      console.error(` Meta Template API Error for ${formattedPhone}:`, fbError);
       
       if (fbError.code === 131030) {
         throw new Error(`Phone number ${formattedPhone} not in allowed list`);
@@ -1218,14 +1350,14 @@ async function sendMetaTemplate(phoneNumber, templateData) {
 }
 
 app.listen(PORT, () => {
-  console.log(`🚀 WhatsApp service running on port ${PORT}`);
+  console.log(` WhatsApp service running on port ${PORT}`);
   
   if (WHATSAPP_ACCESS_TOKEN && WHATSAPP_PHONE_NUMBER_ID) {
-    console.log(`✅ WhatsApp Business API configured`);
+    console.log(` WhatsApp Business API configured`);
     console.log(`📱 Phone Number ID: ${WHATSAPP_PHONE_NUMBER_ID}`);
   } else {
-    console.log(`⚠️  WhatsApp Business API not configured - using URL fallback only`);
-    console.log(`💡 Set WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID for API integration`);
+    console.log(`  WhatsApp Business API not configured - using URL fallback only`);
+    console.log(` Set WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID for API integration`);
   }
 });
 
