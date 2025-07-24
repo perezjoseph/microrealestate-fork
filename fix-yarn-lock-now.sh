@@ -36,13 +36,30 @@ echo "✅ Cleanup completed"
 echo ""
 echo "🗑️ Removing yarn.lock to force regeneration..."
 rm yarn.lock
-echo "✅ yarn.lock removed"
+
+# Temporarily modify .yarnrc.yml to allow lockfile creation if needed
+if [ -f .yarnrc.yml ]; then
+    cp .yarnrc.yml .yarnrc.yml.backup-config
+    # Remove or comment out enableImmutableInstalls if present
+    if grep -q "enableImmutableInstalls:" .yarnrc.yml; then
+        echo "📝 Temporarily disabling immutable installs in .yarnrc.yml..."
+        sed 's/^enableImmutableInstalls:/# enableImmutableInstalls:/' .yarnrc.yml > .yarnrc.yml.temp
+        mv .yarnrc.yml.temp .yarnrc.yml
+    fi
+fi
+echo "✅ yarn.lock removed and configuration adjusted"
 
 # Regenerate yarn.lock
 echo ""
 echo "🔄 Regenerating yarn.lock for current Node.js version..."
 if yarn install; then
     echo "✅ yarn.lock regenerated successfully!"
+    
+    # Restore original .yarnrc.yml if we modified it
+    if [ -f .yarnrc.yml.backup-config ]; then
+        mv .yarnrc.yml.backup-config .yarnrc.yml
+        echo "📝 Restored original .yarnrc.yml configuration"
+    fi
     
     # Show stats
     echo ""
@@ -91,9 +108,13 @@ if yarn install; then
 else
     echo "❌ Failed to regenerate yarn.lock"
     echo ""
-    echo "🔄 Restoring backup..."
+    echo "🔄 Restoring backups..."
     mv yarn.lock.backup yarn.lock
-    echo "✅ Original yarn.lock restored"
+    if [ -f .yarnrc.yml.backup-config ]; then
+        mv .yarnrc.yml.backup-config .yarnrc.yml
+        echo "📝 Restored original .yarnrc.yml configuration"
+    fi
+    echo "✅ Original files restored"
     echo ""
     echo "💡 Troubleshooting suggestions:"
     echo "  - Make sure you're using Node.js 22 (nvm use 22)"
