@@ -106,7 +106,7 @@ async function redirectSignIn(request: NextRequest) {
   const locale = getLocaleFromPathname(pathname);
 
   if (
-    [`/${locale}/signin`, `/${locale}/otp`].some(
+    [`/${locale}/signin`, `/${locale}/otp`, `/${locale}/whatsapp-otp`].some(
       (p) => pathname.indexOf(p) !== -1
     )
   ) {
