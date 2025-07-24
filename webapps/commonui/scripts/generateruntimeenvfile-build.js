@@ -28,7 +28,7 @@ function createBuildTimeEnvFile() {
 
     // Write the template file
     fs.writeFileSync(envFilePath, envTemplate);
-    console.log(`Successfully created build-time environment template`);
+    console.log('Successfully created build-time environment template');
     
   } catch (error) {
     console.error(`Error creating build-time environment template: ${error.message}`);

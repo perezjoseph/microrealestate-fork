@@ -25,7 +25,7 @@ function createRuntimeEnvFile() {
   const envFilePath = path.join(publicDir, '__ENV.js');
   
   console.log(`Creating runtime environment file at: ${envFilePath}`);
-  console.log(`Environment variables:`, browserEnvVars);
+  console.log('Environment variables:', browserEnvVars);
 
   try {
     // Check if public directory exists
@@ -38,7 +38,7 @@ function createRuntimeEnvFile() {
     const envContent = `window.__ENV = ${JSON.stringify(browserEnvVars, null, 2)}`;
     fs.writeFileSync(envFilePath, envContent);
     
-    console.log(`Successfully created runtime environment file`);
+    console.log('Successfully created runtime environment file');
     
   } catch (error) {
     console.error(`Error creating runtime environment file: ${error.message}`);

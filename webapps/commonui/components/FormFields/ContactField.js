@@ -1,7 +1,7 @@
-import { Grid, FormControlLabel, Switch } from '@material-ui/core';
-import { TextField } from './TextField';
-import useTranslation from 'next-translate/useTranslation';
+import { FormControlLabel, Grid, Switch } from '@material-ui/core';
 import { useFormikContext } from 'formik';
+import useTranslation from 'next-translate/useTranslation';
+import { TextField } from './TextField';
 
 // Helper function to get nested value from object using dot notation or bracket notation
 const getNestedValue = (obj, path) => {
