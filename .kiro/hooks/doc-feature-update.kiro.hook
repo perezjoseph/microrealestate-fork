@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "Documentation Feature Updates",
+  "description": "Monitors for new feature additions and updates the documentation accordingly",
+  "version": "1",
+  "when": {
+    "type": "fileCreated",
+    "patterns": [
+      "services/*/src/**/*.js",
+      "services/*/src/**/*.ts",
+      "webapps/*/src/**/*.js",
+      "webapps/*/src/**/*.tsx",
+      "webapps/*/src/**/*.ts",
+      "types/src/**/*.ts",
+      "cli/src/**/*.js"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "New features have been detected in the codebase. Please analyze the changes and update the relevant documentation files in the documentation/ folder. Focus on:\n\n1. API changes in services\n2. New UI components or pages in webapps\n3. New CLI commands or functionality\n4. Type definitions that indicate new features\n5. Configuration changes that affect deployment\n\nUpdate the appropriate documentation files such as:\n- documentation/DEVELOPER.md for development-related changes\n- documentation/DEPLOYMENT.md for deployment-related changes\n- Service-specific README.md files for API changes\n- Create new documentation files if entirely new features are introduced\n\nEnsure documentation is clear, includes examples where appropriate, and maintains consistency with existing documentation style."
+  }
+}

@@ -1,0 +1,53 @@
+{
+    "name": "Clean AI Generated Summaries",
+    "description": "Automatically organize AI-generated summary files and test scripts to appropriate directories",
+    "trigger": {
+        "type": "file",
+        "events": [
+            "created",
+            "modified"
+        ],
+        "patterns": [
+            "*_SUMMARY.md",
+            "*_FIX.md",
+            "*_FIXES.md",
+            "*_CHANGES.md",
+            "*_INTEGRATION.md",
+            "*_COMPLETE.md",
+            "*_GUIDE.md",
+            "*_DECISION.md",
+            "*_PROGRESS.md",
+            "*_CLEANUP.md",
+            "*_CONFLICT.md",
+            "*_RESTORATION.md",
+            "*_DEPLOYMENT.md",
+            "*_WORKFLOW.md",
+            "*_ANALYSIS.md",
+            "*_UPDATE.md",
+            "*_MODERNIZATION.md",
+            "*_MIGRATION.md",
+            "*_CONSOLIDATION.md",
+            "*_STRUCTURE.md",
+            "*_ISSUE.md",
+            "*_SUCCESS.md",
+            "*_NOTES.md",
+            "test-*.sh",
+            "test-*.js",
+            "*-test.js",
+            "*-test.sh",
+            "check-*.sh",
+            "validate-*.sh",
+            "fix-*.sh",
+            "regenerate-*.sh",
+            "build-*.sh",
+            "*.convo",
+            "translation-*-summary.md",
+            "whatsapp-*-changes.md",
+            "whatsapp-*-fixes.md",
+            "proxy-error-resolution.md",
+            "node22.txt",
+            "cookies.txt"
+        ]
+    },
+    "request": "Clean up the root directory by organizing AI-generated summary files and test scripts. For each file that matches the trigger patterns:\n\n1. **AI Summary Files** (files ending with _SUMMARY.md, _FIX.md, _FIXES.md, _CHANGES.md, etc.):\n   - Move to `documentation/fixes/` directory if they document bug fixes or issues\n   - Move to `documentation/` directory if they document features or general changes\n   - If the content is valuable, integrate key information into existing documentation\n   - Delete files that are redundant or no longer relevant\n\n2. **Test Scripts** (test-*.sh, test-*.js, check-*.sh, validate-*.sh, etc.):\n   - Move to `tests/` directory (create if it doesn't exist)\n   - Ensure the `tests/` directory is added to .gitignore so test scripts aren't pushed to repository\n\n3. **Temporary Files** (*.convo, cookies.txt, node22.txt, etc.):\n   - Delete these files as they appear to be temporary artifacts\n\n4. **Build/Fix Scripts** (fix-*.sh, regenerate-*.sh, build-*.sh):\n   - Move to `scripts/` directory if they're useful utilities\n   - Delete if they're one-time fixes that are no longer needed\n\nAfter organizing files, update the main README.md or relevant documentation to reference any important information that was in the summary files. Ensure the root directory only contains essential project files and configuration."
+}

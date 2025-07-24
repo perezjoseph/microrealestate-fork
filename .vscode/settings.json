@@ -31,5 +31,8 @@
   "editor.formatOnPaste": true,
   "tailwindCSS.includeLanguages": {
     "plaintext": "javascript"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
   }
 }

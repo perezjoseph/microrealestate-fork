@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Documentation Consolidation",
+  "description": "Monitors for new documentation files related to fixes and consolidates them into commits, then removes the temporary markdown files",
+  "version": "1",
+  "when": {
+    "type": "fileCreated",
+    "patterns": [
+      "*.md",
+      "documentation/fixes/*.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "New documentation for fixes has been detected. Please consolidate the content into a proper commit message and remove the temporary markdown file(s). Focus on extracting the key information from the documentation and creating a meaningful commit that captures the fix or improvement described."
+  }
+}
