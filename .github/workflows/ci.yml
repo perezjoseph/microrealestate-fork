@@ -1,4 +1,4 @@
-name: Continuous Integration (Fixed)
+name: Continuous Integration
 
 on:
   push:
@@ -30,24 +30,11 @@ jobs:
     - name: Install dependencies
       run: |
         echo "📦 Installing workspace dependencies..."
-        
-        # Show yarn version and configuration
-        echo "Yarn version: $(yarn --version)"
-        echo "Node version: $(node --version)"
-        
-        # Try standard install with verbose output
-        echo "Attempting standard install..."
-        if yarn install --immutable --check-cache --verbose; then
-          echo "✅ Standard install succeeded"
-        else
-          echo "⚠️ Standard install failed, trying without immutable flag..."
-          
-          # Clear cache and try non-immutable install
+        # Try immutable install first
+        if ! yarn install --immutable --check-cache; then
+          echo "⚠️ Immutable install failed, trying without immutable flag..."
           yarn cache clean --all
-          
-          # Install without immutable constraint
-          yarn install --verbose
-          echo "✅ Dependencies installed (yarn.lock may have been updated)"
+          yarn install
         fi
 
     - name: Build types
