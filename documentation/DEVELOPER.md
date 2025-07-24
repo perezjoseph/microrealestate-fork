@@ -1,140 +1,452 @@
-# Microrealestate
+# MicroRealEstate Developer Guide
 
-Here is a diagram showcasing the microservices on the backend and the two frontend applications:
+## Architecture Overview
+
+MicroRealEstate follows a microservices architecture with separate frontend applications and backend services:
 
 [<img src="./pictures/overview.png" alt="drawing" width="770"/>](./pictures/overview.png)
 
+## Services and Applications
+
 | Applications and Services                  | Description                                                                    | Development Status |
 | :----------------------------------------- | :----------------------------------------------------------------------------- | :----------------: |
-| [Landlord UI](../webapps/landlord)         | Landlord web application                                                       |     Available      |
-| [Tenant UI](../webapps/tenant)             | Tenant web application                                                         |     Available      |
+| [Landlord UI](../webapps/landlord)         | Landlord web application (Next.js Pages Router)                               |     Available      |
+| [Tenant UI](../webapps/tenant)             | Tenant web application (Next.js App Router)                                   |     Available      |
 | [Gateway](../services/gateway)             | Exposes UI and services, handles CORS and reverse proxies                      |     Available      |
 | [Authenticator](../services/authenticator) | Handles login/logout and tokens management                                     |     Available      |
 | [API](../services/api)                     | Landlord REST API                                                              |     Available      |
-| [tenantApi](../services/tenantapi)         | Tenant REST API                                                                |     Available      |
-| [EMailer](../services/emailer)             | Generates and sends emails with [Gmail] or [mailgun](https://www.mailgun.com/) |     Available      |
+| [TenantAPI](../services/tenantapi)         | Tenant REST API                                                                |     Available      |
+| [WhatsApp](../services/whatsapp)           | WhatsApp Business API integration                                              |     Available      |
+| [Emailer](../services/emailer)             | Generates and sends emails with Gmail or Mailgun                              |     Available      |
 | [PDFGenerator](../services/pdfgenerator)   | Generates PDF documents (letters, contracts, invoices...)                      |     Available      |
 | [ResetService](../services/resetservice)   | Uses to erase all data, only active in DEV and CI environments                 |     Available      |
 
-## Run the application from source code
+## Development Setup
 
-### Prerequisite
+### Prerequisites
 
 - [Docker and Compose installed](https://docs.docker.com/compose/install/)
 - [Run the Docker daemon as a non-root user](https://docs.docker.com/engine/security/rootless)
 - [Node.js version 20.x installed](https://nodejs.org/en/download/package-manager)
-- [VS Code installed](https://code.visualstudio.com/)
-- [git installed](https://git-scm.com/downloads)
+- [VS Code installed](https://code.visualstudio.com/) (recommended)
+- [Git installed](https://git-scm.com/downloads)
 
-#### Clone the GitHub repository
+### Clone and Setup
 
 ```shell
 git clone https://github.com/perezjoseph/microrealestate-whatsapp.git
 cd microrealestate
+yarn install
 ```
 
-#### Install de application dependencies
+## Development Modes
 
-```shell
-yarn
-```
-
-<details>
-<summary>Run the application in DEV mode and debug</summary>
-
-**Start in DEV mode**
+### Development Mode with Hot Reload
 
 ```shell
 yarn dev
 ```
 
-The logs of the different services will be visible in the console during the exection of the application.
+**Features:**
+- Hot reload for all services
+- Debug ports exposed
+- Live log streaming
+- Automatic service restart on code changes
 
-Also, end to end tests (Cypress tests) can be executed while the application runs in DEV mode. See the next section to knwow how to run the e2e command.
+**Access Points:**
+- **Landlord Interface**: http://localhost:8080/landlord
+- **Tenant Interface**: http://localhost:8080/tenant
+- **API Gateway**: http://localhost:8080
+- **WhatsApp Service**: http://localhost:8500
 
-**Debug**
-To access the debug functionality in VS Code, navigate to the debug bar located within the IDE.
+### CI Mode (Testing)
+
+```shell
+yarn build  # Build all services
+yarn ci     # Start in CI mode
+```
+
+**Features:**
+- Production-like environment
+- No hot reload
+- Optimized builds
+- Suitable for testing
+
+### Production Mode
+
+```shell
+yarn build  # Build all services
+yarn start  # Start in production mode
+```
+
+**Features:**
+- Production optimizations
+- Minimal logging
+- Performance optimized
+- Security hardened
+
+## Debugging
+
+### VS Code Debug Configuration
+
+Access the debug functionality in VS Code through the debug bar:
 
 ![Activity Bar](./pictures/vscode-debugbar.png)
 
-Next, attach the debugger to the service you wish to debug. This will enable you to step through the code and inspect variables, making it easier to identify and resolve any issues.
-
+**Available Debug Targets:**
 - Docker: Attach to Gateway
 - Docker: Attach to Authenticator
 - Docker: Attach to API
 - Docker: Attach to Emailer
-- Docker: Attach to PdfGenerator
+- Docker: Attach to PDFGenerator
 - Docker: Attach to ResetService
+- Docker: Attach to WhatsApp
 
-[For more information about VS Code debugging](https://code.visualstudio.com/Docs/editor/debugging#_debug-actions)
-</details>
+[VS Code Debugging Documentation](https://code.visualstudio.com/Docs/editor/debugging#_debug-actions)
 
-<details>
-<summary>Run the application in CI mode and run the end to end tests</summary>
+### Debug Ports
 
-**Build**
+| Service | Debug Port |
+|---------|------------|
+| Gateway | 9225 |
+| Authenticator | 9226 |
+| API | 9229 |
+| TenantAPI | 9240 |
+| Emailer | 9228 |
+| PDFGenerator | 9227 |
+| WhatsApp | 9231 |
 
-```shell
-yarn build
-```
+## Testing
 
-**Start in CI mode**
-
-```shell
-yarn ci
-```
-
-No logs will be shown in the terminal during the execution. You can use the [docker logs](https://docs.docker.com/reference/cli/docker/container/logs) command to get the container logs.
-Any changes in the source code requires to rebuild the application.
-
-**Execute the end to end tests (Cypress tests)**
-
-- Like in the CI/CD workflow
+### End-to-End Testing with Cypress
 
 ```shell
+# Headless mode (CI/CD)
 yarn e2e:ci
-```
 
-- With the browser visible during the tests
-
-```shell
+# With browser visible
 yarn e2e:run
-```
 
-- With the Cypress UI
-
-```shell
+# Interactive Cypress UI
 yarn e2e:open
 ```
 
-**Stop the application**
+### Unit Testing
 
 ```shell
-yarn stop
+# Run all unit tests
+yarn test
+
+# Run tests for specific service
+yarn workspace @microrealestate/api test
 ```
-</details>
 
-<details>
-<summary>Run the application in PROD mode</summary>
-
-**Build**
+### Integration Testing
 
 ```shell
+# Test service endpoints
+yarn test:integration
+
+# Test database connections
+yarn test:db
+```
+
+## Development Workflow
+
+### 1. Code Changes
+
+Make changes to any service or frontend application:
+
+```shell
+# Backend services
+cd services/[service-name]
+# Make changes...
+
+# Frontend applications
+cd webapps/[app-name]
+# Make changes...
+```
+
+### 2. Local Testing
+
+```shell
+# Start development environment
+yarn dev
+
+# Run tests
+yarn test
+yarn e2e:ci
+```
+
+### 3. Build Verification
+
+```shell
+# Build all services
 yarn build
+
+# Test production build
+yarn ci
 ```
 
-**Start in PROD mode**
+## Service Development
+
+### Backend Services Structure
+
+```
+services/[service-name]/
+├── src/
+│   ├── index.js          # Main entry point
+│   ├── routes/           # API routes
+│   ├── models/           # Data models
+│   ├── services/         # Business logic
+│   └── utils/            # Utilities
+├── Dockerfile            # Docker configuration
+├── package.json          # Dependencies
+└── README.md            # Service documentation
+```
+
+### Frontend Applications Structure
+
+```
+webapps/[app-name]/
+├── src/                  # Source code
+├── public/               # Static assets
+├── pages/                # Next.js pages (landlord)
+├── app/                  # Next.js app router (tenant)
+├── components/           # React components
+├── styles/               # CSS/styling
+├── Dockerfile            # Docker configuration
+├── next.config.js        # Next.js configuration
+└── package.json          # Dependencies
+```
+
+### Adding New Services
+
+1. **Create service directory:**
+   ```shell
+   mkdir services/new-service
+   cd services/new-service
+   ```
+
+2. **Initialize package:**
+   ```shell
+   npm init -y
+   yarn add @microrealestate/common
+   ```
+
+3. **Create Dockerfile:**
+   ```dockerfile
+   FROM node:20-alpine
+   # ... service-specific configuration
+   ```
+
+4. **Add to docker-compose.yml:**
+   ```yaml
+   new-service:
+     build:
+       context: .
+       dockerfile: ./services/new-service/Dockerfile
+     # ... configuration
+   ```
+
+## Environment Configuration
+
+### Development Environment
+
+```bash
+# .env.development
+NODE_ENV=development
+LOGGER_LEVEL=debug
+MONGO_URL=mongodb://mongo/mredb_dev
+REDIS_URL=redis://valkey:6379
+```
+
+### Testing Environment
+
+```bash
+# .env.test
+NODE_ENV=test
+LOGGER_LEVEL=error
+MONGO_URL=mongodb://mongo/mredb_test
+REDIS_URL=redis://valkey:6379
+```
+
+### Production Environment
+
+```bash
+# .env.production
+NODE_ENV=production
+LOGGER_LEVEL=info
+MONGO_URL=mongodb://mongo/mredb
+REDIS_URL=redis://valkey:6379
+```
+
+## Database Development
+
+### MongoDB Operations
 
 ```shell
-yarn start
+# Connect to MongoDB
+docker compose exec mongo mongosh mredb
+
+# Run database migrations
+yarn migrate
+
+# Seed development data
+yarn seed:dev
 ```
 
-You can use the [docker logs](https://docs.docker.com/reference/cli/docker/container/logs) command to get the container logs.
-Any changes in the source code requires to rebuild the application.
-
-**Stop the application**
+### Valkey/Redis Operations
 
 ```shell
-yarn stop
+# Connect to Valkey
+docker compose exec valkey valkey-cli
+
+# Monitor commands
+docker compose exec valkey valkey-cli monitor
+
+# Check memory usage
+docker compose exec valkey valkey-cli info memory
 ```
-</details>
+
+## Code Quality
+
+### Linting
+
+```shell
+# Lint all code
+yarn lint
+
+# Fix linting issues
+yarn lint:fix
+
+# Lint specific service
+yarn workspace @microrealestate/api lint
+```
+
+### Formatting
+
+```shell
+# Format all code
+yarn format
+
+# Check formatting
+yarn format:check
+```
+
+### Type Checking
+
+```shell
+# TypeScript type checking
+yarn type-check
+
+# Watch mode
+yarn type-check:watch
+```
+
+## Performance Monitoring
+
+### Service Metrics
+
+```shell
+# View service logs
+docker compose logs [service-name]
+
+# Monitor resource usage
+docker stats
+
+# Check service health
+curl http://localhost:8080/health
+```
+
+### Database Performance
+
+```shell
+# MongoDB performance
+docker compose exec mongo mongosh --eval "db.stats()"
+
+# Valkey performance
+docker compose exec valkey valkey-cli info stats
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Port Conflicts
+```shell
+# Check port usage
+netstat -tulpn | grep :8080
+
+# Kill process using port
+sudo kill -9 $(lsof -t -i:8080)
+```
+
+#### Docker Issues
+```shell
+# Clean Docker system
+docker system prune -a
+
+# Rebuild specific service
+docker compose build --no-cache [service-name]
+
+# Reset volumes
+docker compose down -v
+```
+
+#### Database Issues
+```shell
+# Reset MongoDB
+docker compose down
+docker volume rm microrealestate_mongodb_data
+docker compose up -d mongo
+
+# Reset Valkey
+docker compose down
+docker volume rm microrealestate_valkey_data
+docker compose up -d valkey
+```
+
+### Debug Logs
+
+```shell
+# Enable debug logging
+export LOGGER_LEVEL=debug
+
+# Service-specific debugging
+docker compose logs -f [service-name]
+
+# Real-time log monitoring
+docker compose logs -f --tail=100
+```
+
+## Contributing
+
+### Code Style
+
+- Use ESLint and Prettier configurations
+- Follow conventional commit messages
+- Write tests for new features
+- Update documentation
+
+### Pull Request Process
+
+1. Fork the repository
+2. Create feature branch
+3. Make changes with tests
+4. Run full test suite
+5. Submit pull request
+
+### Development Best Practices
+
+- **Microservices**: Keep services focused and independent
+- **Error Handling**: Implement comprehensive error handling
+- **Logging**: Use structured logging with appropriate levels
+- **Security**: Follow security best practices
+- **Performance**: Monitor and optimize performance
+- **Documentation**: Keep documentation up to date
+
+---
+
+**Last Updated**: July 2025  
+**Maintainer**: Joseph Pérez

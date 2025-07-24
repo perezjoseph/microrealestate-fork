@@ -116,7 +116,7 @@ export function VersionInfo({ compact = false }) {
         
         <DialogContent>
           <Typography variant="h6" gutterBottom>
-            🚀 What's New in This Release
+            What's New in This Release
           </Typography>
           
           <List>
@@ -138,7 +138,7 @@ export function VersionInfo({ compact = false }) {
 
           <Box mt={3}>
             <Typography variant="h6" gutterBottom>
-              📋 Production Features
+              Production Features
             </Typography>
             <Typography variant="body2" paragraph>
               • <strong>Complete Property Management:</strong> Full-featured system for landlords and property managers
@@ -183,7 +183,7 @@ export function VersionInfo({ compact = false }) {
 
           <Box mt={3}>
             <Typography variant="h6" gutterBottom>
-              ✅ Stability & Reliability
+              Stability & Reliability
             </Typography>
             <Typography variant="body2" paragraph>
               • Fixed critical ContactField TypeError in tenant management forms

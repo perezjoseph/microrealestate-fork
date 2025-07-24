@@ -36,7 +36,7 @@ RUN yarn workspace @microrealestate/types run build && \
 RUN chown -R 1000 /usr/app/webapps/tenant/.next && \
     chown -R 1000 /usr/app/webapps/tenant/public
 
-FROM gcr.io/distroless/nodejs20-debian12
+FROM gcr.io/distroless/nodejs22-debian12
 WORKDIR /usr/app
 ENV NEXT_TELEMETRY_DISABLED=1
 # Set default locale to Spanish

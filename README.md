@@ -2,17 +2,28 @@
 
 [![Continuous Integration](https://github.com/perezjoseph/microrealestate-whatsapp/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/perezjoseph/microrealestate-whatsapp/actions/workflows/ci.yml)
 
-MicroRealEstate is an open-source property management platform designed to help landlords efficiently manage their properties, tenants, and rental operations.
+MicroRealEstate is an open-source property management platform designed to help landlords efficiently manage their properties, tenants, and rental operations with integrated WhatsApp notifications.
 
-## Features
+## Key Features
 
+### Core Property Management
 - **Property & Tenant Management** - Centralized database for properties, tenants, and lease agreements
 - **Rent Tracking & Invoicing** - Automated rent collection with payment tracking and reminders
-- **WhatsApp Integration** - Send invoices and notifications via WhatsApp with OTP authentication
-- **Multi-language Support** - Available in English, Spanish, French, German, and Portuguese
 - **Document Generation** - Create custom leases, notices, and rental documents
 - **Team Collaboration** - Multi-user support for property management teams
+
+### WhatsApp Integration
+- **Invoice Notifications** - Send rent invoices directly via WhatsApp
+- **Payment Reminders** - Automated WhatsApp reminders for overdue payments
+- **OTP Authentication** - Secure tenant login using WhatsApp OTP codes
+- **Multi-language Support** - Templates available in Spanish, English, and more
+- **Dominican Republic Support** - Optimized for DR phone number formatting
+
+### Technical Features
 - **Modern Architecture** - Microservices-based with Docker containerization
+- **Multi-language Support** - Available in English, Spanish, French, German, and Portuguese
+- **Responsive Design** - Works on desktop, tablet, and mobile devices
+- **Security** - JWT authentication, rate limiting, and SQL injection protection
 
 ## Screenshots
 
@@ -37,8 +48,8 @@ MicroRealEstate is an open-source property management platform designed to help 
 ```shell
 mkdir mre
 cd mre
-curl https://raw.githubusercontent.com/microrealestate/microrealestate/master/docker-compose.yml > docker-compose.yml
-curl https://raw.githubusercontent.com/microrealestate/microrealestate/master/.env.domain > .env
+curl https://raw.githubusercontent.com/perezjoseph/microrealestate-whatsapp/master/docker-compose.yml > docker-compose.yml
+curl https://raw.githubusercontent.com/perezjoseph/microrealestate-whatsapp/master/.env.domain > .env
 ```
 
 2. **Configure environment variables:**
@@ -48,7 +59,7 @@ Edit the `.env` file and update the secrets and tokens at the end of the file.
 ```bash
 # Basic Configuration
 MONGO_URL=mongodb://mongo/mredb
-REDIS_URL=redis://redis:6379
+REDIS_URL=redis://valkey:6379
 JWT_SECRET=your_jwt_secret_here
 
 # WhatsApp Configuration (Optional)
@@ -60,64 +71,49 @@ WHATSAPP_LOGIN_TEMPLATE_NAME=otpcode
 WHATSAPP_LOGIN_TEMPLATE_LANGUAGE=es
 ```
 
-**IMPORTANT**
-
-In case you previously ran the application, the secrets, the tokens and the MONGO_URL must be reported from previous .env file to the new one.
-Otherwise, the application will not point to the correct database and will not be able to login with the previous credentials.
+**IMPORTANT**: If you previously ran the application, the secrets, tokens, and MONGO_URL must be copied from the previous .env file to maintain database connectivity and login credentials.
 
 ## Deployment Options
 
 ### Localhost Setup
-
-Start the application under localhost:
-
 ```shell
 APP_PORT=8080 docker compose --profile local up
 ```
-The application will be available on:
 - **Landlord Interface**: http://localhost:8080/landlord
 - **Tenant Interface**: http://localhost:8080/tenant
 
-### IP Address Setup
+### Development Setup (Build from Source)
+```shell
+APP_PORT=8080 docker compose --profile dev up
+```
+This profile builds the frontend applications from source code, useful for development with custom changes.
 
-Start the application under a custom IP:
+### Production Setup
 
+#### IP Address Setup
 ```shell
 sudo APP_DOMAIN=x.x.x.x docker compose up
 ```
-Replace `x.x.x.x` with your server's IP address.
-
-The application will be available on:
 - **Landlord Interface**: http://x.x.x.x/landlord
 - **Tenant Interface**: http://x.x.x.x/tenant
 
-**Note**: If you need to use a port number, use the `APP_PORT` environment variable instead of including it in `APP_DOMAIN`.
-
-### Domain with HTTPS Setup
-
-Start the application under a custom domain with HTTPS:
-
+#### Domain with HTTPS Setup
 ```shell
 sudo APP_DOMAIN=app.example.com APP_PROTOCOL=https docker compose up
 ```
-
-Make sure your DNS records are pointing to your server. The application will automatically issue the SSL certificate.
-
-The application will be available on:
 - **Landlord Interface**: https://app.example.com/landlord
 - **Tenant Interface**: https://app.example.com/tenant
 
-## WhatsApp Integration
+## WhatsApp Integration Setup
 
 ### Prerequisites
-1. **WhatsApp Business API Account**: Set up through Meta Business
-2. **Approved Templates**: Ensure you have the following templates approved:
+1. **WhatsApp Business API Account** - Set up through Meta Business
+2. **Approved Templates** - Ensure you have these templates approved:
    - `factura2` - For rent invoices and notifications
    - `otpcode` - For OTP authentication
 
 ### Configuration
-Add the following to your `.env` file:
-
+Add to your `.env` file:
 ```bash
 # WhatsApp Business API Configuration
 WHATSAPP_ACCESS_TOKEN=your_whatsapp_access_token
@@ -131,103 +127,114 @@ WHATSAPP_LOGIN_TEMPLATE_LANGUAGE=es
 ```
 
 ### Features Enabled
-- **Rent Notifications**: Send rent invoices and reminders via WhatsApp
-- **OTP Authentication**: Secure tenant login using WhatsApp OTP
-- **Multi-language Support**: Templates support multiple languages
+- **Rent Notifications** - Send rent invoices and reminders via WhatsApp
+- **OTP Authentication** - Secure tenant login using WhatsApp OTP
+- **Multi-language Support** - Templates support multiple languages
+- **Dominican Republic Optimization** - Proper phone number formatting
+
+## Architecture
+
+MicroRealEstate follows a microservices architecture:
+
+### Core Services
+- **Gateway** (Port 8080) - API gateway and reverse proxy
+- **API** (Port 8200) - Main business logic and data management
+- **Authenticator** (Port 8100) - Authentication service with JWT and OTP support
+- **TenantAPI** (Port 8300) - Tenant-specific API endpoints
+
+### Communication Services
+- **WhatsApp** (Port 8500) - WhatsApp Business API integration
+- **Emailer** (Port 8083) - Email notification service
+- **PDFGenerator** (Port 8082) - Document generation service
+
+### Frontend Applications
+- **Landlord Frontend** - Property management interface (Next.js)
+- **Tenant Frontend** - Tenant portal interface (Next.js)
+
+### Data Layer
+- **MongoDB** - Primary database for application data
+- **Valkey** - Redis-compatible caching and session management
 
 ## Data Management
 
 ### Backup
-
-The backup and restore commands can be executed when the application is running to allow connecting to MongoDB.
-
-In the mre directory run:
-
 ```shell
 docker compose run mongo /usr/bin/mongodump --uri=mongodb://mongo/mredb --gzip --archive=./backup/mredb-$(date +%F_%T).dump
 ```
 
-Replace "mredb" with the name of your database (see .env file). By default, the database name is "mredb".
-
-The archive file will be placed in the "backup" folder.
-
 ### Restore
-
-In the mre/backup directory, select an archive file you want to restore. 
-
-Then run the restore command:
-
 ```shell
 docker compose run mongo /usr/bin/mongorestore --uri=mongodb://mongo/mredb --drop --gzip --archive=./backup/mredb-XXXX.dump 
 ```
 
-Where mredb-XXXX.dump is the archive file you selected.
-
-Again, replace "mredb" with the name of your database (see .env file). By default, the database name is "mredb".
-
-## Architecture
-
-MicroRealEstate follows a microservices architecture with the following components:
-
-### Core Services
-- **Gateway**: API gateway and reverse proxy
-- **Authenticator**: Authentication service with JWT and OTP support
-- **API**: Main business logic and data management
-- **TenantAPI**: Tenant-specific API endpoints
-
-### Communication Services
-- **WhatsApp**: WhatsApp Business API integration
-- **Emailer**: Email notification service
-- **PDFGenerator**: Document generation service
-
-### Frontend Applications
-- **Landlord Frontend**: Property management interface (Next.js)
-- **Tenant Frontend**: Tenant portal interface (Next.js)
-
-### Data Layer
-- **MongoDB**: Primary database for application data
-- **Redis**: Caching and session management
-
 ## Development
 
-To run the application in development mode, follow the steps outlined in the documentation available [here](./documentation/DEVELOPER.md)
+To run the application in development mode:
 
-### Quick Development Setup
 ```shell
 # Clone the repository
 git clone https://github.com/perezjoseph/microrealestate-whatsapp.git
 cd microrealestate-whatsapp
 
+# Install dependencies
+yarn install
+
 # Start development environment
-npm run dev
+yarn dev
 ```
+
+For detailed development setup, see the [Developer Guide](./documentation/DEVELOPER.md)
+
+For comprehensive deployment instructions, see the [Deployment Guide](./documentation/DEPLOYMENT.md)
 
 ## Contributing
 
-We welcome contributions! Please see our contributing guidelines and feel free to submit pull requests.
-
-### Areas for Contribution
+We welcome contributions! Areas for contribution:
 - New language translations
 - WhatsApp template improvements
 - Security enhancements
 - UI/UX improvements
 - Documentation updates
 
+## License
+
+This project is licensed under the GNU Affero General Public License (AGPL) v3.
+
+The AGPL is a copyleft license that ensures the software remains free and open source, even when used in network services. If you modify this software and provide it as a network service, you must make the source code available to users of that service.
+
+[View License](./LICENSE)
+
 ## Support
 
 For support and questions:
 - Create an issue on GitHub
-- Check the documentation in the `/documentation` folder
-- Review the FAQ and troubleshooting guides
+- Check the [documentation](./documentation/) folder
+- Review the [deployment guide](./documentation/DEPLOYMENT.md)
+- Consult the [developer guide](./documentation/DEVELOPER.md)
 
-## Changelog
+## Recent Updates
 
-See [CHANGELOG.md](./CHANGELOG.md) for detailed release notes and version history.
+### WhatsApp Integration
+- Complete WhatsApp Business API integration
+- Dominican Republic phone number formatting
+- Spanish invoice templates
+- OTP authentication via WhatsApp
+- Rate limiting and security improvements
 
-## License
+### Security Enhancements
+- JWT security improvements
+- NoSQL injection protection
+- Rate limiting implementation
+- Enhanced authentication middleware
 
-The project is licensed under the GNU Affero General Public License (AGPL) v3. To view the license details, please follow the link below:
+### Technical Improvements
+- Microservices architecture optimization
+- Docker containerization improvements
+- Valkey integration (Redis-compatible)
+- Code quality and linting improvements
 
-[GNU Affero General Public License v3](./LICENSE)
+---
 
-The AGPL is a copyleft license that ensures the software remains free and open source, even when used in network services. If you modify this software and provide it as a network service, you must make the source code available to users of that service.
+**Version**: 1.0.0  
+**Author**: Joseph Pérez  
+**Repository**: https://github.com/perezjoseph/microrealestate-whatsapp

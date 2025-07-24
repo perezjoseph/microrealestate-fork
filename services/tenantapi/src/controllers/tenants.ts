@@ -52,14 +52,14 @@ export async function getOneTenant(
 ) {
   const req = request as TenantAPI.GetOneTenant.Request;
   const res = response as TenantAPI.GetOneTenant.Response;
-  const email = (req.user as UserServicePrincipal).email;
-  if (!email) {
-    logger.error('missing email field');
+  const user = req.user as UserServicePrincipal;
+  const email = user.email;
+  const phone = user.phone;
+  
+  if (!email && !phone) {
+    logger.error('missing email or phone field');
     throw new ServiceError('unauthorized', 401);
   }
-  
-  // Validate and sanitize email to prevent injection
-  const sanitizedEmail = validateAndSanitizeEmail(email);
   
   const tenantId = req.params.tenantId;
 
@@ -68,13 +68,27 @@ export async function getOneTenant(
     throw new ServiceError('Invalid tenant ID format', 400);
   }
 
-  // Use exact email match instead of regex to prevent injection
+  let query: any = { _id: tenantId };
+  
+  // Build query based on available authentication method
+  if (email && !email.includes('@whatsapp.tenant')) {
+    // Email-based authentication
+    const sanitizedEmail = validateAndSanitizeEmail(email);
+    query['contacts.email'] = sanitizedEmail;
+  } else if (phone) {
+    // Phone-based authentication (WhatsApp)
+    query.$or = [
+      { 'contacts.phone': phone },
+      { 'contacts.phone1': phone },
+      { 'contacts.phone2': phone }
+    ];
+  } else {
+    throw new ServiceError('unauthorized', 401);
+  }
+
   const dbTenant = await Collections.Tenant.findOne<
     MongooseDocument<CollectionTypes.Tenant>
-  >({
-    _id: tenantId,
-    'contacts.email': sanitizedEmail
-  }).populate<{
+  >(query).populate<{
     realmId: CollectionTypes.Realm;
     leaseId: CollectionTypes.Lease;
   }>(['realmId', 'leaseId']);
@@ -97,21 +111,36 @@ export async function getAllTenants(
 ) {
   const req = request as TenantAPI.GetAllTenants.Request;
   const res = response as TenantAPI.GetAllTenants.Response;
-  const email = (req.user as UserServicePrincipal).email;
-  if (!email) {
-    logger.error('missing email field');
+  const user = req.user as UserServicePrincipal;
+  const email = user.email;
+  const phone = user.phone;
+  
+  if (!email && !phone) {
+    logger.error('missing email or phone field');
     throw new ServiceError('unauthorized', 401);
   }
 
-  // Validate and sanitize email to prevent injection
-  const sanitizedEmail = validateAndSanitizeEmail(email);
+  let query: any = {};
+  
+  // Build query based on available authentication method
+  if (email && !email.includes('@whatsapp.tenant')) {
+    // Email-based authentication
+    const sanitizedEmail = validateAndSanitizeEmail(email);
+    query['contacts.email'] = sanitizedEmail;
+  } else if (phone) {
+    // Phone-based authentication (WhatsApp)
+    query.$or = [
+      { 'contacts.phone': phone },
+      { 'contacts.phone1': phone },
+      { 'contacts.phone2': phone }
+    ];
+  } else {
+    throw new ServiceError('unauthorized', 401);
+  }
 
-  // Use exact email match instead of regex to prevent injection
   const dbTenants = await Collections.Tenant.find<
     MongooseDocument<CollectionTypes.Tenant>
-  >({
-    'contacts.email': sanitizedEmail
-  }).populate<{
+  >(query).populate<{
     realmId: CollectionTypes.Realm;
     leaseId: CollectionTypes.Lease;
   }>(['realmId', 'leaseId']);

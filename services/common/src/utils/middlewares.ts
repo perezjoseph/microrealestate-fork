@@ -96,6 +96,7 @@ export function needAccessToken(
         const user: UserServicePrincipal = {
           type: 'user',
           email: decoded.account.email,
+          phone: decoded.account.phone,
           role: decoded.account.role
         };
         req.user = user;

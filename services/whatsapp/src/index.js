@@ -204,7 +204,7 @@ Your invoice for period ${data.invoicePeriod} is ready.
 
  Total: ${data.currency} ${data.totalAmount}
 
-${data.invoiceUrl ? `📄 View invoice: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` View invoice: ${data.invoiceUrl}` : ''}
 
 Thank you for your trust.
 ${data.organizationName}`,
@@ -218,7 +218,7 @@ Your rent for period ${data.invoicePeriod} is pending payment.
  Amount: ${data.currency} ${data.totalAmount}
 📅 Due date: ${data.dueDate}
 
-${data.invoiceUrl ? `📄 View invoice: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` View invoice: ${data.invoiceUrl}` : ''}
 
 Please make your payment as soon as possible.
 
@@ -234,7 +234,7 @@ Your rent for period ${data.invoicePeriod} remains pending.
 📅 Due date: ${data.dueDate}
 ⏰ Days overdue: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 View invoice: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` View invoice: ${data.invoiceUrl}` : ''}
 
 It's important to regularize your situation to avoid inconveniences.
 
@@ -250,7 +250,7 @@ Your rent for period ${data.invoicePeriod} is in arrears.
 📅 Due date: ${data.dueDate}
 ⏰ Days overdue: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 View invoice: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` View invoice: ${data.invoiceUrl}` : ''}
 
  IMPORTANT: If we don't receive your payment within the next 48 hours, we will proceed according to the contract terms.
 
@@ -267,7 +267,7 @@ Su factura del período ${data.invoicePeriod} está lista.
 
  Saldo pendiente: ${data.currency} ${data.totalAmount}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
 Gracias por su confianza.
 ${data.organizationName}`,
@@ -281,7 +281,7 @@ Su renta del período ${data.invoicePeriod} está pendiente de pago.
  Monto: ${data.currency} ${data.totalAmount}
 📅 Fecha límite: ${data.dueDate}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
 Por favor, realice su pago a la brevedad posible.
 
@@ -297,7 +297,7 @@ Su renta del período ${data.invoicePeriod} continúa pendiente.
 📅 Fecha límite: ${data.dueDate}
 ⏰ Días de retraso: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
 Es importante regularizar su situación para evitar inconvenientes.
 
@@ -313,7 +313,7 @@ Su renta del período ${data.invoicePeriod} está en mora.
 📅 Fecha límite: ${data.dueDate}
 ⏰ Días de retraso: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
  IMPORTANTE: Si no recibimos su pago en las próximas 48 horas, procederemos según los términos del contrato.
 
@@ -330,7 +330,7 @@ Votre facture pour la période ${data.invoicePeriod} est prête.
 
  Total: ${data.currency} ${data.totalAmount}
 
-${data.invoiceUrl ? `📄 Voir la facture: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Voir la facture: ${data.invoiceUrl}` : ''}
 
 Merci pour votre confiance.
 ${data.organizationName}`,
@@ -344,7 +344,7 @@ Votre loyer pour la période ${data.invoicePeriod} est en attente de paiement.
  Montant: ${data.currency} ${data.totalAmount}
 📅 Date limite: ${data.dueDate}
 
-${data.invoiceUrl ? `📄 Voir la facture: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Voir la facture: ${data.invoiceUrl}` : ''}
 
 Veuillez effectuer votre paiement dès que possible.
 
@@ -360,7 +360,7 @@ Votre loyer pour la période ${data.invoicePeriod} reste en attente.
 📅 Date limite: ${data.dueDate}
 ⏰ Jours de retard: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Voir la facture: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Voir la facture: ${data.invoiceUrl}` : ''}
 
 Il est important de régulariser votre situation pour éviter les désagréments.
 
@@ -376,7 +376,7 @@ Votre loyer pour la période ${data.invoicePeriod} est en retard.
 📅 Date limite: ${data.dueDate}
 ⏰ Jours de retard: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Voir la facture: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Voir la facture: ${data.invoiceUrl}` : ''}
 
  IMPORTANT: Si nous ne recevons pas votre paiement dans les 48 heures, nous procéderons selon les termes du contrat.
 
@@ -393,7 +393,7 @@ Ihre Rechnung für den Zeitraum ${data.invoicePeriod} ist bereit.
 
  Gesamt: ${data.currency} ${data.totalAmount}
 
-${data.invoiceUrl ? `📄 Rechnung anzeigen: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
 Vielen Dank für Ihr Vertrauen.
 ${data.organizationName}`,
@@ -407,7 +407,7 @@ Ihre Miete für den Zeitraum ${data.invoicePeriod} steht noch aus.
  Betrag: ${data.currency} ${data.totalAmount}
 📅 Fälligkeitsdatum: ${data.dueDate}
 
-${data.invoiceUrl ? `📄 Rechnung anzeigen: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
 Bitte leisten Sie Ihre Zahlung so bald wie möglich.
 
@@ -423,7 +423,7 @@ Ihre Miete für den Zeitraum ${data.invoicePeriod} ist weiterhin ausstehend.
 📅 Fälligkeitsdatum: ${data.dueDate}
 ⏰ Tage überfällig: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Rechnung anzeigen: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
 Es ist wichtig, Ihre Situation zu regularisieren, um Unannehmlichkeiten zu vermeiden.
 
@@ -439,7 +439,7 @@ Ihre Miete für den Zeitraum ${data.invoicePeriod} ist im Rückstand.
 📅 Fälligkeitsdatum: ${data.dueDate}
 ⏰ Tage überfällig: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Rechnung anzeigen: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
  WICHTIG: Wenn wir Ihre Zahlung nicht innerhalb der nächsten 48 Stunden erhalten, werden wir gemäß den Vertragsbedingungen vorgehen.
 
@@ -456,7 +456,7 @@ Sua fatura do período ${data.invoicePeriod} está pronta.
 
  Total: ${data.currency} ${data.totalAmount}
 
-${data.invoiceUrl ? `📄 Ver fatura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver fatura: ${data.invoiceUrl}` : ''}
 
 Obrigado pela sua confiança.
 ${data.organizationName}`,
@@ -470,7 +470,7 @@ Seu aluguel do período ${data.invoicePeriod} está pendente de pagamento.
  Valor: ${data.currency} ${data.totalAmount}
 📅 Data limite: ${data.dueDate}
 
-${data.invoiceUrl ? `📄 Ver fatura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver fatura: ${data.invoiceUrl}` : ''}
 
 Por favor, realize seu pagamento o mais breve possível.
 
@@ -486,7 +486,7 @@ Seu aluguel do período ${data.invoicePeriod} continua pendente.
 📅 Data limite: ${data.dueDate}
 ⏰ Dias em atraso: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Ver fatura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver fatura: ${data.invoiceUrl}` : ''}
 
 É importante regularizar sua situação para evitar inconvenientes.
 
@@ -502,7 +502,7 @@ Seu aluguel do período ${data.invoicePeriod} está em atraso.
 📅 Data limite: ${data.dueDate}
 ⏰ Dias em atraso: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Ver fatura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver fatura: ${data.invoiceUrl}` : ''}
 
  IMPORTANTE: Se não recebermos seu pagamento nas próximas 48 horas, procederemos conforme os termos do contrato.
 
@@ -857,7 +857,7 @@ app.post('/send-message', async (req, res) => {
       // Fallback to WhatsApp Web URL
       const whatsappURL = generateWhatsAppURL(phoneNumber, message);
       
-      console.log(`📱 Fallback: WhatsApp URL generated for ${recipientName || phoneNumber}`);
+      console.log(` Fallback: WhatsApp URL generated for ${recipientName || phoneNumber}`);
       
       res.json({
         success: true,
@@ -1016,7 +1016,7 @@ app.post('/send-invoice', async (req, res) => {
         });
         
         urlFallbackCount++;
-        console.log(`📱 Fallback URL generated for ${phone} (${templateName})`);
+        console.log(` Fallback URL generated for ${phone} (${templateName})`);
       }
     }
     
@@ -1354,7 +1354,7 @@ app.listen(PORT, () => {
   
   if (WHATSAPP_ACCESS_TOKEN && WHATSAPP_PHONE_NUMBER_ID) {
     console.log(` WhatsApp Business API configured`);
-    console.log(`📱 Phone Number ID: ${WHATSAPP_PHONE_NUMBER_ID}`);
+    console.log(` Phone Number ID: ${WHATSAPP_PHONE_NUMBER_ID}`);
   } else {
     console.log(`  WhatsApp Business API not configured - using URL fallback only`);
     console.log(` Set WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID for API integration`);

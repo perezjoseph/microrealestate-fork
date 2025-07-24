@@ -117,7 +117,7 @@ function WhatsAppActions({ values, onDone }) {
         // Only send payment reminders for positive balances (money owed)
         const finalAmount = Math.max(0, netBalance);
         
-        console.log('🔍 WhatsApp Actions Balance Debug:', {
+        console.log('WhatsApp Actions Balance Debug:', {
           tenantName: tenant.name,
           grandTotal,
           payment,
@@ -192,18 +192,18 @@ function WhatsAppActions({ values, onDone }) {
             totalSuccess += apiResults.length + urlResults.length;
             totalFailed += result.results.filter(r => !r.success).length;
             
-            console.log(`✅ ${selectedTemplate} processed for ${tenant.name}:`, {
+            console.log(`${selectedTemplate} processed for ${tenant.name}:`, {
               apiSent: apiResults.length,
               urlGenerated: urlResults.length,
               failed: result.results.filter(r => !r.success).length
             });
           } else {
-            console.error(`❌ WhatsApp service failed for ${tenant.name}:`, result.error);
+            console.error(`WhatsApp service failed for ${tenant.name}:`, result.error);
             totalFailed += whatsappNumbers.length;
           }
           
         } catch (apiError) {
-          console.error(`❌ WhatsApp API error for ${tenant.name}:`, apiError);
+          console.error(`WhatsApp API error for ${tenant.name}:`, apiError);
           totalFailed += whatsappNumbers.length;
         }
       }
@@ -227,7 +227,7 @@ function WhatsAppActions({ values, onDone }) {
       }
 
     } catch (error) {
-      console.error('❌ WhatsApp send error:', error);
+      console.error('WhatsApp send error:', error);
       toast.error(t('Error sending WhatsApp messages: {{error}}', { error: error.message }));
     } finally {
       setSending(false);

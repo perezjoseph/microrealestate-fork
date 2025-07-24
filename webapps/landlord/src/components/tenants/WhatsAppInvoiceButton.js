@@ -97,13 +97,13 @@ export default function WhatsAppInvoiceButton({ tenant, rent, disabled = false }
           }));
         }
         
-        console.log('✅ WhatsApp invoice sent:', result);
+        console.log('WhatsApp invoice sent:', result);
       } else {
         throw new Error(result.error || 'Failed to send WhatsApp invoice');
       }
 
     } catch (error) {
-      console.error('❌ WhatsApp send error:', error);
+      console.error('WhatsApp send error:', error);
       toast.error(t('whatsapp_send_error', { 
         error: error.message 
       }));

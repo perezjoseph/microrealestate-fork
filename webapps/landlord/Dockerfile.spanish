@@ -42,7 +42,7 @@ RUN touch /usr/app/webapps/landlord/public/__ENV.js
 RUN chown -R 1000 /usr/app/webapps/landlord/.next && \
     chown -R 1000 /usr/app/webapps/landlord/public
 
-FROM gcr.io/distroless/nodejs20-debian12
+FROM gcr.io/distroless/nodejs22-debian12
 WORKDIR /usr/app
 ENV NEXT_TELEMETRY_DISABLED=1
 # Set default locale to Spanish

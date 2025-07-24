@@ -90,7 +90,7 @@ export const apiFetcher = () => {
       if (webAppUrl.origin !== gatewayUrl.origin) {
         console.error(
           `-----------------------------------------------------------------------------------------------------
-| 🚨 Important! 🚨                                                                                   |
+| Important!                                                                                   |
 -----------------------------------------------------------------------------------------------------
 Origin mismatch between webapp and api endpoint: ${webAppUrl.origin} vs ${
             gatewayUrl.origin

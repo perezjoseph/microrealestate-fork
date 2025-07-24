@@ -216,7 +216,7 @@ async function checkHealth() {
     console.log(chalk.red('💣 Application did not start successfully'));
     displayConfigWarningsAndErrors();
   } else {
-    console.log(chalk.green('🚀 application started\n'));
+    console.log(chalk.green(' application started\n'));
   }
 
   return healthcheckSuccess;

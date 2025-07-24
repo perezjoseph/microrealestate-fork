@@ -46,7 +46,7 @@ app.post('/send-message', async (req, res) => {
     // Generate WhatsApp URL
     const whatsappURL = generateWhatsAppURL(phoneNumber, message, documentUrl);
     
-    console.log(`📱 WhatsApp URL generated for ${recipientName || phoneNumber}:`, whatsappURL);
+    console.log(` WhatsApp URL generated for ${recipientName || phoneNumber}:`, whatsappURL);
     
     res.json({
       success: true,
@@ -57,7 +57,7 @@ app.post('/send-message', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Error generating WhatsApp URL:', error);
+    console.error(' Error generating WhatsApp URL:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to generate WhatsApp URL',
@@ -91,9 +91,9 @@ app.post('/send-invoice', async (req, res) => {
 
 Su factura del período ${invoicePeriod} está lista.
 
-💰 Total: ${currency} ${totalAmount}
+ Total: ${currency} ${totalAmount}
 
-${invoiceUrl ? `📄 Ver factura: ${invoiceUrl}` : ''}
+${invoiceUrl ? ` Ver factura: ${invoiceUrl}` : ''}
 
 Gracias por su confianza.
 ${organizationName}`;
@@ -108,7 +108,7 @@ ${organizationName}`;
       };
     });
     
-    console.log(`📱 Generated ${results.length} WhatsApp URLs for ${tenantName}`);
+    console.log(` Generated ${results.length} WhatsApp URLs for ${tenantName}`);
     
     res.json({
       success: true,
@@ -119,7 +119,7 @@ ${organizationName}`;
     });
     
   } catch (error) {
-    console.error('❌ Error sending WhatsApp invoice:', error);
+    console.error(' Error sending WhatsApp invoice:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to generate WhatsApp URLs',
@@ -140,8 +140,8 @@ app.get('/health', (req, res) => {
 const PORT = process.env.WHATSAPP_PORT || 8500;
 
 app.listen(PORT, () => {
-  console.log(`🚀 WhatsApp Web service running on port ${PORT}`);
-  console.log(`📱 Service type: WhatsApp Web Integration (Click-to-send)`);
+  console.log(` WhatsApp Web service running on port ${PORT}`);
+  console.log(` Service type: WhatsApp Web Integration (Click-to-send)`);
 });
 
 module.exports = app;

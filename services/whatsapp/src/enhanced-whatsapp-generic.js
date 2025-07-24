@@ -12,9 +12,9 @@ const MESSAGE_TEMPLATES = {
 
 Su factura del período ${data.invoicePeriod} está lista.
 
-💰 Total: ${data.currency} ${data.totalAmount}
+ Total: ${data.currency} ${data.totalAmount}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
 Gracias por su confianza.
 ${data.organizationName}`,
@@ -26,10 +26,10 @@ ${data.organizationName}`,
 
 Su renta del período ${data.invoicePeriod} está pendiente de pago.
 
-💰 Monto: ${data.currency} ${data.totalAmount}
+ Monto: ${data.currency} ${data.totalAmount}
 📅 Fecha límite: ${data.dueDate}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
 Por favor, realice su pago a la brevedad posible.
 
@@ -42,11 +42,11 @@ ${data.organizationName}`,
 
 Su renta del período ${data.invoicePeriod} continúa pendiente.
 
-💰 Monto: ${data.currency} ${data.totalAmount}
+ Monto: ${data.currency} ${data.totalAmount}
 📅 Fecha límite: ${data.dueDate}
 ⏰ Días de retraso: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
 Es importante regularizar su situación para evitar inconvenientes.
 
@@ -59,11 +59,11 @@ ${data.organizationName}`,
 
 Su renta del período ${data.invoicePeriod} está en mora.
 
-💰 Monto: ${data.currency} ${data.totalAmount}
+ Monto: ${data.currency} ${data.totalAmount}
 📅 Fecha límite: ${data.dueDate}
 ⏰ Días de retraso: ${data.daysOverdue}
 
-${data.invoiceUrl ? `📄 Ver factura: ${data.invoiceUrl}` : ''}
+${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
 ⚠️ IMPORTANTE: Si no recibimos su pago en las próximas 48 horas, procederemos según los términos del contrato.
 
@@ -190,10 +190,10 @@ app.post('/send-document', async (req, res) => {
           templateName
         });
         
-        console.log(`✅ ${templateName} URL generated for ${phone}`);
+        console.log(` ${templateName} URL generated for ${phone}`);
         
       } catch (error) {
-        console.error(`❌ Error generating URL for ${phone}:`, error.message);
+        console.error(` Error generating URL for ${phone}:`, error.message);
         
         results.push({
           phoneNumber: phone,
@@ -204,7 +204,7 @@ app.post('/send-document', async (req, res) => {
       }
     }
     
-    console.log(`📊 ${templateName} delivery summary for ${tenantName}: ${results.filter(r => r.success).length} URLs generated`);
+    console.log(` ${templateName} delivery summary for ${tenantName}: ${results.filter(r => r.success).length} URLs generated`);
     
     res.json({
       success: true,
@@ -216,7 +216,7 @@ app.post('/send-document', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Error generating WhatsApp URLs:', error);
+    console.error(' Error generating WhatsApp URLs:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to generate WhatsApp URLs',
@@ -316,7 +316,7 @@ app.post('/send-bulk', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Error in bulk WhatsApp send:', error);
+    console.error(' Error in bulk WhatsApp send:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to process bulk WhatsApp send',
@@ -363,10 +363,10 @@ app.get('/health', (req, res) => {
 const PORT = process.env.WHATSAPP_PORT || 8500;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Generic WhatsApp service running on port ${PORT}`);
-  console.log(`📱 Available templates: ${Object.keys(MESSAGE_TEMPLATES).join(', ')}`);
+  console.log(` Generic WhatsApp service running on port ${PORT}`);
+  console.log(` Available templates: ${Object.keys(MESSAGE_TEMPLATES).join(', ')}`);
   console.log(`🌍 Using generic international phone formatting`);
-  console.log(`✅ All email functionality now available via WhatsApp`);
+  console.log(` All email functionality now available via WhatsApp`);
 });
 
 module.exports = app;

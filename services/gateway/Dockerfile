@@ -30,7 +30,7 @@ COPY services/gateway/tsconfig.json ./services/gateway/
 WORKDIR /usr/app/services/gateway
 RUN npm run build
 
-FROM gcr.io/distroless/nodejs20-debian12
+FROM gcr.io/distroless/nodejs22-debian12
 ENV NODE_ENV=production
 WORKDIR /usr/app
 

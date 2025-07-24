@@ -14,7 +14,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import locale from 'locale';
 
-console.log('🔧 LANDLORD MODULE: Loading successfully...');
+console.log(' LANDLORD MODULE: Loading successfully...');
 
 // Create rate limiting middleware directly in this file
 const authRateLimit = rateLimit({
@@ -172,7 +172,7 @@ const createAccountSpecificRateLimit = (windowMs = 15 * 60 * 1000, max = 10) => 
   });
 };
 
-console.log('✅ LANDLORD MODULE: Rate limiting middleware created successfully');
+console.log(' LANDLORD MODULE: Rate limiting middleware created successfully');
 
 // Rate limit warning middleware - provides feedback before hitting the limit
 const rateLimitWarning = (req, res, next) => {
@@ -391,7 +391,7 @@ const _userSignIn = Middlewares.asyncWrapper(async (req, res) => {
 });
 
 export default function () {
-  console.log('🚀 LANDLORD ROUTER: Starting setup...');
+  console.log(' LANDLORD ROUTER: Starting setup...');
   
   const {
     APPCREDZ_TOKEN_SECRET,
@@ -403,7 +403,7 @@ export default function () {
   } = Service.getInstance().envConfig.getValues();
   const landlordRouter = express.Router();
 
-  console.log('🚀 LANDLORD ROUTER: Environment config loaded, SIGNUP enabled:', SIGNUP);
+  console.log(' LANDLORD ROUTER: Environment config loaded, SIGNUP enabled:', SIGNUP);
 
   // parse locale
   landlordRouter.use(
@@ -412,7 +412,7 @@ export default function () {
 
   // Add basic test middleware
   landlordRouter.use((req, res, next) => {
-    console.log('🔍 BASIC MIDDLEWARE: Request received -', req.method, req.path);
+    console.log(' BASIC MIDDLEWARE: Request received -', req.method, req.path);
     next();
   });
 
@@ -435,17 +435,17 @@ export default function () {
   });
 
   if (SIGNUP) {
-    console.log('📝 LANDLORD ROUTER: Setting up signup route with rate limiting...');
+    console.log(' LANDLORD ROUTER: Setting up signup route with rate limiting...');
     landlordRouter.post(
       '/signup',
       (req, res, next) => {
-        console.log('🔍 SIGNUP ROUTE: Request received');
+        console.log(' SIGNUP ROUTE: Request received');
         next();
       },
       signupRateLimit,
       createAccountSpecificRateLimit(60 * 60 * 1000, 3), // 3 attempts per hour per email
       Middlewares.asyncWrapper(async (req, res) => {
-        console.log('📝 SIGNUP HANDLER: Processing request for:', req.body?.email);
+        console.log(' SIGNUP HANDLER: Processing request for:', req.body?.email);
         const { firstname, lastname, email, password } = req.body;
         if (
           [firstname, lastname, email, password]
@@ -470,14 +470,14 @@ export default function () {
         res.sendStatus(201);
       })
     );
-    console.log('✅ LANDLORD ROUTER: Signup route configured with rate limiting');
+    console.log(' LANDLORD ROUTER: Signup route configured with rate limiting');
   }
 
   console.log('🔐 LANDLORD ROUTER: Setting up signin route with comprehensive rate limiting...');
   landlordRouter.post(
     '/signin',
     (req, res, next) => {
-      console.log('🔍 SIGNIN ROUTE: Request received');
+      console.log(' SIGNIN ROUTE: Request received');
       next();
     },
     rateLimitWarning, // Add warning feedback before rate limiting
@@ -499,7 +499,7 @@ export default function () {
       }
     })
   );
-  console.log('✅ LANDLORD ROUTER: Signin route configured with comprehensive rate limiting');
+  console.log(' LANDLORD ROUTER: Signin route configured with comprehensive rate limiting');
 
   landlordRouter.use(
     '/appcredz',
@@ -590,7 +590,7 @@ export default function () {
   landlordRouter.post(
     '/forgotpassword',
     (req, res, next) => {
-      console.log('🔍 FORGOT PASSWORD ROUTE: Request received');
+      console.log(' FORGOT PASSWORD ROUTE: Request received');
       next();
     },
     passwordResetRateLimit, // Rate limit password reset requests
@@ -638,7 +638,7 @@ export default function () {
   landlordRouter.patch(
     '/resetpassword',
     (req, res, next) => {
-      console.log('🔍 RESET PASSWORD ROUTE: Request received');
+      console.log(' RESET PASSWORD ROUTE: Request received');
       next();
     },
     authRateLimit, // Rate limit password reset attempts
@@ -676,7 +676,7 @@ export default function () {
     })
   );
 
-  console.log('✅ LANDLORD ROUTER: All routes configured with comprehensive rate limiting');
-  console.log('🚀 LANDLORD ROUTER: Setup complete, returning router');
+  console.log(' LANDLORD ROUTER: All routes configured with comprehensive rate limiting');
+  console.log(' LANDLORD ROUTER: Setup complete, returning router');
   return landlordRouter;
 }

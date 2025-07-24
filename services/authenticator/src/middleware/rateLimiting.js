@@ -2,7 +2,7 @@ import rateLimit from 'express-rate-limit';
 import slowDown from 'express-slow-down';
 import { logger } from '@microrealestate/common';
 
-console.log('🔧 Rate limiting middleware loading...');
+console.log(' Rate limiting middleware loading...');
 
 // Strict rate limiting for authentication attempts
 export const authRateLimit = rateLimit({
@@ -31,7 +31,7 @@ export const authRateLimit = rateLimit({
   }
 });
 
-console.log('✅ authRateLimit middleware created');
+console.log(' authRateLimit middleware created');
 
 // More lenient rate limiting for password reset requests
 export const passwordResetRateLimit = rateLimit({
@@ -53,7 +53,7 @@ export const passwordResetRateLimit = rateLimit({
   }
 });
 
-console.log('✅ passwordResetRateLimit middleware created');
+console.log(' passwordResetRateLimit middleware created');
 
 // Rate limiting for signup attempts
 export const signupRateLimit = rateLimit({
@@ -75,7 +75,7 @@ export const signupRateLimit = rateLimit({
   }
 });
 
-console.log('✅ signupRateLimit middleware created');
+console.log(' signupRateLimit middleware created');
 
 // Progressive delay for repeated requests (slows down responses)
 export const authSlowDown = slowDown({
@@ -89,7 +89,7 @@ export const authSlowDown = slowDown({
   }
 });
 
-console.log('✅ authSlowDown middleware created');
+console.log(' authSlowDown middleware created');
 
 // Rate limiting for token refresh
 export const tokenRefreshRateLimit = rateLimit({
@@ -111,7 +111,7 @@ export const tokenRefreshRateLimit = rateLimit({
   }
 });
 
-console.log('✅ tokenRefreshRateLimit middleware created');
+console.log(' tokenRefreshRateLimit middleware created');
 
 // General API rate limiting
 export const generalRateLimit = rateLimit({
@@ -133,11 +133,11 @@ export const generalRateLimit = rateLimit({
   }
 });
 
-console.log('✅ generalRateLimit middleware created');
+console.log(' generalRateLimit middleware created');
 
 // Account-specific rate limiting (by email)
 export const createAccountSpecificRateLimit = (windowMs = 15 * 60 * 1000, max = 10) => {
-  console.log('🔧 Creating account-specific rate limit with window:', windowMs, 'max:', max);
+  console.log(' Creating account-specific rate limit with window:', windowMs, 'max:', max);
   return rateLimit({
     windowMs,
     max,
@@ -165,4 +165,4 @@ export const createAccountSpecificRateLimit = (windowMs = 15 * 60 * 1000, max = 
   });
 };
 
-console.log('✅ All rate limiting middleware exported successfully');
+console.log(' All rate limiting middleware exported successfully');

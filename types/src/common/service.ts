@@ -27,6 +27,7 @@ export type ServiceResponse<
 export type UserServicePrincipal = {
   type: 'user';
   email: string;
+  phone?: string;
   role?: ConnectionRole;
 };
 export type ApplicationServicePrincipal = {
