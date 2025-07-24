@@ -2,113 +2,169 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
+    branches: [ master ]
 
 jobs:
-  test-workspace:
+  setup:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Enable Corepack
-      run: corepack enable
+      - name: Queue workflow if already running
+        uses: ahmadnassri/action-workflow-queue@v1
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'yarn'
-
-    - name: Install dependencies
-      run: |
-        echo "📦 Installing workspace dependencies..."
-        
-        # Try different installation strategies
-        if yarn install --immutable --check-cache; then
-          echo "✅ Installation completed successfully"
-        elif yarn cache clean --all && yarn install --immutable; then
-          echo "✅ Installation completed successfully"
-        elif yarn install; then
-          echo "✅ Installation completed successfully"
-          echo "📝 yarn.lock may have been updated for CI compatibility"
-        else
-          echo "❌ Installation failed"
-          exit 1
-        fi
-
-    - name: Build types
-      run: |
-        echo "🔨 Building types..."
-        yarn workspace @microrealestate/types run build
-
-    - name: Lint workspace
-      run: |
-        echo "🔍 Running linting across workspace..."
-        yarn lint
-
-    - name: Test services
-      continue-on-error: true
-      run: |
-        echo "🧪 Testing individual services..."
-        
-        # Test services that have test scripts
-        for service in services/*/package.json webapps/*/package.json; do
-          if [ -f "$service" ]; then
-            dir=$(dirname "$service")
-            service_name=$(basename "$dir")
-            echo "Testing $service_name..."
-            
-            cd "$dir"
-            if npm test --if-present 2>/dev/null; then
-              echo "✅ Tests passed for $service_name"
-            else
-              echo "⚠️ No tests or tests failed for $service_name"
-            fi
-            cd - > /dev/null
-          fi
-        done
-
-  security-scan:
-    needs: test-workspace
+  lint:
     runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Lint
+        run: yarn lint
+
+  build-push-images:
     permissions:
-      actions: read
       contents: read
-      security-events: write
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
-
-  ci-complete:
-    needs: [test-workspace, security-scan]
+      packages: write
     runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        include:
+          - appname: gateway
+            image: ghcr.io/${{ github.repository }}/gateway
+            dockerfile: services/gateway/Dockerfile
+          - appname: api
+            image: ghcr.io/${{ github.repository }}/api
+            dockerfile: services/api/Dockerfile
+          - appname: tenantapi
+            image: ghcr.io/${{ github.repository }}/tenantapi
+            dockerfile: services/tenantapi/Dockerfile
+          - appname: authenticator
+            image: ghcr.io/${{ github.repository }}/authenticator
+            dockerfile: services/authenticator/Dockerfile
+          - appname: pdfgenerator
+            image: ghcr.io/${{ github.repository }}/pdfgenerator
+            dockerfile: services/pdfgenerator/Dockerfile
+          - appname: emailer
+            image: ghcr.io/${{ github.repository }}/emailer
+            dockerfile: services/emailer/Dockerfile
+          - appname: resetservice
+            image: ghcr.io/${{ github.repository }}/resetservice
+            dockerfile: services/resetservice/Dockerfile
+          - appname: landlord-frontend
+            image: ghcr.io/${{ github.repository }}/landlord-frontend
+            dockerfile: webapps/landlord/Dockerfile
+          - appname: tenant-frontend
+            image: ghcr.io/${{ github.repository }}/tenant-frontend
+            dockerfile: webapps/tenant/Dockerfile
+
     steps:
-    - name: CI Summary
-      run: |
-        echo "🎉 CI Pipeline Completed Successfully!"
-        echo ""
-        echo "✅ Workspace dependencies installed"
-        echo "✅ Types built successfully"
-        echo "✅ Linting passed"
-        echo "✅ Tests completed"
-        echo "✅ Security scan completed"
-        echo ""
-        echo "🚀 Code is ready for deployment!"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ matrix.image }}
+
+      - name: Build and push to GitHub Container Registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: '${{ matrix.image }}:${{ github.sha }}'
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-push-images
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: install node v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build linux cli
+        run: |
+          npm install -g @yao-pkg/pkg
+          yarn workspaces focus @microrealestate/cli
+          pkg cli/package.json --targets node20-linux-x64 --compress Brotli --output mre
+
+      - name: Copy files to remote server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: 'base.env,docker-compose.microservices.base.yml,docker-compose.microservices.test.yml,mre'
+          target: microrealestate_ci
+
+      - name: Start mre on remote server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd microrealestate_ci
+            docker stop $(docker ps -qf "network=microrealestate_ci_net")
+            docker rm $(docker ps -qf "network=microrealestate_ci_net") 
+            docker rmi $(docker images --filter=reference="ghcr.io/microrealestate/microrealestate/*:${{ github.sha }}" -q)
+            docker system prune -f
+            MRE_VERSION=${{ github.sha }} ./mre ci
+
+  healthcheck:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Check if the app is up and running
+        uses: gerdemann/http-status-code@1.0.0
+        with:
+          url: ${{ secrets.CI_LANDLORD_APP_URL }}/en/signin
+          code: 200
+          interval: 5
+
+  test:
+    runs-on: ubuntu-latest
+    needs: healthcheck
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        env:
+          GATEWAY_URL: ${{ secrets.CI_GATEWAY_URL }}
+          LANDLORD_APP_URL: ${{ secrets.CI_LANDLORD_APP_URL }}
+        run: |
+          corepack enable
+          yarn
+          yarn run e2e:ci
+
+      - name: Upload cypress artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: cypress-results
+          path: |
+            e2e/cypress/screenshots
+            e2e/cypress/videos
+            e2e/cypress/results
+          if-no-files-found: ignore
