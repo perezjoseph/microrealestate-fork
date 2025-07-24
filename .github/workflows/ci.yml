@@ -36,27 +36,38 @@ jobs:
     strategy:
       matrix:
         include:
-          - appname: gateway
-            image: ghcr.io/${{ github.repository }}/gateway
-            dockerfile: services/gateway/Dockerfile
+          # Backend Services
           - appname: api
             image: ghcr.io/${{ github.repository }}/api
             dockerfile: services/api/Dockerfile
-          - appname: tenantapi
-            image: ghcr.io/${{ github.repository }}/tenantapi
-            dockerfile: services/tenantapi/Dockerfile
           - appname: authenticator
             image: ghcr.io/${{ github.repository }}/authenticator
             dockerfile: services/authenticator/Dockerfile
-          - appname: pdfgenerator
-            image: ghcr.io/${{ github.repository }}/pdfgenerator
-            dockerfile: services/pdfgenerator/Dockerfile
+          - appname: cache
+            image: ghcr.io/${{ github.repository }}/cache
+            dockerfile: services/cache/Dockerfile
           - appname: emailer
             image: ghcr.io/${{ github.repository }}/emailer
             dockerfile: services/emailer/Dockerfile
+          - appname: gateway
+            image: ghcr.io/${{ github.repository }}/gateway
+            dockerfile: services/gateway/Dockerfile
+          - appname: monitoring
+            image: ghcr.io/${{ github.repository }}/monitoring
+            dockerfile: services/monitoring/Dockerfile
+          - appname: pdfgenerator
+            image: ghcr.io/${{ github.repository }}/pdfgenerator
+            dockerfile: services/pdfgenerator/Dockerfile
           - appname: resetservice
             image: ghcr.io/${{ github.repository }}/resetservice
             dockerfile: services/resetservice/Dockerfile
+          - appname: tenantapi
+            image: ghcr.io/${{ github.repository }}/tenantapi
+            dockerfile: services/tenantapi/Dockerfile
+          - appname: whatsapp
+            image: ghcr.io/${{ github.repository }}/whatsapp
+            dockerfile: services/whatsapp/Dockerfile
+          # Frontend Applications
           - appname: landlord-frontend
             image: ghcr.io/${{ github.repository }}/landlord-frontend
             dockerfile: webapps/landlord/Dockerfile
