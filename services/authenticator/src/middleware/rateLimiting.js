@@ -1,6 +1,6 @@
+import { logger } from '@microrealestate/common';
 import rateLimit from 'express-rate-limit';
 import slowDown from 'express-slow-down';
-import { logger } from '@microrealestate/common';
 
 console.log(' Rate limiting middleware loading...');
 
@@ -26,7 +26,7 @@ export const authRateLimit = rateLimit({
     // Skip rate limiting for health checks or specific IPs if needed
     return req.path === '/health';
   },
-  onLimitReached: (req, res, options) => {
+  onLimitReached: (req) => {
     console.log('🔥 AUTH RATE LIMIT REACHED for IP:', req.ip);
   }
 });
@@ -83,7 +83,7 @@ export const authSlowDown = slowDown({
   delayAfter: 2, // Allow 2 requests per windowMs without delay
   delayMs: (hits) => hits * 1000, // Add 1 second delay per hit after delayAfter
   maxDelayMs: 10000, // Maximum delay of 10 seconds
-  onLimitReached: (req, res, options) => {
+  onLimitReached: (req) => {
     console.log('⏰ AUTH SLOW DOWN TRIGGERED for IP:', req.ip, 'on path:', req.path);
     logger.warn(`Slow down limit reached for IP: ${req.ip} on ${req.path}`);
   }

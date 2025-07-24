@@ -66,7 +66,7 @@ export const suspiciousActivityDetector = (req, res, next) => {
     // XSS patterns
     /<script[^>]*>.*?<\/script>/gi,
     // Path traversal
-    /\.\.[\/\\]/,
+    /\.\.[/\\]/,
     // Command injection
     /[;&|`$(){}[\]]/
   ];

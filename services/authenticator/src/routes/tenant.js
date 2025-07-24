@@ -8,8 +8,7 @@ import {
 import {
   authRateLimit,
   authSlowDown,
-  createAccountSpecificRateLimit,
-  tokenRefreshRateLimit
+  createAccountSpecificRateLimit
 } from '../middleware/rateLimiting.js';
 import {
   securityMonitoring,
@@ -17,9 +16,9 @@ import {
   trackFailedAttempts
 } from '../middleware/securityMonitoring.js';
 import axios from 'axios';
-import { customAlphabet } from 'nanoid';
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('0123456789', 6);
 

@@ -114,6 +114,21 @@ yarn mre build           # Production build
 yarn workspaces foreach  # Cross-workspace commands
 ```
 
+## Testing Commands
+```bash
+# Start application for testing
+APP_PORT=8080 docker-compose -p local up
+
+# Start application in background for testing
+APP_PORT=8080 docker-compose -p local up -d
+
+# Stop testing application
+docker-compose -p local down
+
+# View logs during testing
+docker-compose -p local logs -f [service-name]
+```
+
 ## Parallel Processing & Development Efficiency
 
 ### File Operations (Use Parallel Processing)

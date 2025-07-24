@@ -5,14 +5,14 @@ import {
   Service,
   ServiceError
 } from '@microrealestate/common';
-import rateLimit from 'express-rate-limit';
-import slowDown from 'express-slow-down';
 import axios from 'axios';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import locale from 'locale';
+import rateLimit from 'express-rate-limit';
+import slowDown from 'express-slow-down';
 
 console.log(' LANDLORD MODULE: Loading successfully...');
 
@@ -97,12 +97,9 @@ const authSlowDown = slowDown({
   delayAfter: 2, // Allow 2 requests per windowMs without delay
   delayMs: (hits) => hits * 1000, // Add 1 second delay per hit after delayAfter
   maxDelayMs: 10000, // Maximum delay of 10 seconds
-  onLimitReached: (req, res, options) => {
+  onLimitReached: (req) => {
     console.log('⏰ AUTH SLOW DOWN TRIGGERED for IP:', req.ip, 'on path:', req.path);
     logger.warn(`Slow down limit reached for IP: ${req.ip} on ${req.path}`);
-    
-    // Add a custom header to inform about the delay
-    res.set('X-RateLimit-Delay', 'Authentication requests are being slowed down due to repeated attempts');
   }
 });
 
@@ -176,14 +173,6 @@ console.log(' LANDLORD MODULE: Rate limiting middleware created successfully');
 
 // Rate limit warning middleware - provides feedback before hitting the limit
 const rateLimitWarning = (req, res, next) => {
-  // Add warning headers when approaching rate limits
-  const addWarningHeaders = (remaining, limit, windowMs) => {
-    if (remaining <= 2 && remaining > 0) {
-      const waitMinutes = Math.ceil(windowMs / (1000 * 60));
-      res.set('X-RateLimit-Warning', `Only ${remaining} attempts remaining. Limit resets in ${waitMinutes} minutes.`);
-      console.log(`⚠️  RATE LIMIT WARNING: ${remaining} attempts remaining for IP ${req.ip} on ${req.path}`);
-    }
-  };
 
   // Override res.json to add warnings to successful responses
   const originalJson = res.json;

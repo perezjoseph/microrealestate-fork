@@ -1,6 +1,6 @@
-import express from 'express';
-import { logger, Service, ServiceError, Middlewares } from '@microrealestate/common';
+import { logger, Middlewares, Service, ServiceError } from '@microrealestate/common';
 import axios from 'axios';
+import express from 'express';
 import { nanoid } from 'nanoid';
 
 const router = express.Router();

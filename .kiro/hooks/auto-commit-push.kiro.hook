@@ -24,6 +24,6 @@
   },
   "then": {
     "type": "askAgent",
-    "prompt": "Analyze the changed files and create a concise summary of the modifications. Then commit the changes with a descriptive commit message and push to the repository. Use git commands to:\n\n1. Check git status to see what files have changed\n2. Create a brief but informative summary of the changes\n3. Add all changed files to staging\n4. Commit with a clear, descriptive message that follows conventional commit format\n5. Push the changes to the remote repository\n\nFocus on being concise but informative in the commit message, highlighting the key changes made."
+    "prompt": "Analyze the changed files and create a concise summary of the modifications. Then commit the changes with a descriptive commit message and push to the repository. Use git commands to:\n\n1. Check git status to see what files have changed\n2. Create a brief but informative summary of the changes\n3. Add all changed files to staging\n4. Commit with a clear, descriptive message that follows conventional commit format\n5. Push the changes to the remote repository\n6. Avoid commands that wil\n\nFocus on being concise but informative in the commit message, highlighting the key changes made."
   }
 }
