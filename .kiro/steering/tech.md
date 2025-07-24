@@ -119,6 +119,53 @@ yarn workspaces foreach  # Cross-workspace commands
 - `--profile local`: Pre-built images
 - Production: No profile (optimized)
 
+## CI/CD & GitHub Actions
+
+### Simplified CI Pipeline
+- **Focus**: Code quality, testing, and security scanning
+- **No Docker builds**: Manual deployment approach
+- **No dependency updates**: Manual dependency management
+
+### CI Workflow Structure
+```yaml
+name: Continuous Integration
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test-workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install
+      - name: Build types
+        run: yarn workspace @microrealestate/types run build
+      - name: Lint workspace
+        run: yarn lint
+      - name: Test services
+        run: # Individual service testing
+```
+
+### Security & Quality Checks
+- **Trivy vulnerability scanning**: File system security scan
+- **ESLint + Prettier**: Code quality enforcement
+- **Husky pre-commit hooks**: Prevent bad commits
+- **Manual dependency reviews**: No automated updates
+
+### Manual Deployment Process
+- Build Docker images locally or in separate deployment pipeline
+- Use `release.yml` workflow for tagged releases only
+- Focus CI on code quality rather than deployment artifacts
+
 ## New Service Checklist
 1. Create `services/[name]/` directory
 2. Use TypeScript (mandatory for new services)
