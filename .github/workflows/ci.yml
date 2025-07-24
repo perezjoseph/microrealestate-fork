@@ -54,6 +54,7 @@ jobs:
         # Function to try yarn install with error handling
         try_install() {
           local description="$1"
+          shift  # Remove description from arguments
           echo "Trying: $description"
           if yarn install "$@"; then
             echo "✅ $description succeeded"
@@ -69,7 +70,7 @@ jobs:
           echo "✅ Installation completed successfully"
         elif yarn cache clean --all && try_install "immutable install after cache cleanup" --immutable; then
           echo "✅ Installation completed successfully"
-        elif try_install "non-immutable install" ; then
+        elif try_install "non-immutable install"; then
           echo "✅ Installation completed successfully"
           echo "📝 yarn.lock may have been updated for CI compatibility"
         else
@@ -83,14 +84,29 @@ jobs:
           cp yarn.lock yarn.lock.ci-backup
           echo "📋 Backed up original yarn.lock"
           
-          # Remove yarn.lock to force regeneration
+          # Remove yarn.lock and temporarily disable immutable mode
           rm yarn.lock
           echo "🗑️ Removed yarn.lock to force regeneration"
+          
+          # Temporarily modify .yarnrc.yml to allow lockfile creation
+          if [ -f .yarnrc.yml ]; then
+            cp .yarnrc.yml .yarnrc.yml.backup
+            # Remove or comment out enableImmutableInstalls if present
+            sed 's/^enableImmutableInstalls:/# enableImmutableInstalls:/' .yarnrc.yml > .yarnrc.yml.temp
+            mv .yarnrc.yml.temp .yarnrc.yml
+            echo "📝 Temporarily disabled immutable installs"
+          fi
           
           # Try fresh install without yarn.lock (will regenerate)
           if yarn install; then
             echo "✅ yarn.lock regeneration succeeded!"
             echo "📝 New yarn.lock generated for Node.js 22 compatibility"
+            
+            # Restore original .yarnrc.yml
+            if [ -f .yarnrc.yml.backup ]; then
+              mv .yarnrc.yml.backup .yarnrc.yml
+              echo "📝 Restored original .yarnrc.yml"
+            fi
             
             # Show some stats about the new lockfile
             echo "📊 New yarn.lock info:"
@@ -105,8 +121,11 @@ jobs:
             fi
           else
             echo "❌ yarn.lock regeneration also failed"
-            echo "🔄 Restoring original yarn.lock"
+            echo "🔄 Restoring original files"
             mv yarn.lock.ci-backup yarn.lock
+            if [ -f .yarnrc.yml.backup ]; then
+              mv .yarnrc.yml.backup .yarnrc.yml
+            fi
             
             echo "📋 Diagnostic information:"
             echo "Node.js version: $(node --version)"
@@ -114,6 +133,8 @@ jobs:
             echo "Working directory: $(pwd)"
             echo "Package.json exists: $(test -f package.json && echo 'Yes' || echo 'No')"
             echo "Yarn config exists: $(test -f .yarnrc.yml && echo 'Yes' || echo 'No')"
+            echo ".yarnrc.yml contents:"
+            cat .yarnrc.yml || echo "Could not read .yarnrc.yml"
             
             exit 1
           fi
