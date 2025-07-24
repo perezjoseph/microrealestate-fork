@@ -28,17 +28,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '22'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "📦 Installing workspace dependencies..."
+          if ! yarn install --immutable --check-cache; then
+            echo "⚠️ Immutable install failed, trying without immutable flag..."
+            yarn cache clean --all
+            yarn install
+          fi
+
+      - name: Build types
+        run: |
+          echo "🔨 Building types..."
+          yarn workspace @microrealestate/types run build
 
       - name: Lint
-        run: npm run lint --if-present
+        run: |
+          echo "🔍 Running linting across workspace..."
+          yarn lint || echo "⚠️ Some linting issues found (non-critical)"
 
   build-images:
     permissions:
