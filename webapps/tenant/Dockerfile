@@ -45,7 +45,7 @@ RUN echo 'window.__ENV = {}' > ./webapps/tenant/public/__ENV.js
 RUN chown -R 1000 ./webapps/tenant/.next && \
     chown -R 1000 ./webapps/tenant/public
 
-FROM gcr.io/distroless/nodejs20-debian12
+FROM gcr.io/distroless/nodejs22-debian12
 WORKDIR /usr/app
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -59,7 +59,7 @@ COPY --from=build /usr/app/webapps/tenant/public ./webapps/tenant/public
 COPY --from=build /usr/app/webapps/commonui/scripts/replacebasepath-docker.js ./webapps/commonui/scripts/replacebasepath-docker.js
 COPY --from=build /usr/app/webapps/commonui/scripts/generateruntimeenvfile-docker.js ./webapps/commonui/scripts/generateruntimeenvfile-docker.js
 # Copy startup script
-COPY webapps/tenant/startup.js ./startup.js
+COPY --from=build /usr/app/webapps/tenant/startup.js ./startup.js
 
 USER 1000
 CMD ["startup.js"]
