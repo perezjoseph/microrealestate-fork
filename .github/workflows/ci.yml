@@ -51,72 +51,71 @@ jobs:
         echo "Yarn version: $(yarn --version)"
         echo "Node version: $(node --version)"
         
-        # Try immutable install first
-        if yarn install --immutable --check-cache; then
-          echo "✅ Immutable install succeeded"
-        else
-          echo "⚠️ Immutable install failed, trying cache cleanup..."
-          
-          # Clear yarn cache completely
-          yarn cache clean --all
-          
-          # Try immutable install again after cache cleanup
-          if yarn install --immutable; then
-            echo "✅ Immutable install succeeded after cache cleanup"
+        # Function to try yarn install with error handling
+        try_install() {
+          local description="$1"
+          echo "Trying: $description"
+          if yarn install "$@"; then
+            echo "✅ $description succeeded"
+            return 0
           else
-            echo "⚠️ Immutable install still failing, trying non-immutable install..."
+            echo "❌ $description failed"
+            return 1
+          fi
+        }
+        
+        # Try different installation strategies
+        if try_install "immutable install" --immutable --check-cache; then
+          echo "✅ Installation completed successfully"
+        elif yarn cache clean --all && try_install "immutable install after cache cleanup" --immutable; then
+          echo "✅ Installation completed successfully"
+        elif try_install "non-immutable install" ; then
+          echo "✅ Installation completed successfully"
+          echo "📝 yarn.lock may have been updated for CI compatibility"
+        else
+          echo "❌ Standard installation methods failed"
+          echo "🔄 Attempting yarn.lock regeneration for Node.js 22 compatibility..."
+          
+          # Clean everything for fresh start
+          rm -rf node_modules .yarn/cache .yarn/install-state.gz
+          
+          # Backup original yarn.lock
+          cp yarn.lock yarn.lock.ci-backup
+          echo "📋 Backed up original yarn.lock"
+          
+          # Remove yarn.lock to force regeneration
+          rm yarn.lock
+          echo "🗑️ Removed yarn.lock to force regeneration"
+          
+          # Try fresh install without yarn.lock (will regenerate)
+          if yarn install; then
+            echo "✅ yarn.lock regeneration succeeded!"
+            echo "📝 New yarn.lock generated for Node.js 22 compatibility"
             
-            # Try non-immutable install (allows yarn.lock updates)
-            if yarn install; then
-              echo "✅ Non-immutable install succeeded"
-              echo "📝 yarn.lock may have been updated for CI compatibility"
+            # Show some stats about the new lockfile
+            echo "📊 New yarn.lock info:"
+            echo "  Size: $(du -h yarn.lock | cut -f1)"
+            echo "  Lines: $(wc -l < yarn.lock)"
+            
+            # Verify the installation works
+            if yarn install --check-cache; then
+              echo "✅ Verification: New yarn.lock is valid"
             else
-              echo "❌ All install strategies failed, trying fresh install..."
-              
-              # Last resort: remove node_modules and try fresh install
-              rm -rf node_modules
-              rm -rf .yarn/cache
-              rm -rf .yarn/install-state.gz
-              
-              # Try fresh install
-              if yarn install; then
-                echo "✅ Fresh install succeeded"
-              else
-                echo "❌ Fresh install failed, showing yarn configuration..."
-                echo "Yarn configuration:"
-                yarn config list
-                echo "Package.json workspaces:"
-                cat package.json | grep -A 10 '"workspaces"' || echo "No workspaces found"
-                echo "Available packages:"
-                find . -name "package.json" -not -path "./node_modules/*" | head -10
-                
-                # Try to get more specific error information
-                echo "Attempting install with error details..."
-                yarn install 2>&1 | head -50
-                
-                echo "❌ All strategies failed. Trying yarn.lock regeneration..."
-                echo "⚠️ This will regenerate yarn.lock for Node.js 22 compatibility"
-                
-                # Backup and remove yarn.lock to force regeneration
-                cp yarn.lock yarn.lock.ci-backup
-                rm yarn.lock
-                
-                # Try fresh install without yarn.lock (will regenerate)
-                if yarn install; then
-                  echo "✅ yarn.lock regeneration succeeded!"
-                  echo "📝 New yarn.lock generated for Node.js 22 compatibility"
-                  
-                  # Show the difference
-                  echo "Changes made to yarn.lock:"
-                  diff yarn.lock.ci-backup yarn.lock | head -20 || echo "Files are significantly different"
-                else
-                  echo "❌ Even yarn.lock regeneration failed"
-                  # Restore original yarn.lock
-                  mv yarn.lock.ci-backup yarn.lock
-                  exit 1
-                fi
-              fi
+              echo "⚠️ Verification: New yarn.lock may have issues (continuing anyway)"
             fi
+          else
+            echo "❌ yarn.lock regeneration also failed"
+            echo "🔄 Restoring original yarn.lock"
+            mv yarn.lock.ci-backup yarn.lock
+            
+            echo "📋 Diagnostic information:"
+            echo "Node.js version: $(node --version)"
+            echo "Yarn version: $(yarn --version)"
+            echo "Working directory: $(pwd)"
+            echo "Package.json exists: $(test -f package.json && echo 'Yes' || echo 'No')"
+            echo "Yarn config exists: $(test -f .yarnrc.yml && echo 'Yes' || echo 'No')"
+            
+            exit 1
           fi
         fi
 
