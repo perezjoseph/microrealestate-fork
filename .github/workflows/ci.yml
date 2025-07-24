@@ -76,14 +76,45 @@ jobs:
               # Last resort: remove node_modules and try fresh install
               rm -rf node_modules
               rm -rf .yarn/cache
+              rm -rf .yarn/install-state.gz
               
               # Try fresh install
               if yarn install; then
                 echo "✅ Fresh install succeeded"
               else
-                echo "❌ Fresh install failed, showing detailed error..."
-                yarn install --verbose
-                exit 1
+                echo "❌ Fresh install failed, showing yarn configuration..."
+                echo "Yarn configuration:"
+                yarn config list
+                echo "Package.json workspaces:"
+                cat package.json | grep -A 10 '"workspaces"' || echo "No workspaces found"
+                echo "Available packages:"
+                find . -name "package.json" -not -path "./node_modules/*" | head -10
+                
+                # Try to get more specific error information
+                echo "Attempting install with error details..."
+                yarn install 2>&1 | head -50
+                
+                echo "❌ All strategies failed. Trying yarn.lock regeneration..."
+                echo "⚠️ This will regenerate yarn.lock for Node.js 22 compatibility"
+                
+                # Backup and remove yarn.lock to force regeneration
+                cp yarn.lock yarn.lock.ci-backup
+                rm yarn.lock
+                
+                # Try fresh install without yarn.lock (will regenerate)
+                if yarn install; then
+                  echo "✅ yarn.lock regeneration succeeded!"
+                  echo "📝 New yarn.lock generated for Node.js 22 compatibility"
+                  
+                  # Show the difference
+                  echo "Changes made to yarn.lock:"
+                  diff yarn.lock.ci-backup yarn.lock | head -20 || echo "Files are significantly different"
+                else
+                  echo "❌ Even yarn.lock regeneration failed"
+                  # Restore original yarn.lock
+                  mv yarn.lock.ci-backup yarn.lock
+                  exit 1
+                fi
               fi
             fi
           fi
