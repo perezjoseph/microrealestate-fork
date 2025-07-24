@@ -27,15 +27,78 @@ jobs:
         node-version: '22'
         cache: 'yarn'
 
+    - name: Debug environment
+      run: |
+        echo "🔍 Environment debugging..."
+        echo "Node.js version: $(node --version)"
+        echo "Yarn version: $(yarn --version)"
+        echo "NPM version: $(npm --version)"
+        echo "Current directory: $(pwd)"
+        echo "Available disk space:"
+        df -h
+        echo "Memory info:"
+        free -h
+        echo "Checking workspace files..."
+        ls -la package.json yarn.lock .yarnrc.yml || true
+        echo "Checking yarn configuration..."
+        yarn config list || true
+
     - name: Install dependencies
       run: |
         echo "📦 Installing workspace dependencies..."
+        
+        # Show yarn and node versions for debugging
+        echo "Yarn version: $(yarn --version)"
+        echo "Node version: $(node --version)"
+        
         # Try immutable install first
-        if ! yarn install --immutable --check-cache; then
-          echo "⚠️ Immutable install failed, trying without immutable flag..."
+        if yarn install --immutable --check-cache; then
+          echo "✅ Immutable install succeeded"
+        else
+          echo "⚠️ Immutable install failed, trying cache cleanup..."
+          
+          # Clear yarn cache completely
           yarn cache clean --all
-          yarn install
+          
+          # Try immutable install again after cache cleanup
+          if yarn install --immutable; then
+            echo "✅ Immutable install succeeded after cache cleanup"
+          else
+            echo "⚠️ Immutable install still failing, trying non-immutable install..."
+            
+            # Try non-immutable install (allows yarn.lock updates)
+            if yarn install; then
+              echo "✅ Non-immutable install succeeded"
+              echo "📝 yarn.lock may have been updated for CI compatibility"
+            else
+              echo "❌ All install strategies failed, trying fresh install..."
+              
+              # Last resort: remove node_modules and try fresh install
+              rm -rf node_modules
+              rm -rf .yarn/cache
+              
+              # Try fresh install
+              if yarn install; then
+                echo "✅ Fresh install succeeded"
+              else
+                echo "❌ Fresh install failed, showing detailed error..."
+                yarn install --verbose
+                exit 1
+              fi
+            fi
+          fi
         fi
+
+    - name: Verify installation
+      run: |
+        echo "🔍 Verifying installation..."
+        echo "Checking node_modules..."
+        ls -la node_modules/ | head -10 || true
+        echo "Checking workspace structure..."
+        yarn workspaces list || true
+        echo "Checking for common issues..."
+        # Check if there are any obvious dependency conflicts
+        yarn why react || true
 
     - name: Build types
       run: |
