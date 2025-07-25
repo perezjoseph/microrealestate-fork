@@ -23,7 +23,7 @@ import config from '../config';
 import moment from 'moment';
 import { Separator } from './ui/separator';
 import SideMenuButton from './SideMenuButton';
-import SponsorMenu from './SponsorMenu';
+import FeedbackMenu from './FeedbackMenu';
 import { StoreContext } from '../store';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
@@ -192,7 +192,7 @@ export function HamburgerMenu({ className, onChange }) {
                 );
               })}
           </div>
-          <SponsorMenu />
+          <FeedbackMenu />
         </SheetContent>
       </Sheet>
       {selectedMenu ? (
@@ -268,7 +268,7 @@ export function SideMenu({ className }) {
             );
           })}
       </div>
-      <SponsorMenu className="mb-20" />
+      <FeedbackMenu className="mb-20" />
     </div>
   );
 }

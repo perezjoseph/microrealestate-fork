@@ -1,5 +1,5 @@
 import FeedbackForm from './FeedbackForm';
 
-export default function SponsorMenu({ className }) {
+export default function FeedbackMenu({ className }) {
   return <FeedbackForm className={className} />;
 }

@@ -41,32 +41,7 @@ function displayHeader() {
   console.log('');
 }
 
-function displaySponsorMessage() {
-  console.log('');
-  console.log(chalk.dim('#'.repeat(80)));
-  console.log(
-    chalk.dim('#' + ' '.repeat(8)),
-    chalk.red.bold(''),
-    chalk.white('If you like this project, please consider sponsoring it'),
-    chalk.red.bold(''),
-    chalk.dim(' '.repeat(9) + '#')
-  );
-  console.log(
-    chalk.dim('#' + ' '.repeat(3)),
-    chalk.white('Click here >>>'),
-    chalk.cyan.bold('https://github.com/sponsors/camelaissani'),
-    chalk.white('<<< to sponsor'),
-    chalk.dim(' '.repeat(3) + '#')
-  );
-  console.log(
-    chalk.dim('#' + ' '.repeat(32)),
-    chalk.white('Thank you'),
-    chalk.white(''),
-    chalk.dim(' '.repeat(32) + '#')
-  );
-  console.log(chalk.dim('#'.repeat(80)));
-  console.log('');
-}
+
 
 async function build({ service = 'all' }) {
   const composeArgs = [];
@@ -111,18 +86,12 @@ async function start() {
   }
 
   displayConfigWarningsAndErrors();
-
-  displaySponsorMessage();
 }
 
 async function stop({ runMode = 'prod' }) {
   loadEnv();
 
   await runCompose('stop', [], { runMode });
-
-  if (runMode === 'prod') {
-    displaySponsorMessage();
-  }
 }
 
 async function dev() {

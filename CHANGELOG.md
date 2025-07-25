@@ -32,5 +32,5 @@
 - Modern Next.js frontend applications
 
 ### Contributors
-- [@camelaissani](https://github.com/camelaissani)
-- [@perezjoseph](https://github.com/perezjoseph)
+- [@perezjoseph](https://github.com/perezjoseph) - Current maintainer and WhatsApp integration developer
+- [@camelaissani](https://github.com/camelaissani) - Original project creator
