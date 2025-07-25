@@ -12,11 +12,9 @@ const RechartsPrimitive = {
 } as any;
 
 // Stub types
-namespace RechartsPrimitive {
-  export interface LegendProps {
-    payload?: any;
-    verticalAlign?: string;
-  }
+interface RechartsPrimitiveLegendProps {
+  payload?: any;
+  verticalAlign?: string;
 }
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -262,7 +260,7 @@ const ChartLegend = RechartsPrimitive.Legend;
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> &
-    Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
+    Pick<RechartsPrimitiveLegendProps, 'payload' | 'verticalAlign'> & {
       hideIcon?: boolean;
       nameKey?: string;
     }
