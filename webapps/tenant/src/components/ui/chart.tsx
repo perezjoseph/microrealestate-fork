@@ -1,7 +1,23 @@
 import * as React from 'react';
-import * as RechartsPrimitive from 'recharts';
+// Recharts is not installed, creating stub components
+// import * as RechartsPrimitive from 'recharts';
 
 import { cn } from '@/utils';
+
+// Stub components and types for recharts
+const RechartsPrimitive = {
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Tooltip: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
+  Legend: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>
+} as any;
+
+// Stub types
+namespace RechartsPrimitive {
+  export interface LegendProps {
+    payload?: any;
+    verticalAlign?: string;
+  }
+}
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = {
