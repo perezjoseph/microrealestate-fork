@@ -20,6 +20,8 @@ import { LazyCountryData } from '../../utils/phone/CountriesLazy';
 import VirtualizedCountryList from './VirtualizedCountryList';
 import useTranslation from '@/utils/i18n/client/useTranslation';
 
+// Fixed TypeScript compilation issues with translation functions
+
 export interface CountrySelectorProps {
   selectedCountry: Country;
   onCountrySelect: (country: Country) => void;
@@ -241,6 +243,7 @@ export const CompactCountrySelector: React.FC<CompactCountrySelectorProps> = mem
   disabled = false,
   className
 }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   // Use lazy loading for better performance
