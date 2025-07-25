@@ -7,10 +7,11 @@ import { setOrganizationId } from '../utils/fetch';
 import SignInUpLayout from '../components/SignInUpLayout';
 import { StoreContext } from '../store';
 import { SubmitButton } from '@microrealestate/commonui/components';
-import { TextField } from '../components/formfields/TextField';
-import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import { toast } from 'sonner';
+
+import { TextField } from '../components/formfields/TextField';
 import { getLocalizedValidationSchema } from '../utils/validation';
 
 const defaultValues = {
@@ -40,7 +41,7 @@ export default function SignIn() {
     async ({ email, password }) => {
       try {
         const result = await store.user.signIn(email, password);
-        
+
         if (result.status !== 200) {
           switch (result.status) {
             case 422:

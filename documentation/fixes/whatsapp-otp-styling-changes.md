@@ -44,12 +44,12 @@ Updated the WhatsApp OTP page styling to match the email OTP page for consistenc
 ## Visual Consistency Achieved
 
 Both OTP pages now have:
-- ✅ Same header structure and styling
-- ✅ Same input field appearance (large, centered, with consistent colors)
-- ✅ Same layout spacing and typography
-- ✅ Same navigation patterns
-- ✅ Same error handling and toast behavior
-- ✅ Same auto-completion behavior
+-  Same header structure and styling
+-  Same input field appearance (large, centered, with consistent colors)
+-  Same layout spacing and typography
+-  Same navigation patterns
+-  Same error handling and toast behavior
+-  Same auto-completion behavior
 
 ## Technical Improvements
 

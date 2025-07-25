@@ -7,10 +7,11 @@ import Link from '../components/Link';
 import SignInUpLayout from '../components/SignInUpLayout';
 import { StoreContext } from '../store';
 import { SubmitButton } from '@microrealestate/commonui/components';
-import { TextField } from '../components/formfields/TextField';
-import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import { toast } from 'sonner';
+
+import { TextField } from '../components/formfields/TextField';
 import { getLocalizedValidationSchema } from '../utils/validation';
 
 const initialValues = {
@@ -22,7 +23,7 @@ const initialValues = {
 
 export default function SignUp() {
   const { t } = useTranslation('common');
-  
+
   // Create localized validation schema
   const validationSchema = getLocalizedValidationSchema(t).signUp;
   const store = useContext(StoreContext);
@@ -54,7 +55,8 @@ export default function SignUp() {
             toast.error(
               t('Account creation rate limit exceeded', {
                 waitTime: waitTime,
-                details: result.details || t('Too many account creation attempts')
+                details:
+                  result.details || t('Too many account creation attempts')
               }),
               {
                 duration: 8000, // Show longer for rate limit messages

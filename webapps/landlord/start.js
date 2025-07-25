@@ -8,15 +8,15 @@ const { spawn } = require('child_process');
 function replaceBasePath() {
   const BASE_PATH = process.env.BASE_PATH || '';
   console.log(`Replacing __MRE_BASE_PATH__ with: ${BASE_PATH}`);
-  
+
   // Get all files in the .next directory and server.js
   const nextDir = path.join(__dirname, '.next');
   const nextDirFiles = [path.join(__dirname, 'server.js')];
-  
+
   // Crawl nextDir and return all files
   function crawl(dir, files) {
     if (!fs.existsSync(dir)) return;
-    
+
     const dirFiles = fs.readdirSync(dir);
     dirFiles.forEach((file) => {
       const filePath = path.join(dir, file);
@@ -28,7 +28,7 @@ function replaceBasePath() {
       }
     });
   }
-  
+
   crawl(nextDir, nextDirFiles);
 
   // Filter files which end with .js, .json, .html, .css, .map and trace file
@@ -50,7 +50,7 @@ function replaceBasePath() {
         BASE_PATH || ''
       );
       replaced = replaced.replace(/%2F__MRE_BASE_PATH__/g, BASE_PATH || '');
-      
+
       if (fileContents !== replaced) {
         fs.writeFileSync(f, replaced);
         console.log(`Updated: ${f}`);

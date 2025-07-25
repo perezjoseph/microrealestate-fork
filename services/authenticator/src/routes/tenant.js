@@ -1,3 +1,4 @@
+/* eslint-disable sort-imports */
 import {
   Collections,
   logger,
@@ -15,25 +16,28 @@ import {
   suspiciousActivityDetector,
   trackFailedAttempts
 } from '../middleware/securityMonitoring.js';
+import { customAlphabet } from 'nanoid';
 import axios from 'axios';
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('0123456789', 6);
 
 // WhatsApp Business API configuration
-const WHATSAPP_API_URL = process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0';
+const WHATSAPP_API_URL =
+  process.env.WHATSAPP_API_URL || 'https://graph.facebook.com/v18.0';
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
-const WHATSAPP_LOGIN_TEMPLATE_NAME = process.env.WHATSAPP_LOGIN_TEMPLATE_NAME || 'otpcode';
-const WHATSAPP_LOGIN_TEMPLATE_LANGUAGE = process.env.WHATSAPP_LOGIN_TEMPLATE_LANGUAGE || 'es';
+const WHATSAPP_LOGIN_TEMPLATE_NAME =
+  process.env.WHATSAPP_LOGIN_TEMPLATE_NAME || 'otpcode';
+const WHATSAPP_LOGIN_TEMPLATE_LANGUAGE =
+  process.env.WHATSAPP_LOGIN_TEMPLATE_LANGUAGE || 'es';
 
 // Send WhatsApp OTP using the otpcode template
 async function sendWhatsAppOTP(phoneNumber, otp) {
   try {
     const url = `${WHATSAPP_API_URL}/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
-    
+
     const payload = {
       messaging_product: 'whatsapp',
       to: phoneNumber,
@@ -70,46 +74,52 @@ async function sendWhatsAppOTP(phoneNumber, otp) {
 
     const response = await axios.post(url, payload, {
       headers: {
-        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
       }
     });
 
-    logger.info('WhatsApp OTP sent successfully', { phoneNumber, messageId: response.data.messages[0].id });
+    logger.info('WhatsApp OTP sent successfully', {
+      phoneNumber,
+      messageId: response.data.messages[0].id
+    });
     return { success: true, messageId: response.data.messages[0].id };
   } catch (error) {
-    logger.error('Failed to send WhatsApp OTP', { 
-      phoneNumber, 
+    logger.error('Failed to send WhatsApp OTP', {
+      phoneNumber,
       error: (error.response && error.response.data) || error.message,
       status: error.response && error.response.status,
       statusText: error.response && error.response.statusText,
       fullError: error.message
     });
-    return { success: false, error: (error.response && error.response.data) || error.message };
+    return {
+      success: false,
+      error: (error.response && error.response.data) || error.message
+    };
   }
 }
 
 export default function () {
-  console.log('🚀 TENANT ROUTER: Starting tenant router setup...');
-  
+  console.log('TENANT ROUTER: Starting tenant router setup...');
+
   const {
     EMAILER_URL,
     ACCESS_TOKEN_SECRET,
     TOKEN_COOKIE_ATTRIBUTES,
     PRODUCTION
   } = Service.getInstance().envConfig.getValues();
-  
-  console.log('📋 TENANT ROUTER: Environment config loaded');
-  
+
+  console.log('TENANT ROUTER: Environment config loaded');
+
   const tenantRouter = express.Router();
 
-  console.log('🛡️ TENANT ROUTER: Adding security middleware...');
+  console.log('TENANT ROUTER: Adding security middleware...');
   // Add security monitoring middleware
   tenantRouter.use(securityMonitoring);
   tenantRouter.use(suspiciousActivityDetector);
   tenantRouter.use(trackFailedAttempts);
 
-  console.log('📧 TENANT ROUTER: Setting up email signin route...');
+  console.log('TENANT ROUTER: Setting up email signin route...');
   tenantRouter.post(
     '/signin',
     authRateLimit, // Rate limit authentication attempts
@@ -209,15 +219,20 @@ export default function () {
       });
 
       if (!tenants.length) {
-        logger.info(`WhatsApp login failed for ${phoneNumber} tenant not found`);
+        logger.info(
+          `WhatsApp login failed for ${phoneNumber} tenant not found`
+        );
         return res.sendStatus(204);
       }
 
       // Check if the phone number has WhatsApp enabled
       const tenant = tenants[0];
-      const hasWhatsAppEnabled = tenant.contacts.some(contact => 
-        (contact.phone === phoneNumber || contact.phone1 === phoneNumber || contact.phone2 === phoneNumber) &&
-        (contact.whatsapp1 || contact.whatsapp2)
+      const hasWhatsAppEnabled = tenant.contacts.some(
+        (contact) =>
+          (contact.phone === phoneNumber ||
+            contact.phone1 === phoneNumber ||
+            contact.phone2 === phoneNumber) &&
+          (contact.whatsapp1 || contact.whatsapp2)
       );
 
       if (!hasWhatsAppEnabled) {
@@ -242,7 +257,10 @@ export default function () {
       const result = await sendWhatsAppOTP(phoneNumber, otp);
 
       if (!result.success) {
-        logger.error(`Failed to send WhatsApp OTP to ${phoneNumber}`, result.error);
+        logger.error(
+          `Failed to send WhatsApp OTP to ${phoneNumber}`,
+          result.error
+        );
         throw new ServiceError('Failed to send WhatsApp OTP', 500);
       }
 
@@ -318,16 +336,19 @@ export default function () {
         }
 
         const tenant = tenants[0];
-        const contact = tenant.contacts.find(c => 
-          c.phone === payload.phoneNumber || 
-          c.phone1 === payload.phoneNumber || 
-          c.phone2 === payload.phoneNumber
+        const contact = tenant.contacts.find(
+          (c) =>
+            c.phone === payload.phoneNumber ||
+            c.phone1 === payload.phoneNumber ||
+            c.phone2 === payload.phoneNumber
         );
 
-        account = { 
-          email: (contact && contact.email) || `${payload.phoneNumber}@whatsapp.tenant`, 
+        account = {
+          email:
+            (contact && contact.email) ||
+            `${payload.phoneNumber}@whatsapp.tenant`,
           phone: payload.phoneNumber,
-          role: 'tenant' 
+          role: 'tenant'
         };
         sessionKey = payload.phoneNumber;
       } else {
@@ -398,27 +419,33 @@ export default function () {
       }
 
       const tenant = tenants[0];
-      const contact = tenant.contacts.find(c => 
-        c.phone === payload.phoneNumber || 
-        c.phone1 === payload.phoneNumber || 
-        c.phone2 === payload.phoneNumber
+      const contact = tenant.contacts.find(
+        (c) =>
+          c.phone === payload.phoneNumber ||
+          c.phone1 === payload.phoneNumber ||
+          c.phone2 === payload.phoneNumber
       );
 
-      const account = { 
-        email: (contact && contact.email) || `${payload.phoneNumber}@whatsapp.tenant`, 
+      const account = {
+        email:
+          (contact && contact.email) ||
+          `${payload.phoneNumber}@whatsapp.tenant`,
         phone: payload.phoneNumber,
         role: 'tenant',
         tenantId: tenant._id
       };
-      
+
       const sessionToken = jwt.sign({ account }, ACCESS_TOKEN_SECRET, {
         expiresIn: PRODUCTION ? '30m' : '12h'
       });
-      await Service.getInstance().redisClient.set(sessionToken, payload.phoneNumber);
+      await Service.getInstance().redisClient.set(
+        sessionToken,
+        payload.phoneNumber
+      );
       res.cookie('sessionToken', sessionToken, TOKEN_COOKIE_ATTRIBUTES);
-      
+
       logger.info(`WhatsApp signin successful for ${payload.phoneNumber}`);
-      res.json({ 
+      res.json({
         sessionToken,
         user: {
           email: account.email,
@@ -438,7 +465,8 @@ export default function () {
         throw new ServiceError('invalid token', 401);
       }
 
-      const sessionKey = await Service.getInstance().redisClient.get(sessionToken);
+      const sessionKey =
+        await Service.getInstance().redisClient.get(sessionToken);
       if (!sessionKey) {
         logger.error(`session key not found for token ${sessionToken}`);
         throw new ServiceError('invalid token', 401);
@@ -446,10 +474,10 @@ export default function () {
 
       try {
         const decoded = jwt.verify(sessionToken, ACCESS_TOKEN_SECRET);
-        
+
         // Return session info based on whether it's email or phone-based
         if (decoded.account.phone) {
-          return res.json({ 
+          return res.json({
             email: decoded.account.email,
             phone: decoded.account.phone,
             role: decoded.account.role,

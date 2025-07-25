@@ -1,7 +1,11 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+
 import { Locale } from '@microrealestate/types';
+
+import { LOCALES } from '@/utils/i18n/common';
+
 import {
   Select,
   SelectContent,
@@ -9,10 +13,9 @@ import {
   SelectTrigger,
   SelectValue
 } from './ui/select';
-import { LOCALES } from '@/utils/i18n/common';
 
 const languageNames: Record<string, string> = {
-  'en': 'English',
+  en: 'English',
   'fr-FR': 'Français',
   'pt-BR': 'Português',
   'de-DE': 'Deutsch',
@@ -23,10 +26,10 @@ const languageNames: Record<string, string> = {
 export function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
-  
+
   // Extract the current locale from the pathname
   const currentLocale = pathname.split('/')[1] as Locale;
-  
+
   // Function to change the locale
   const handleLocaleChange = (newLocale: string) => {
     // Replace the current locale in the pathname with the new one
@@ -41,8 +44,8 @@ export function LanguageSwitcher() {
       </SelectTrigger>
       <SelectContent className="bg-card border-secondary-foreground/25">
         {LOCALES.map((locale) => (
-          <SelectItem 
-            key={locale} 
+          <SelectItem
+            key={locale}
             value={locale}
             className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
           >

@@ -7,22 +7,24 @@ import {
 } from '../../../../components/ui/popover';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Alert } from '../../../../components/ui/alert';
-import { Button } from '../../../../components/ui/button';
-import ConfirmDialog from '../../../../components/ConfirmDialog';
-import { GrDocumentPdf } from 'react-icons/gr';
-import { List } from '../../../../components/ResourceList';
-import { LuRotateCw } from 'react-icons/lu';
 import { BsWhatsapp } from 'react-icons/bs';
+import { GrDocumentPdf } from 'react-icons/gr';
+import { LuRotateCw } from 'react-icons/lu';
 import moment from 'moment';
+import { useRouter } from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
+import { toast } from 'sonner';
+
+import { withAuthentication } from '../../../../components/Authentication';
+import ConfirmDialog from '../../../../components/ConfirmDialog';
 import Page from '../../../../components/Page';
 import { RentOverview } from '../../../../components/rents/RentOverview';
 import RentTable from '../../../../components/rents/RentTable';
+import { List } from '../../../../components/ResourceList';
+import { Alert } from '../../../../components/ui/alert';
+import { Button } from '../../../../components/ui/button';
+
 import { StoreContext } from '../../../../store';
-import { toast } from 'sonner';
-import { useRouter } from 'next/router';
-import useTranslation from 'next-translate/useTranslation';
-import { withAuthentication } from '../../../../components/Authentication';
 
 function _filterData(data, filters) {
   let filteredItems =
@@ -93,17 +95,19 @@ function Actions({ values, onDone }) {
   const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const [showConfirmDlg, setShowConfirmDlg] = useState(false);
   const [showWhatsAppConfirmDlg, setShowWhatsAppConfirmDlg] = useState(false);
-  const [selectedWhatsAppDocument, setSelectedWhatsAppDocument] = useState(null);
+  const [selectedWhatsAppDocument, setSelectedWhatsAppDocument] =
+    useState(null);
   const [selectedDocumentName, setSelectedDocumentName] = useState(null);
   const disabled = !values?.length;
 
   // Get tenants with WhatsApp numbers
   const getTenantsWithWhatsApp = useCallback(() => {
-    return values.filter(rent => {
+    return values.filter((rent) => {
       const tenant = rent.occupant;
-      return tenant.contacts?.some(contact => 
-        (contact.phone1 && contact.whatsapp1) || 
-        (contact.phone2 && contact.whatsapp2)
+      return tenant.contacts?.some(
+        (contact) =>
+          (contact.phone1 && contact.whatsapp1) ||
+          (contact.phone2 && contact.whatsapp2)
       );
     });
   }, [values]);
@@ -150,19 +154,20 @@ function Actions({ values, onDone }) {
   }, [onDone, selectedDocumentName, store.rent, t, values]);
 
   const handleWhatsAppConfirm = useCallback(async () => {
-    if (!hasWhatsAppTenants || sendingWhatsApp || !selectedWhatsAppDocument) return;
+    if (!hasWhatsAppTenants || sendingWhatsApp || !selectedWhatsAppDocument)
+      return;
 
     setSendingWhatsApp(true);
     try {
       let totalApiSuccess = 0;
       let totalUrlFallback = 0;
-      
+
       for (const rent of tenantsWithWhatsApp) {
         const tenant = rent.occupant;
-        
+
         // Get WhatsApp numbers for this tenant
         const whatsappNumbers = [];
-        tenant.contacts?.forEach(contact => {
+        tenant.contacts?.forEach((contact) => {
           if (contact.phone1 && contact.whatsapp1) {
             whatsappNumbers.push(contact.phone1);
           }
@@ -180,26 +185,34 @@ function Actions({ values, onDone }) {
         const dueDate = termDate.endOf('month').format('DD/MM/YYYY');
 
         // Calculate balance (net amount owed) for WhatsApp messages
-        const grandTotal = rent.grandTotal || rent.totalAmount || rent.total || 0;
+        const grandTotal =
+          rent.grandTotal || rent.totalAmount || rent.total || 0;
         const payment = rent.payment || 0;
         const netBalance = grandTotal - payment;
-        
+
         // Only send payment reminders for positive balances (money owed)
         const finalAmount = Math.max(0, netBalance);
-        
+
         console.log('WhatsApp Balance Debug:', {
           tenantName: tenant.name,
           grandTotal,
           payment,
           netBalance,
           finalAmount,
-          status: netBalance > 0 ? 'PAYMENT DUE' : netBalance === 0 ? 'PAID' : 'OVERPAID',
+          status:
+            netBalance > 0
+              ? 'PAYMENT DUE'
+              : netBalance === 0
+                ? 'PAID'
+                : 'OVERPAID',
           rentObject: rent
         });
-        
+
         // Skip WhatsApp message if tenant doesn't owe money
         if (finalAmount <= 0) {
-          console.log(`⏭️ Skipping WhatsApp for ${tenant.name} - Account current or overpaid`);
+          console.log(
+            `⏭️ Skipping WhatsApp for ${tenant.name} - Account current or overpaid`
+          );
           continue;
         }
 
@@ -208,33 +221,39 @@ function Actions({ values, onDone }) {
           templateName: selectedWhatsAppDocument,
           phoneNumbers: whatsappNumbers,
           tenantName: tenant.name,
-          invoicePeriod: moment(rent.term.toString(), 'YYYYMMDDHH').format('MMMM YYYY'),
+          invoicePeriod: moment(rent.term.toString(), 'YYYYMMDDHH').format(
+            'MMMM YYYY'
+          ),
           totalAmount: finalAmount,
           currency: store.organization.selected.currency || '$',
-          organizationName: store.organization.selected.name || 'MicroRealEstate',
+          organizationName:
+            store.organization.selected.name || 'MicroRealEstate',
           dueDate: dueDate,
           daysOverdue: daysOverdue
         };
 
         // Add document URL for all document types
         templateData.invoiceUrl = `${window.location.origin}/api/v2/documents/${selectedWhatsAppDocument}/${tenant._id}/${rent.term}`;
-        
+
         try {
           // Call WhatsApp service API (handles both Business API and URL fallback automatically)
           const response = await fetch('/api/v2/whatsapp/send-invoice', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${store.user.accessToken}`,
-              'organizationId': store.organization.selected._id
+              Authorization: `Bearer ${store.user.accessToken}`,
+              organizationId: store.organization.selected._id
             },
             body: JSON.stringify({
               phoneNumbers: whatsappNumbers,
               tenantName: tenant.name,
-              invoicePeriod: moment(rent.term.toString(), 'YYYYMMDDHH').format('MMMM YYYY'),
+              invoicePeriod: moment(rent.term.toString(), 'YYYYMMDDHH').format(
+                'MMMM YYYY'
+              ),
               totalAmount: finalAmount,
               currency: store.organization.selected.currency || 'RD$',
-              organizationName: store.organization.selected.name || 'MicroRealEstate',
+              organizationName:
+                store.organization.selected.name || 'MicroRealEstate',
               invoiceUrl: `${window.location.origin}/api/v2/documents/${selectedWhatsAppDocument}/${tenant._id}/${rent.term}`,
               locale: store.organization.selected.locale || 'es-CO',
               templateName: selectedWhatsAppDocument,
@@ -247,29 +266,41 @@ function Actions({ values, onDone }) {
 
           if (result.success && result.results) {
             // Handle both API and URL fallback results
-            const apiResults = result.results.filter(r => r.method === 'api' && r.success);
-            const urlResults = result.results.filter(r => r.method === 'url' && r.success);
-            
+            const apiResults = result.results.filter(
+              (r) => r.method === 'api' && r.success
+            );
+            const urlResults = result.results.filter(
+              (r) => r.method === 'url' && r.success
+            );
+
             // Open WhatsApp URLs for fallback results with delays
             urlResults.forEach((urlResult, index) => {
-              setTimeout(() => {
-                window.open(urlResult.whatsappURL, '_blank');
-              }, (totalApiSuccess + totalUrlFallback + index) * 1000);
+              setTimeout(
+                () => {
+                  window.open(urlResult.whatsappURL, '_blank');
+                },
+                (totalApiSuccess + totalUrlFallback + index) * 1000
+              );
             });
-            
+
             totalApiSuccess += apiResults.length;
             totalUrlFallback += urlResults.length;
-            
-            console.log(`${selectedWhatsAppDocument} processed for ${tenant.name}:`, {
-              apiSent: apiResults.length,
-              urlGenerated: urlResults.length,
-              failed: result.results.filter(r => !r.success).length
-            });
+
+            console.log(
+              `${selectedWhatsAppDocument} processed for ${tenant.name}:`,
+              {
+                apiSent: apiResults.length,
+                urlGenerated: urlResults.length,
+                failed: result.results.filter((r) => !r.success).length
+              }
+            );
           } else {
-            console.error(`WhatsApp service failed for ${tenant.name}:`, result.error);
+            console.error(
+              `WhatsApp service failed for ${tenant.name}:`,
+              result.error
+            );
             totalUrlFallback += whatsappNumbers.length;
           }
-          
         } catch (apiError) {
           console.error(`WhatsApp API error for ${tenant.name}:`, apiError);
           totalUrlFallback += whatsappNumbers.length;
@@ -278,24 +309,39 @@ function Actions({ values, onDone }) {
 
       // Show success messages
       if (totalApiSuccess > 0) {
-        toast.success(t('WhatsApp messages sent to {{count}} contact(s)', { 
-          count: totalApiSuccess 
-        }));
-      }
-      
-      if (totalUrlFallback > 0) {
-        toast.info(t('Opening WhatsApp for {{count}} contact(s)', { 
-          count: totalUrlFallback 
-        }));
+        toast.success(
+          t('WhatsApp messages sent to {{count}} contact(s)', {
+            count: totalApiSuccess
+          })
+        );
       }
 
+      if (totalUrlFallback > 0) {
+        toast.info(
+          t('Opening WhatsApp for {{count}} contact(s)', {
+            count: totalUrlFallback
+          })
+        );
+      }
     } catch (error) {
       console.error('WhatsApp send error:', error);
-      toast.error(t('Error sending WhatsApp messages: {{error}}', { error: error.message }));
+      toast.error(
+        t('Error sending WhatsApp messages: {{error}}', {
+          error: error.message
+        })
+      );
     } finally {
       setSendingWhatsApp(false);
     }
-  }, [hasWhatsAppTenants, sendingWhatsApp, selectedWhatsAppDocument, tenantsWithWhatsApp, store.organization.selected, store.user.accessToken, t]);
+  }, [
+    hasWhatsAppTenants,
+    sendingWhatsApp,
+    selectedWhatsAppDocument,
+    tenantsWithWhatsApp,
+    store.organization.selected,
+    store.user.accessToken,
+    t
+  ]);
 
   return (
     <>
@@ -355,8 +401,8 @@ function Actions({ values, onDone }) {
           {/* WhatsApp Actions */}
           <Popover>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 disabled={disabled || !hasWhatsAppTenants}
                 className="border-green-500 text-green-600 hover:bg-green-50"
               >
@@ -389,7 +435,8 @@ function Actions({ values, onDone }) {
                   disabled={disabled || !hasWhatsAppTenants}
                   className="justify-start w-full rounded-none text-orange-600"
                 >
-                  <GrDocumentPdf className="mr-2" /> {t('Second payment notice')}
+                  <GrDocumentPdf className="mr-2" />{' '}
+                  {t('Second payment notice')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -441,7 +488,7 @@ function Actions({ values, onDone }) {
               {t(selectedWhatsAppDocument || 'document')}
             </div>
           </div>
-          
+
           <div>
             <div className="mb-2 font-medium">{t('Recipients')}</div>
             <div className="flex flex-col gap-1 pl-4 text-sm max-h-48 overflow-auto">
@@ -449,9 +496,13 @@ function Actions({ values, onDone }) {
                 <div key={rent._id} className="flex justify-between">
                   <span>{rent.occupant.name}</span>
                   <span className="text-muted-foreground">
-                    {rent.occupant.contacts?.filter(c => 
-                      (c.phone1 && c.whatsapp1) || (c.phone2 && c.whatsapp2)
-                    ).length} WhatsApp
+                    {
+                      rent.occupant.contacts?.filter(
+                        (c) =>
+                          (c.phone1 && c.whatsapp1) || (c.phone2 && c.whatsapp2)
+                      ).length
+                    }{' '}
+                    WhatsApp
                   </span>
                 </div>
               ))}

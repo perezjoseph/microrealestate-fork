@@ -11,8 +11,13 @@ export async function DocumentTable({ documents }: { documents: Document[] }) {
       <Label>{t('Documents')}</Label>
       <Table>
         <TableBody>
-          {documents.map((document) => (
-            <TableRow key={document.id} className="hover:bg-inherit">
+          {documents.map((document, index) => (
+            <TableRow 
+              key={document.id} 
+              className={`hover:bg-muted/50 transition-colors ${
+                index % 2 === 0 ? 'bg-muted/20' : ''
+              }`}
+            >
               <TableCell className="flex flex-col">
                 <div>{document.name}</div>
                 <div className="text-xs text-slate-500">

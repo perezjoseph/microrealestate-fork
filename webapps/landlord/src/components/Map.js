@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Loading from './Loading';
 import { LocationIllustration } from './Illustrations';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@microrealestate/commonui/hooks/useTheme';
 
 const nominatimBaseURL = 'https://nominatim.openstreetmap.org';
 
 export default function Map({ address }) {
   const [center, setCenter] = useState();
   const [loading, setLoading] = useState(true);
-  const theme = useTheme();
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const getLatLong = async () => {
@@ -65,7 +65,7 @@ export default function Map({ address }) {
             <Marker
               height={35}
               width={35}
-              color={theme.palette.info.main}
+              color={resolvedTheme === 'dark' ? '#3b82f6' : '#2563eb'}
               anchor={center}
             />
           </PigeonMap>

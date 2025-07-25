@@ -1,3 +1,31 @@
 :root {
   --rpv-core__inner-page-background-color: transparent;
+  --rpv-core__text-color: #020817;
+  --rpv-core__background-color: #ffffff;
+  --rpv-core__border-color: #e2e8f0;
+}
+
+.dark {
+  --rpv-core__text-color: #f8fafc;
+  --rpv-core__background-color: #1e293b;
+  --rpv-core__border-color: #334155;
+}
+
+/* Apply theme-aware colors to PDF viewer components */
+.rpv-core__viewer {
+  color: var(--rpv-core__text-color);
+  background-color: var(--rpv-core__background-color);
+}
+
+.rpv-core__toolbar {
+  background-color: var(--rpv-core__background-color);
+  border-bottom: 1px solid var(--rpv-core__border-color);
+}
+
+.rpv-core__toolbar-item {
+  color: var(--rpv-core__text-color);
+}
+
+.rpv-core__toolbar-item:hover {
+  background-color: var(--rpv-core__border-color);
 }

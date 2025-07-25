@@ -11,7 +11,7 @@ async function runScript(scriptPath) {
       env: process.env,
       cwd: '/usr/app/webapps/landlord'
     });
-    
+
     child.on('exit', (code) => {
       if (code === 0) {
         resolve();
@@ -19,7 +19,7 @@ async function runScript(scriptPath) {
         reject(new Error(`Script ${scriptPath} exited with code ${code}`));
       }
     });
-    
+
     child.on('error', reject);
   });
 }
@@ -28,13 +28,17 @@ async function main() {
   try {
     // Change to the landlord directory
     process.chdir('/usr/app/webapps/landlord');
-    
+
     // Run base path replacement script (Docker version)
-    await runScript('/usr/app/webapps/commonui/scripts/replacebasepath-docker.js');
-    
+    await runScript(
+      '/usr/app/webapps/commonui/scripts/replacebasepath-docker.js'
+    );
+
     // Run runtime environment file generation script (Docker version)
-    await runScript('/usr/app/webapps/commonui/scripts/generateruntimeenvfile-docker.js');
-    
+    await runScript(
+      '/usr/app/webapps/commonui/scripts/generateruntimeenvfile-docker.js'
+    );
+
     // Start the Next.js server
     console.log('Starting Next.js server...');
     const server = spawn(process.execPath, ['server.js'], {
@@ -42,19 +46,18 @@ async function main() {
       env: process.env,
       cwd: '/usr/app/webapps/landlord'
     });
-    
+
     server.on('exit', (code) => {
       process.exit(code);
     });
-    
+
     process.on('SIGTERM', () => {
       server.kill('SIGTERM');
     });
-    
+
     process.on('SIGINT', () => {
       server.kill('SIGINT');
     });
-    
   } catch (error) {
     console.error('Startup failed:', error.message);
     process.exit(1);

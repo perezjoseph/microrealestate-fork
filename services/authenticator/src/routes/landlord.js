@@ -21,19 +21,28 @@ const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // Limit each IP to 5 requests per windowMs
   message: {
-    error: 'Too many login attempts. Please wait 15 minutes before trying again.',
-    details: 'For security reasons, we limit login attempts to prevent unauthorized access.',
+    error:
+      'Too many login attempts. Please wait 15 minutes before trying again.',
+    details:
+      'For security reasons, we limit login attempts to prevent unauthorized access.',
     retryAfter: 15 * 60,
     type: 'RATE_LIMIT_AUTH'
   },
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    console.log('🚨 AUTH RATE LIMIT TRIGGERED for IP:', req.ip, 'on path:', req.path);
+    console.log(
+      'AUTH RATE LIMIT TRIGGERED for IP:',
+      req.ip,
+      'on path:',
+      req.path
+    );
     logger.warn(`Rate limit exceeded for IP: ${req.ip} on ${req.path}`);
     res.status(429).json({
-      error: 'Too many login attempts. Please wait 15 minutes before trying again.',
-      details: 'For security reasons, we limit login attempts to prevent unauthorized access.',
+      error:
+        'Too many login attempts. Please wait 15 minutes before trying again.',
+      details:
+        'For security reasons, we limit login attempts to prevent unauthorized access.',
       retryAfter: 15 * 60,
       retryAfterMinutes: 15,
       type: 'RATE_LIMIT_AUTH',
@@ -46,7 +55,8 @@ const passwordResetRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // Limit each IP to 3 password reset requests per hour
   message: {
-    error: 'Too many password reset requests. Please wait 1 hour before trying again.',
+    error:
+      'Too many password reset requests. Please wait 1 hour before trying again.',
     details: 'Password reset requests are limited to prevent abuse.',
     retryAfter: 60 * 60,
     type: 'RATE_LIMIT_PASSWORD_RESET'
@@ -54,11 +64,13 @@ const passwordResetRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    console.log('🚨 PASSWORD RESET RATE LIMIT TRIGGERED for IP:', req.ip);
+    console.log('PASSWORD RESET RATE LIMIT TRIGGERED for IP:', req.ip);
     logger.warn(`Password reset rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
-      error: 'Too many password reset requests. Please wait 1 hour before trying again.',
-      details: 'Password reset requests are limited to prevent abuse. If you need immediate assistance, please contact support.',
+      error:
+        'Too many password reset requests. Please wait 1 hour before trying again.',
+      details:
+        'Password reset requests are limited to prevent abuse. If you need immediate assistance, please contact support.',
       retryAfter: 60 * 60,
       retryAfterMinutes: 60,
       type: 'RATE_LIMIT_PASSWORD_RESET',
@@ -71,7 +83,8 @@ const signupRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5, // Limit each IP to 5 signup attempts per hour
   message: {
-    error: 'Too many account creation attempts. Please wait 1 hour before trying again.',
+    error:
+      'Too many account creation attempts. Please wait 1 hour before trying again.',
     details: 'Account creation is limited to prevent spam and abuse.',
     retryAfter: 60 * 60,
     type: 'RATE_LIMIT_SIGNUP'
@@ -79,11 +92,13 @@ const signupRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    console.log('🚨 SIGNUP RATE LIMIT TRIGGERED for IP:', req.ip);
+    console.log('SIGNUP RATE LIMIT TRIGGERED for IP:', req.ip);
     logger.warn(`Signup rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
-      error: 'Too many account creation attempts. Please wait 1 hour before trying again.',
-      details: 'Account creation is limited to prevent spam and abuse. If you need immediate assistance, please contact support.',
+      error:
+        'Too many account creation attempts. Please wait 1 hour before trying again.',
+      details:
+        'Account creation is limited to prevent spam and abuse. If you need immediate assistance, please contact support.',
       retryAfter: 60 * 60,
       retryAfterMinutes: 60,
       type: 'RATE_LIMIT_SIGNUP',
@@ -98,7 +113,12 @@ const authSlowDown = slowDown({
   delayMs: (hits) => hits * 1000, // Add 1 second delay per hit after delayAfter
   maxDelayMs: 10000, // Maximum delay of 10 seconds
   onLimitReached: (req) => {
-    console.log('⏰ AUTH SLOW DOWN TRIGGERED for IP:', req.ip, 'on path:', req.path);
+    console.log(
+      ' AUTH SLOW DOWN TRIGGERED for IP:',
+      req.ip,
+      'on path:',
+      req.path
+    );
     logger.warn(`Slow down limit reached for IP: ${req.ip} on ${req.path}`);
   }
 });
@@ -107,7 +127,8 @@ const tokenRefreshRateLimit = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
   max: 20, // Allow more frequent token refreshes
   message: {
-    error: 'Too many token refresh attempts. Please wait 5 minutes before trying again.',
+    error:
+      'Too many token refresh attempts. Please wait 5 minutes before trying again.',
     details: 'Token refresh requests are limited for security purposes.',
     retryAfter: 5 * 60,
     type: 'RATE_LIMIT_TOKEN_REFRESH'
@@ -115,11 +136,13 @@ const tokenRefreshRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    console.log('🚨 TOKEN REFRESH RATE LIMIT TRIGGERED for IP:', req.ip);
+    console.log('TOKEN REFRESH RATE LIMIT TRIGGERED for IP:', req.ip);
     logger.warn(`Token refresh rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
-      error: 'Too many token refresh attempts. Please wait 5 minutes before trying again.',
-      details: 'Token refresh requests are limited for security purposes. Please try again in a few minutes.',
+      error:
+        'Too many token refresh attempts. Please wait 5 minutes before trying again.',
+      details:
+        'Token refresh requests are limited for security purposes. Please try again in a few minutes.',
       retryAfter: 5 * 60,
       retryAfterMinutes: 5,
       type: 'RATE_LIMIT_TOKEN_REFRESH',
@@ -128,7 +151,10 @@ const tokenRefreshRateLimit = rateLimit({
   }
 });
 
-const createAccountSpecificRateLimit = (windowMs = 15 * 60 * 1000, max = 10) => {
+const createAccountSpecificRateLimit = (
+  windowMs = 15 * 60 * 1000,
+  max = 10
+) => {
   return rateLimit({
     windowMs,
     max,
@@ -137,7 +163,8 @@ const createAccountSpecificRateLimit = (windowMs = 15 * 60 * 1000, max = 10) => 
       return key;
     },
     message: {
-      error: 'Too many attempts for this account. Please wait before trying again.',
+      error:
+        'Too many attempts for this account. Please wait before trying again.',
       details: 'Multiple failed attempts have been detected for this account.',
       retryAfter: windowMs / 1000,
       type: 'RATE_LIMIT_ACCOUNT_SPECIFIC'
@@ -148,15 +175,22 @@ const createAccountSpecificRateLimit = (windowMs = 15 * 60 * 1000, max = 10) => 
       const identifier = req.body?.email || req.ip;
       const isEmail = req.body?.email ? true : false;
       const waitMinutes = Math.ceil(windowMs / (1000 * 60));
-      
-      console.log('🚨 ACCOUNT-SPECIFIC RATE LIMIT TRIGGERED for:', identifier, 'on path:', req.path);
-      logger.warn(`Account-specific rate limit exceeded for: ${identifier} on ${req.path}`);
-      
+
+      console.log(
+        'ACCOUNT-SPECIFIC RATE LIMIT TRIGGERED for:',
+        identifier,
+        'on path:',
+        req.path
+      );
+      logger.warn(
+        `Account-specific rate limit exceeded for: ${identifier} on ${req.path}`
+      );
+
       res.status(429).json({
-        error: isEmail 
+        error: isEmail
           ? `Too many attempts for account ${req.body.email}. Please wait ${waitMinutes} minutes before trying again.`
           : `Too many attempts from your location. Please wait ${waitMinutes} minutes before trying again.`,
-        details: isEmail 
+        details: isEmail
           ? 'Multiple failed login attempts have been detected for this email address. This is a security measure to protect your account.'
           : 'Multiple failed attempts have been detected from your location. This is a security measure to prevent unauthorized access.',
         retryAfter: windowMs / 1000,
@@ -173,30 +207,30 @@ console.log(' LANDLORD MODULE: Rate limiting middleware created successfully');
 
 // Rate limit warning middleware - provides feedback before hitting the limit
 const rateLimitWarning = (req, res, next) => {
-
   // Override res.json to add warnings to successful responses
   const originalJson = res.json;
-  res.json = function(data) {
+  res.json = function (data) {
     // Check if this is a successful authentication response
     if (res.statusCode === 200 && req.path === '/signin') {
       const rateLimitRemaining = res.get('X-RateLimit-Remaining');
       const rateLimitLimit = res.get('X-RateLimit-Limit');
-      
+
       if (rateLimitRemaining && rateLimitLimit) {
         const remaining = parseInt(rateLimitRemaining);
         const limit = parseInt(rateLimitLimit);
-        
+
         if (remaining <= 2 && remaining > 0) {
           data.warning = {
             message: `Security Notice: You have ${remaining} login attempts remaining before temporary lockout.`,
-            details: 'For your account security, login attempts are limited. Please ensure you are using the correct credentials.',
+            details:
+              'For your account security, login attempts are limited. Please ensure you are using the correct credentials.',
             attemptsRemaining: remaining,
             totalAttempts: limit
           };
         }
       }
     }
-    
+
     return originalJson.call(this, data);
   };
 
@@ -381,7 +415,7 @@ const _userSignIn = Middlewares.asyncWrapper(async (req, res) => {
 
 export default function () {
   console.log(' LANDLORD ROUTER: Starting setup...');
-  
+
   const {
     APPCREDZ_TOKEN_SECRET,
     ACCESS_TOKEN_SECRET,
@@ -392,7 +426,10 @@ export default function () {
   } = Service.getInstance().envConfig.getValues();
   const landlordRouter = express.Router();
 
-  console.log(' LANDLORD ROUTER: Environment config loaded, SIGNUP enabled:', SIGNUP);
+  console.log(
+    ' LANDLORD ROUTER: Environment config loaded, SIGNUP enabled:',
+    SIGNUP
+  );
 
   // parse locale
   landlordRouter.use(
@@ -409,22 +446,24 @@ export default function () {
   landlordRouter.use((req, res, next) => {
     const userAgent = req.get('User-Agent') || '';
     const ip = req.ip;
-    
+
     // Log suspicious patterns
     if (userAgent.includes('bot') || userAgent.includes('crawler')) {
-      console.log('🤖 SECURITY: Bot detected -', ip, userAgent);
+      console.log(' SECURITY: Bot detected -', ip, userAgent);
     }
-    
+
     // Track failed attempts (basic implementation)
     if (req.method === 'POST' && req.path === '/signin') {
-      console.log('🔐 SECURITY: Authentication attempt from', ip);
+      console.log('SECURITY: Authentication attempt from', ip);
     }
-    
+
     next();
   });
 
   if (SIGNUP) {
-    console.log(' LANDLORD ROUTER: Setting up signup route with rate limiting...');
+    console.log(
+      ' LANDLORD ROUTER: Setting up signup route with rate limiting...'
+    );
     landlordRouter.post(
       '/signup',
       (req, res, next) => {
@@ -434,7 +473,10 @@ export default function () {
       signupRateLimit,
       createAccountSpecificRateLimit(60 * 60 * 1000, 3), // 3 attempts per hour per email
       Middlewares.asyncWrapper(async (req, res) => {
-        console.log(' SIGNUP HANDLER: Processing request for:', req.body?.email);
+        console.log(
+          ' SIGNUP HANDLER: Processing request for:',
+          req.body?.email
+        );
         const { firstname, lastname, email, password } = req.body;
         if (
           [firstname, lastname, email, password]
@@ -462,7 +504,9 @@ export default function () {
     console.log(' LANDLORD ROUTER: Signup route configured with rate limiting');
   }
 
-  console.log('🔐 LANDLORD ROUTER: Setting up signin route with comprehensive rate limiting...');
+  console.log(
+    'LANDLORD ROUTER: Setting up signin route with comprehensive rate limiting...'
+  );
   landlordRouter.post(
     '/signin',
     (req, res, next) => {
@@ -474,7 +518,7 @@ export default function () {
     authSlowDown, // Progressive delay for repeated attempts
     createAccountSpecificRateLimit(15 * 60 * 1000, 5), // 5 attempts per 15 minutes per email
     Middlewares.asyncWrapper(async (req, res) => {
-      console.log('🔐 SIGNIN HANDLER: Processing request for:', req.body?.email);
+      console.log('SIGNIN HANDLER: Processing request for:', req.body?.email);
       if (!req.body.email && !req.body.clientId) {
         throw new ServiceError('missing fields', 422);
       }
@@ -488,7 +532,9 @@ export default function () {
       }
     })
   );
-  console.log(' LANDLORD ROUTER: Signin route configured with comprehensive rate limiting');
+  console.log(
+    ' LANDLORD ROUTER: Signin route configured with comprehensive rate limiting'
+  );
 
   landlordRouter.use(
     '/appcredz',
@@ -575,7 +621,9 @@ export default function () {
     })
   );
 
-  console.log('🔑 LANDLORD ROUTER: Setting up password reset routes with rate limiting...');
+  console.log(
+    'LANDLORD ROUTER: Setting up password reset routes with rate limiting...'
+  );
   landlordRouter.post(
     '/forgotpassword',
     (req, res, next) => {
@@ -585,7 +633,10 @@ export default function () {
     passwordResetRateLimit, // Rate limit password reset requests
     createAccountSpecificRateLimit(60 * 60 * 1000, 2), // 2 attempts per hour per email
     Middlewares.asyncWrapper(async (req, res) => {
-      console.log('🔑 FORGOT PASSWORD HANDLER: Processing request for:', req.body?.email);
+      console.log(
+        'FORGOT PASSWORD HANDLER: Processing request for:',
+        req.body?.email
+      );
       const { email } = req.body;
       if (!email) {
         logger.error('missing email field');
@@ -632,7 +683,7 @@ export default function () {
     },
     authRateLimit, // Rate limit password reset attempts
     Middlewares.asyncWrapper(async (req, res) => {
-      console.log('🔑 RESET PASSWORD HANDLER: Processing request');
+      console.log('RESET PASSWORD HANDLER: Processing request');
       const { resetToken, password } = req.body;
       if (
         [resetToken, password]
@@ -665,7 +716,9 @@ export default function () {
     })
   );
 
-  console.log(' LANDLORD ROUTER: All routes configured with comprehensive rate limiting');
+  console.log(
+    ' LANDLORD ROUTER: All routes configured with comprehensive rate limiting'
+  );
   console.log(' LANDLORD ROUTER: Setup complete, returning router');
   return landlordRouter;
 }

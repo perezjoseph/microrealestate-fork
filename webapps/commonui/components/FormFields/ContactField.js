@@ -1,15 +1,15 @@
 import { FormControlLabel, Grid, Switch } from '@material-ui/core';
+import { TextField } from './TextField';
 import { useFormikContext } from 'formik';
 import useTranslation from 'next-translate/useTranslation';
-import { TextField } from './TextField';
 
 // Helper function to get nested value from object using dot notation or bracket notation
 const getNestedValue = (obj, path) => {
   if (!path) return undefined;
-  
+
   // Handle bracket notation like "contacts[0].whatsapp1"
   const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.');
-  
+
   return keys.reduce((current, key) => {
     return current && current[key] !== undefined ? current[key] : undefined;
   }, obj);
@@ -26,11 +26,15 @@ export function ContactField({
 }) {
   const { t } = useTranslation('common');
   const { values, setFieldValue } = useFormikContext();
-  
+
   // Get values using the helper function to handle nested paths
-  const whatsapp1Value = whatsapp1Name ? getNestedValue(values, whatsapp1Name) || false : false;
-  const whatsapp2Value = whatsapp2Name ? getNestedValue(values, whatsapp2Name) || false : false;
-  
+  const whatsapp1Value = whatsapp1Name
+    ? getNestedValue(values, whatsapp1Name) || false
+    : false;
+  const whatsapp2Value = whatsapp2Name
+    ? getNestedValue(values, whatsapp2Name) || false
+    : false;
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>

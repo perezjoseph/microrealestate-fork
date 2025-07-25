@@ -1,0 +1,8 @@
+{
+    "name": "Auto Commit & Push",
+    "description": "Analyze changed files, create concise summary, commit with conventional format, increment versions, and push to repository",
+    "trigger": {
+        "type": "manual"
+    },
+    "request": "Analyze the changed files and create a concise summary of the modifications. Then commit the changes with a descriptive commit message and push to the repository. Use git commands to:\n\n1. Check git status to see what files have changed\n2. Avoid commands that will block your terminal\n3. Increment the release number when there are enough changes. Use minor, major version numbers.\n4. Update the version in the frontend.\n5. Create a brief but informative summary of the changes\n6. Add all changed files to staging\n7. Commit with a clear, descriptive message that follows conventional commit format\n8. Push the changes to the remote repository\n\nFocus on being concise but informative in the commit message, highlighting the key changes made.\n\nConventional commit format examples:\n- feat: add new WhatsApp OTP validation\n- fix: resolve phone number formatting issue\n- docs: update API documentation\n- refactor: improve error handling in auth service\n- chore: update dependencies\n\nFor version increments:\n- Major version (x.0.0): Breaking changes or major new features\n- Minor version (x.y.0): New features that are backward compatible\n- Patch version (x.y.z): Bug fixes and small improvements"
+}

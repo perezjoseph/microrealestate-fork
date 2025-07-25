@@ -140,13 +140,15 @@ export function InvoiceTable({ lease }: { lease: Lease }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {visibleInvoices.map((invoice) => {
+          {visibleInvoices.map((invoice, index) => {
             const mTerm = moment(String(invoice.term), 'YYYYMMDDHH');
             const isNowTerm = mTerm.isSame(moment(), lease.timeRange);
             return (
               <TableRow
                 key={`${lease.tenant.id}_${invoice.id}`}
-                className="hover:bg-inherit"
+                className={`hover:bg-muted/50 transition-colors ${
+                  index % 2 === 0 ? 'bg-muted/20' : ''
+                }`}
               >
                 <TableCell className="sm:uppercase">
                   {formatTimeRange(invoice.term)}

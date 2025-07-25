@@ -14,6 +14,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Phone validation utilities
+export * from './phone';
+
 export function getMoment(locale: Locale) {
   const lang = locale.split('-')[0];
   return (date: Date | string, pattern?: string) => {
@@ -63,7 +66,9 @@ export function toUILease(tenant: TenantAPI.TenantDataType): Lease {
       beginDate: tenant.lease?.beginDate
         ? new Date(tenant.lease.beginDate)
         : undefined,
-      endDate: tenant.lease?.endDate ? new Date(tenant.lease.endDate) : undefined,
+      endDate: tenant.lease?.endDate
+        ? new Date(tenant.lease.endDate)
+        : undefined,
       terminationDate: tenant.lease?.terminationDate
         ? new Date(tenant.lease.terminationDate)
         : undefined,
@@ -77,22 +82,24 @@ export function toUILease(tenant: TenantAPI.TenantDataType): Lease {
       },
       remainingIterations: tenant.lease?.remainingIterations || 0,
       remainingIterationsToPay: tenant.lease?.remainingIterationsToPay || 0,
-      properties: tenant.lease?.properties?.map((property) => ({
-        id: property.id || '',
-        name: property.name || '',
-        description: property.description || '',
-        type: property.type || ''
-      })) || [],
+      properties:
+        tenant.lease?.properties?.map((property) => ({
+          id: property.id || '',
+          name: property.name || '',
+          description: property.description || '',
+          type: property.type || ''
+        })) || [],
       balance: tenant.lease?.balance || 0,
       deposit: tenant.lease?.deposit || 0,
-      invoices: tenant.lease?.invoices?.map((invoice) => ({
-        id: String(invoice.term || ''),
-        term: invoice.term || 0,
-        grandTotal: invoice.grandTotal || 0,
-        payment: invoice.payment || 0,
-        status: invoice.status || 'unpaid',
-        methods: invoice.methods || []
-      })) || [],
+      invoices:
+        tenant.lease?.invoices?.map((invoice) => ({
+          id: String(invoice.term || ''),
+          term: invoice.term || 0,
+          grandTotal: invoice.grandTotal || 0,
+          payment: invoice.payment || 0,
+          status: invoice.status || 'unpaid',
+          methods: invoice.methods || []
+        })) || [],
       documents: []
     };
   } catch (error) {

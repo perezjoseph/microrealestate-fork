@@ -31,23 +31,35 @@ export default function BillingForm({ organization }) {
     toast.error(t('Error updating organization'));
   }
 
-  const validationSchema = useMemo(() => Yup.object().shape({
-    vatNumber: organization.isCompany ? Yup.string().required(t('This field is required')) : Yup.string(),
-    bankName: organization.isCompany ? Yup.string().required(t('This field is required')) : Yup.string(),
-    iban: organization.isCompany ? Yup.string().required(t('This field is required')) : Yup.string(),
-    contact: Yup.string().required(t('This field is required')),
-    email: Yup.string().email(t('Please enter a valid email address')).required(t('This field is required')),
-    phone1: Yup.string().required(t('This field is required')),
-    phone2: Yup.string(),
-    address: Yup.object().shape({
-      street1: Yup.string().required(t('This field is required')),
-      street2: Yup.string(),
-      city: Yup.string().required(t('This field is required')),
-      zipCode: Yup.string().required(t('This field is required')),
-      state: Yup.string(),
-      country: Yup.string().required(t('This field is required'))
-    })
-  }), [organization.isCompany, t]);
+  const validationSchema = useMemo(
+    () =>
+      Yup.object().shape({
+        vatNumber: organization.isCompany
+          ? Yup.string().required(t('This field is required'))
+          : Yup.string(),
+        bankName: organization.isCompany
+          ? Yup.string().required(t('This field is required'))
+          : Yup.string(),
+        iban: organization.isCompany
+          ? Yup.string().required(t('This field is required'))
+          : Yup.string(),
+        contact: Yup.string().required(t('This field is required')),
+        email: Yup.string()
+          .email(t('Please enter a valid email address'))
+          .required(t('This field is required')),
+        phone1: Yup.string().required(t('This field is required')),
+        phone2: Yup.string(),
+        address: Yup.object().shape({
+          street1: Yup.string().required(t('This field is required')),
+          street2: Yup.string(),
+          city: Yup.string().required(t('This field is required')),
+          zipCode: Yup.string().required(t('This field is required')),
+          state: Yup.string(),
+          country: Yup.string().required(t('This field is required'))
+        })
+      }),
+    [organization.isCompany, t]
+  );
 
   const initialValues = useMemo(
     () => ({

@@ -86,5 +86,18 @@
   "Please check your WhatsApp for the verification code.": "Please check your WhatsApp for the verification code.",
   "Your email": "Your email",
   "Your WhatsApp number (e.g., +1234567890)": "Your WhatsApp number (e.g., +1234567890)",
-  "This code expires shortly, so please check your email soon.": "This code expires shortly, so please check your email soon."
+  "This code expires shortly, so please check your email soon.": "This code expires shortly, so please check your email soon.",
+  "Enter your phone number": "Enter your phone number",
+  "Phone number is required": "Phone number is required",
+  "Please enter a valid phone number": "Please enter a valid phone number",
+  "Phone number is too short": "Phone number is too short",
+  "Phone number is too long": "Phone number is too long",
+  "Unable to parse phone number": "Unable to parse phone number",
+  "Invalid phone number format": "Invalid phone number format",
+  "Valid phone number": "Valid phone number",
+  "Search countries...": "Search countries...",
+  "No country found.": "No country found.",
+  "Select country": "Select country",
+  "Validating phone number": "Validating phone number",
+  "Invalid phone number": "Invalid phone number"
 }

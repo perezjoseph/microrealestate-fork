@@ -1,5 +1,8 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
   SheetClose,
@@ -8,16 +11,15 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import getEnv from '@/utils/env/client';
-import { Separator } from '@/components/ui/separator';
-import SideMenuButton from './side-menu-button';
-import useApiFetcher from '@/utils/fetch/client';
-import UserAvatar from './user-avatar';
-import useSession from '@/utils/session/client/usesession';
 import { useToast } from '@/components/ui/use-toast';
+
+import getEnv from '@/utils/env/client';
+import useApiFetcher from '@/utils/fetch/client';
 import useTranslation from '@/utils/i18n/client/useTranslation';
-import { LanguageSwitcher } from '@/components/language-switcher';
+import useSession from '@/utils/session/client/usesession';
+
+import SideMenuButton from './side-menu-button';
+import UserAvatar from './user-avatar';
 
 export default function UserMenu() {
   const apiFetcher = useApiFetcher();
@@ -58,7 +60,9 @@ export default function UserMenu() {
         </SheetHeader>
         <Separator className="bg-secondary-foreground/25" />
         <div className="py-4">
-          <div className="mb-3 text-sm font-medium text-foreground">{t('Language')}</div>
+          <div className="mb-3 text-sm font-medium text-foreground">
+            {t('Language')}
+          </div>
           <LanguageSwitcher />
         </div>
         <Separator className="bg-secondary-foreground/25" />

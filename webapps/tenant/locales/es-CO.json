@@ -86,5 +86,18 @@
   "A new OTP has been sent to your WhatsApp.": "Se ha enviado un nuevo código OTP a su WhatsApp.",
   "Please check your WhatsApp for the verification code.": "Por favor revise su WhatsApp para el código de verificación.",
   "Your email": "Su correo electrónico",
-  "Your WhatsApp number (e.g., +1234567890)": "Su número de WhatsApp (ej: +1234567890)"
+  "Your WhatsApp number (e.g., +1234567890)": "Su número de WhatsApp (ej: +1234567890)",
+  "Enter your phone number": "Ingrese su número de teléfono",
+  "Phone number is required": "El número de teléfono es requerido",
+  "Please enter a valid phone number": "Por favor ingrese un número de teléfono válido",
+  "Phone number is too short": "El número de teléfono es muy corto",
+  "Phone number is too long": "El número de teléfono es muy largo",
+  "Unable to parse phone number": "No se puede procesar el número de teléfono",
+  "Invalid phone number format": "Formato de número de teléfono inválido",
+  "Valid phone number": "Número de teléfono válido",
+  "Search countries...": "Buscar países...",
+  "No country found.": "No se encontró país.",
+  "Select country": "Seleccionar país",
+  "Validating phone number": "Validando número de teléfono",
+  "Invalid phone number": "Número de teléfono inválido"
 }

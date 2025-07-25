@@ -12,20 +12,22 @@ import ContractOverviewCard from '../../../components/tenants/ContractOverviewCa
 import moment from 'moment';
 import { observer } from 'mobx-react-lite';
 import Page from '../../../components/Page';
+import { toJS } from 'mobx';
+import { useRouter } from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
+import { toast } from 'sonner';
+
+import { withAuthentication } from '../../../components/Authentication';
 import RentHistoryDialog from '../../../components/rents/RentHistoryDialog';
-import RentOverviewCard from '../../../components/tenants/RentOverviewCard';
 import ShortcutButton from '../../../components/ShortcutButton';
-import { StoreContext } from '../../../store';
+import RentOverviewCard from '../../../components/tenants/RentOverviewCard';
 import TenantStepper from '../../../components/tenants/TenantStepper';
 import TenantTabs from '../../../components/tenants/TenantTabs';
 import TerminateLeaseDialog from '../../../components/tenants/TerminateLeaseDialog';
 import WhatsAppInvoiceButton from '../../../components/tenants/WhatsAppInvoiceButton';
-import { toast } from 'sonner';
-import { toJS } from 'mobx';
 import useFillStore from '../../../hooks/useFillStore';
-import { useRouter } from 'next/router';
-import useTranslation from 'next-translate/useTranslation';
-import { withAuthentication } from '../../../components/Authentication';
+
+import { StoreContext } from '../../../store';
 
 async function fetchData(store, router) {
   const results = await Promise.all([

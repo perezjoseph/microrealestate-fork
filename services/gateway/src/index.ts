@@ -70,7 +70,9 @@ function configureRateLimiting(application: Express.Application) {
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-      logger.warn(`General API rate limit exceeded for IP: ${req.ip} on ${req.path}`);
+      logger.warn(
+        `General API rate limit exceeded for IP: ${req.ip} on ${req.path}`
+      );
       res.status(429).json({
         error: 'Too many requests from this IP, please try again later.',
         retryAfter: 15 * 60
@@ -87,15 +89,19 @@ function configureRateLimiting(application: Express.Application) {
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 50, // Limit each IP to 50 auth requests per windowMs
     message: {
-      error: 'Too many authentication requests from this IP, please try again later.',
+      error:
+        'Too many authentication requests from this IP, please try again later.',
       retryAfter: 15 * 60
     },
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req, res) => {
-      logger.warn(`Auth API rate limit exceeded for IP: ${req.ip} on ${req.path}`);
+      logger.warn(
+        `Auth API rate limit exceeded for IP: ${req.ip} on ${req.path}`
+      );
       res.status(429).json({
-        error: 'Too many authentication requests from this IP, please try again later.',
+        error:
+          'Too many authentication requests from this IP, please try again later.',
         retryAfter: 15 * 60
       });
     }

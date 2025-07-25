@@ -50,7 +50,7 @@ function _formatTenant(tenant) {
         whatsapp1: Boolean(contact.whatsapp1),
         whatsapp2: Boolean(contact.whatsapp2)
       };
-      
+
       return dbContact;
     });
   }

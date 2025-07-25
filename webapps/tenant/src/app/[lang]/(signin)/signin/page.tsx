@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import getEnv from '@/utils/env/client';
 import { Input } from '@/components/ui/input';
+import { PhoneInputFormField } from '@/components/ui/PhoneInputFormField';
 import mockedSession from '@/mocks/session';
 import useApiFetcher from '@/utils/fetch/client';
 import { useForm } from 'react-hook-form';
@@ -18,13 +19,15 @@ import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import useTranslation from '@/utils/i18n/client/useTranslation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { phoneNumberSchema } from '@/utils/validation/phoneValidation';
+import { Country } from '@/utils/phone/Countries';
 
 const signInFormSchema = z.object({
   email: z.string().email()
 });
 
 const whatsappSignInFormSchema = z.object({
-  phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
+  phoneNumber: phoneNumberSchema
 });
 
 type SignInFormValues = z.infer<typeof signInFormSchema>;
@@ -37,7 +40,8 @@ export default function SignIn() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [loginMethod, setLoginMethod] = useState<'email' | 'whatsapp'>('email');
-  
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+
   const emailForm = useForm<SignInFormValues>({
     resolver: zodResolver(signInFormSchema),
     defaultValues:
@@ -86,6 +90,7 @@ export default function SignIn() {
     } else {
       try {
         setLoading(true);
+        // The phoneNumber is already in E.164 format thanks to the schema transformation
         const response = await apiFetcher.post(
           '/api/v2/authenticator/tenant/whatsapp/signin',
           {
@@ -95,9 +100,13 @@ export default function SignIn() {
         if (response.status >= 200 && response.status < 300) {
           toast({
             title: t('WhatsApp OTP Sent'),
-            description: t('Please check your WhatsApp for the verification code.')
+            description: t(
+              'Please check your WhatsApp for the verification code.'
+            )
           });
-          return router.replace(`/whatsapp-otp/${encodeURIComponent(values.phoneNumber)}`);
+          return router.replace(
+            `/whatsapp-otp/${encodeURIComponent(values.phoneNumber)}`
+          );
         }
       } catch (error) {
         console.error(error);
@@ -140,7 +149,10 @@ export default function SignIn() {
       {/* Email Login Form */}
       {loginMethod === 'email' && (
         <Form {...emailForm}>
-          <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-6">
+          <form
+            onSubmit={emailForm.handleSubmit(onEmailSubmit)}
+            className="space-y-6"
+          >
             <FormField
               control={emailForm.control}
               name="email"
@@ -167,17 +179,24 @@ export default function SignIn() {
       {/* WhatsApp Login Form */}
       {loginMethod === 'whatsapp' && (
         <Form {...whatsappForm}>
-          <form onSubmit={whatsappForm.handleSubmit(onWhatsAppSubmit)} className="space-y-6">
+          <form
+            onSubmit={whatsappForm.handleSubmit(onWhatsAppSubmit)}
+            className="space-y-6"
+          >
             <FormField
               control={whatsappForm.control}
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t('Your WhatsApp number (e.g., +1234567890)')}
+                    <PhoneInputFormField
+                      name="phoneNumber"
+                      control={whatsappForm.control}
+                      placeholder={t('Enter your phone number')}
                       disabled={loading}
+                      onCountryChange={(country) => {
+                        setSelectedCountry(country);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -192,10 +211,9 @@ export default function SignIn() {
       )}
 
       <div className="mt-6 text-center text-sm text-muted-foreground">
-        {loginMethod === 'email' 
+        {loginMethod === 'email'
           ? t('We will send a verification code to your email')
-          : t('We will send a verification code to your WhatsApp')
-        }
+          : t('We will send a verification code to your WhatsApp')}
       </div>
     </div>
   );

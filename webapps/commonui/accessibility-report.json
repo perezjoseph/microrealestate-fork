@@ -1,0 +1,162 @@
+{
+  "timestamp": "2025-07-25T00:53:16.760Z",
+  "wcagLevel": "AA",
+  "summary": {
+    "totalTests": 18,
+    "passed": 18,
+    "failed": 0,
+    "passRate": 100
+  },
+  "themes": {
+    "light": {
+      "foreground-background": {
+        "name": "Body text",
+        "ratio": 20.01,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "222.2 84% 4.9%",
+        "background": "0 0% 100%"
+      },
+      "primary-foreground-primary": {
+        "name": "Primary button",
+        "ratio": 4.94,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "210 40% 98%",
+        "background": "221.2 83.2% 53.3%"
+      },
+      "secondary-foreground-secondary": {
+        "name": "Secondary button",
+        "ratio": 16.3,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "222.2 47.4% 11.2%",
+        "background": "210 40% 96.1%"
+      },
+      "accent-foreground-accent": {
+        "name": "Accent elements",
+        "ratio": 16.3,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "222.2 47.4% 11.2%",
+        "background": "210 40% 96.1%"
+      },
+      "muted-foreground-background": {
+        "name": "Muted text",
+        "ratio": 4.76,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "215.4 16.3% 46.9%",
+        "background": "0 0% 100%"
+      },
+      "card-foreground-card": {
+        "name": "Card content",
+        "ratio": 20.01,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "222.2 84% 4.9%",
+        "background": "0 0% 100%"
+      },
+      "destructive-foreground-destructive": {
+        "name": "Error messages",
+        "ratio": 4.52,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "0 0% 100%",
+        "background": "0 84.2% 50.2%"
+      },
+      "success-foreground-success": {
+        "name": "Success messages",
+        "ratio": 4.55,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "0 0% 100%",
+        "background": "142.1 76.2% 30.3%"
+      },
+      "warning-foreground-warning": {
+        "name": "Warning messages",
+        "ratio": 5.52,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "0 0% 100%",
+        "background": "24.6 95% 35.1%"
+      }
+    },
+    "dark": {
+      "foreground-background": {
+        "name": "Body text",
+        "ratio": 19.12,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "210 40% 98%",
+        "background": "222.2 84% 4.9%"
+      },
+      "primary-foreground-primary": {
+        "name": "Primary button",
+        "ratio": 4.85,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "222.2 47.4% 11.2%",
+        "background": "217.2 91.2% 59.8%"
+      },
+      "secondary-foreground-secondary": {
+        "name": "Secondary button",
+        "ratio": 13.98,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "210 40% 98%",
+        "background": "217.2 32.6% 17.5%"
+      },
+      "accent-foreground-accent": {
+        "name": "Accent elements",
+        "ratio": 13.98,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "210 40% 98%",
+        "background": "217.2 32.6% 17.5%"
+      },
+      "muted-foreground-background": {
+        "name": "Muted text",
+        "ratio": 7.8,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "215 20.2% 65.1%",
+        "background": "222.2 84% 4.9%"
+      },
+      "card-foreground-card": {
+        "name": "Card content",
+        "ratio": 19.12,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "210 40% 98%",
+        "background": "222.2 84% 4.9%"
+      },
+      "destructive-foreground-destructive": {
+        "name": "Error messages",
+        "ratio": 9.58,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "210 40% 98%",
+        "background": "0 62.8% 30.6%"
+      },
+      "success-foreground-success": {
+        "name": "Success messages",
+        "ratio": 4.55,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "0 0% 100%",
+        "background": "142.1 76.2% 30.3%"
+      },
+      "warning-foreground-warning": {
+        "name": "Warning messages",
+        "ratio": 5.52,
+        "passed": true,
+        "passedLarge": true,
+        "foreground": "0 0% 100%",
+        "background": "24.6 95% 35.1%"
+      }
+    }
+  },
+  "issues": [],
+  "recommendations": []
+}

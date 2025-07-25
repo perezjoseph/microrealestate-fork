@@ -140,16 +140,52 @@ The integration uses WhatsApp Business API with the following template structure
 }
 ```
 
-### 5. Security Features
+### 5. Phone Validation System
+
+The tenant webapp includes a comprehensive phone validation system for WhatsApp OTP authentication:
+
+**Key Features:**
+- **International Support**: 25+ countries with proper formatting
+- **Country Detection**: Automatic detection from browser locale
+- **Dominican Republic Support**: Special handling for DR area codes (809, 829, 849)
+- **E.164 Formatting**: Proper formatting for API integration
+- **Real-time Validation**: Instant feedback on phone number validity
+- **localStorage Integration**: Remembers user's preferred country
+
+**Usage Example:**
+```typescript
+import { PhoneValidator, CountryData } from '@/utils/phone';
+
+// Validate and format phone number
+const result = PhoneValidator.validate('(809) 123-4567', 'DO');
+if (result.isValid) {
+  // Send E.164 formatted number to API
+  await sendWhatsAppOTP(result.e164); // +18091234567
+}
+
+// Detect best country for user
+const country = CountryData.detectBestCountry();
+```
+
+**Testing:**
+```bash
+# Run phone validation tests
+cd webapps/tenant
+yarn test src/utils/phone/__tests__/
+```
+
+For detailed documentation, see [Phone Validation System](./PHONE_VALIDATION_SYSTEM.md).
+
+### 6. Security Features
 
 - **Rate Limiting**: 5 attempts per 15 minutes per phone number
 - **OTP Expiration**: 5-minute expiration for OTP codes
-- **Phone Validation**: Strict regex validation for international phone numbers
+- **Phone Validation**: Comprehensive validation using libphonenumber-js
 - **Single Use**: OTP codes are deleted after verification
 - **WhatsApp Verification**: Only phones with WhatsApp enabled can receive OTP
 - **No Phone Enumeration**: Always returns 204 regardless of phone existence
 
-### 6. Frontend Components
+### 7. Frontend Components
 
 #### Signin Page Enhancement
 - Toggle between Email and WhatsApp authentication

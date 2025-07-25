@@ -10,26 +10,26 @@ replaceBasePath();
  */
 function replaceBasePath() {
   const BASE_PATH = process.env.BASE_PATH || '';
-  
+
   // Use current working directory to find .next directory
   const nextDir = path.join(process.cwd(), '.next');
   const serverJsPath = path.join(process.cwd(), 'server.js');
-  
+
   console.log(`Looking for .next directory at: ${nextDir}`);
   console.log(`Looking for server.js at: ${serverJsPath}`);
-  
+
   // Check if .next directory exists
   if (!fs.existsSync(nextDir)) {
     console.error(`Error: .next directory not found at ${nextDir}`);
     process.exit(1);
   }
-  
+
   // Start with server.js if it exists
   const nextDirFiles = [];
   if (fs.existsSync(serverJsPath)) {
     nextDirFiles.push(serverJsPath);
   }
-  
+
   // crawl nextDir and return all files
   _crawl(nextDir, nextDirFiles);
 
@@ -54,7 +54,7 @@ function replaceBasePath() {
         BASE_PATH || ''
       );
       replaced = replaced.replace(/%2F__MRE_BASE_PATH__/g, BASE_PATH || '');
-      
+
       if (fileContents !== replaced) {
         fs.writeFileSync(f, replaced);
         console.log(`Updated: ${f}`);
@@ -63,7 +63,7 @@ function replaceBasePath() {
       console.warn(`Warning: Could not process file ${f}: ${error.message}`);
     }
   });
-  
+
   console.log(`Base path replacement completed. BASE_PATH: ${BASE_PATH}`);
 }
 

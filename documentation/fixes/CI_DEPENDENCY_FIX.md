@@ -1,6 +1,6 @@
-# 🔧 CI Dependency Issues - Solution Guide
+#  CI Dependency Issues - Solution Guide
 
-## 🚨 Problem Identified
+##  Problem Identified
 
 The GitHub Actions workflow is failing during dependency installation because:
 
@@ -8,7 +8,7 @@ The GitHub Actions workflow is failing during dependency installation because:
 2. **Puppeteer Build Failure**: `puppeteer@23.2.1` requires modern ES module support not available in Node.js 12
 3. **Yarn Lock Conflicts**: The `yarn.lock` was generated with Node.js 12, causing compatibility issues in CI
 
-## 🎯 Solutions Provided
+##  Solutions Provided
 
 ### 1. **Updated CI Workflow**
 - Added fallback dependency installation strategy
@@ -47,7 +47,7 @@ git commit -m "Update yarn.lock for Node.js 22 compatibility"
 git push origin feature/nodejs-v22-modernization
 ```
 
-## 🔍 Root Cause Analysis
+##  Root Cause Analysis
 
 ### The Error Chain:
 1. **Local Development**: Using Node.js 12.22.9
@@ -64,7 +64,7 @@ SyntaxError: Unexpected reserved word
 
 This occurs because Node.js 12 doesn't fully support ES modules syntax used by modern Puppeteer.
 
-## 🛠️ Technical Fixes Applied
+##  Technical Fixes Applied
 
 ### 1. **CI Workflow Improvements**
 ```yaml
@@ -72,7 +72,7 @@ This occurs because Node.js 12 doesn't fully support ES modules syntax used by m
   run: |
     # Try immutable install first
     if ! yarn install --immutable --check-cache; then
-      echo "⚠️ Immutable install failed, trying with cache refresh..."
+      echo " Immutable install failed, trying with cache refresh..."
       yarn cache clean --all
       yarn install  # Allow lockfile updates if needed
     fi
@@ -88,21 +88,21 @@ This occurs because Node.js 12 doesn't fully support ES modules syntax used by m
 - Fallback to non-immutable install for CI compatibility
 - Proper Node.js version alignment
 
-## 📊 Expected Outcomes
+##  Expected Outcomes
 
 ### After Applying Quick Fix (Option A):
-- ✅ CI workflow will handle dependency conflicts gracefully
-- ✅ Build process will continue even with some warnings
-- ✅ Docker builds will proceed normally
-- ⚠️ Some peer dependency warnings may persist (non-critical)
+-  CI workflow will handle dependency conflicts gracefully
+-  Build process will continue even with some warnings
+-  Docker builds will proceed normally
+-  Some peer dependency warnings may persist (non-critical)
 
 ### After Complete Fix (Option B):
-- ✅ All dependency issues resolved
-- ✅ Clean yarn.lock compatible with Node.js 22
-- ✅ No build warnings or errors
-- ✅ Optimal performance and compatibility
+-  All dependency issues resolved
+-  Clean yarn.lock compatible with Node.js 22
+-  No build warnings or errors
+-  Optimal performance and compatibility
 
-## 🚀 Next Steps
+##  Next Steps
 
 ### Immediate (Choose One):
 
@@ -140,7 +140,7 @@ git push origin feature/nodejs-v22-modernization
    - Implement better error reporting
    - Consider using dependency vulnerability scanning
 
-## 🔍 Monitoring
+##  Monitoring
 
 After pushing the fix, monitor:
 
@@ -149,7 +149,7 @@ After pushing the fix, monitor:
 3. **Docker Builds**: Ensure all services build correctly
 4. **Application Functionality**: Test key features
 
-## 📞 Support
+##  Support
 
 If issues persist:
 
@@ -160,6 +160,6 @@ If issues persist:
 
 ---
 
-**Status**: 🔧 Ready to apply  
+**Status**:  Ready to apply  
 **Priority**: High (blocking CI/CD)  
 **Estimated Fix Time**: 5-15 minutes depending on approach chosen

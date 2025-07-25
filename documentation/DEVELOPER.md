@@ -139,7 +139,29 @@ yarn test
 
 # Run tests for specific service
 yarn workspace @microrealestate/api test
+
+# Run tests for tenant webapp (includes phone validation tests)
+yarn workspace @microrealestate/tenant test
 ```
+
+#### Phone Validation Testing
+
+The tenant webapp includes comprehensive unit tests for phone validation utilities:
+
+```shell
+# Run phone validation tests specifically
+cd webapps/tenant
+yarn test src/utils/phone/__tests__/
+```
+
+**Test Coverage:**
+- **CountryData.test.ts**: Country detection, localStorage integration, browser locale detection
+- **PhoneValidator.test.ts**: Phone number validation, E.164 formatting, Dominican Republic special handling
+
+**Test Environment Setup:**
+- Jest configuration with TypeScript support
+- Browser environment mocking (localStorage, navigator)
+- Automatic mock cleanup between tests
 
 ### Integration Testing
 

@@ -22,12 +22,12 @@ ${data.organizationName}`,
   // First payment notice template
   rentcall: (data) => `Estimado/a ${data.tenantName},
 
-🔔 RECORDATORIO DE PAGO
+ RECORDATORIO DE PAGO
 
 Su renta del período ${data.invoicePeriod} está pendiente de pago.
 
  Monto: ${data.currency} ${data.totalAmount}
-📅 Fecha límite: ${data.dueDate}
+ Fecha límite: ${data.dueDate}
 
 ${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
@@ -38,13 +38,13 @@ ${data.organizationName}`,
   // Second payment notice template  
   rentcall_reminder: (data) => `Estimado/a ${data.tenantName},
 
-⚠️ SEGUNDO AVISO - PAGO PENDIENTE
+ SEGUNDO AVISO - PAGO PENDIENTE
 
 Su renta del período ${data.invoicePeriod} continúa pendiente.
 
  Monto: ${data.currency} ${data.totalAmount}
-📅 Fecha límite: ${data.dueDate}
-⏰ Días de retraso: ${data.daysOverdue}
+ Fecha límite: ${data.dueDate}
+ Días de retraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
@@ -55,17 +55,17 @@ ${data.organizationName}`,
   // Last payment notice template
   rentcall_last_reminder: (data) => `Estimado/a ${data.tenantName},
 
-🚨 ÚLTIMO AVISO - PAGO URGENTE
+ÚLTIMO AVISO - PAGO URGENTE
 
 Su renta del período ${data.invoicePeriod} está en mora.
 
  Monto: ${data.currency} ${data.totalAmount}
-📅 Fecha límite: ${data.dueDate}
-⏰ Días de retraso: ${data.daysOverdue}
+ Fecha límite: ${data.dueDate}
+ Días de retraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
-⚠️ IMPORTANTE: Si no recibimos su pago en las próximas 48 horas, procederemos según los términos del contrato.
+ IMPORTANTE: Si no recibimos su pago en las próximas 48 horas, procederemos según los términos del contrato.
 
 Contacte inmediatamente para resolver esta situación.
 
@@ -74,7 +74,7 @@ ${data.organizationName}`,
   // OTP template for tenant authentication
   otp: (data) => `Código de verificación MicroRealEstate
 
-🔐 Su código de acceso es: ${data.otpCode}
+Su código de acceso es: ${data.otpCode}
 
 Este código expira en ${data.expirationMinutes} minutos.
 
@@ -85,9 +85,9 @@ ${data.organizationName}`,
   // Password reset template
   reset_password: (data) => `Recuperación de contraseña
 
-🔑 Hemos recibido una solicitud para restablecer su contraseña.
+Hemos recibido una solicitud para restablecer su contraseña.
 
-${data.resetUrl ? `🔗 Haga clic aquí para crear una nueva contraseña: ${data.resetUrl}` : ''}
+${data.resetUrl ? `Haga clic aquí para crear una nueva contraseña: ${data.resetUrl}` : ''}
 
 Si no solicitó este cambio, ignore este mensaje.
 

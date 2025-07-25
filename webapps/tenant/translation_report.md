@@ -8,13 +8,13 @@ Your tenant frontend application has **significant translation gaps** across mul
 
 | Locale | Coverage | Translated | Missing | Status |
 |--------|----------|------------|---------|---------|
-| **es-CO** | 100% | 82/82 | 0 | ✅ Complete |
-| **en** | 99% | 81/82 | 1 | ⚠️ Nearly complete |
-| **es-DO** | 71% | 58/82 | 24 | ⚠️ Needs attention |
-| **de-DE** | 66% | 54/82 | 28 | ⚠️ Needs attention |
-| **fr-FR** | 66% | 54/82 | 28 | ⚠️ Needs attention |
-| **fr** | 66% | 54/82 | 28 | ⚠️ Needs attention |
-| **pt-BR** | 66% | 54/82 | 28 | ⚠️ Needs attention |
+| **es-CO** | 100% | 82/82 | 0 |  Complete |
+| **en** | 99% | 81/82 | 1 |  Nearly complete |
+| **es-DO** | 71% | 58/82 | 24 |  Needs attention |
+| **de-DE** | 66% | 54/82 | 28 |  Needs attention |
+| **fr-FR** | 66% | 54/82 | 28 |  Needs attention |
+| **fr** | 66% | 54/82 | 28 |  Needs attention |
+| **pt-BR** | 66% | 54/82 | 28 |  Needs attention |
 
 ## Key Findings
 

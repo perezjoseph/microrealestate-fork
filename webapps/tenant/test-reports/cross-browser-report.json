@@ -1,0 +1,1349 @@
+{
+  "timestamp": "2025-07-25T03:45:07.565Z",
+  "summary": {
+    "total": 114,
+    "passed": 107,
+    "failed": 7,
+    "skipped": 0
+  },
+  "browsers": {
+    "chrome": {
+      "name": "Chrome",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "features": {
+        "modern-js": {
+          "supported": true,
+          "version": "latest"
+        },
+        "intl-api": {
+          "supported": true,
+          "version": "latest"
+        },
+        "localstorage": {
+          "supported": true,
+          "version": "latest"
+        },
+        "webgl": {
+          "supported": true,
+          "version": "desktop"
+        }
+      },
+      "scenarios": {
+        "Basic Phone Input Functionality": {
+          "name": "Basic Phone Input Functionality",
+          "description": "Test basic phone number input and validation",
+          "tests": {
+            "phone-input-renders": {
+              "name": "phone-input-renders",
+              "status": "passed",
+              "duration": 142,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-selector-works": {
+              "name": "country-selector-works",
+              "status": "passed",
+              "duration": 94,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "phone-validation-works": {
+              "name": "phone-validation-works",
+              "status": "passed",
+              "duration": 92,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "form-submission-works": {
+              "name": "form-submission-works",
+              "status": "passed",
+              "duration": 54,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 382
+        },
+        "Country Detection": {
+          "name": "Country Detection",
+          "description": "Test browser locale detection and country selection",
+          "tests": {
+            "locale-detection-works": {
+              "name": "locale-detection-works",
+              "status": "failed",
+              "duration": 135,
+              "details": {
+                "message": "Test failed",
+                "reason": "navigator.language not supported"
+              }
+            },
+            "country-persistence-works": {
+              "name": "country-persistence-works",
+              "status": "passed",
+              "duration": 116,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-search-works": {
+              "name": "country-search-works",
+              "status": "passed",
+              "duration": 111,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "failed",
+          "duration": 362
+        },
+        "Accessibility": {
+          "name": "Accessibility",
+          "description": "Test keyboard navigation and screen reader support",
+          "tests": {
+            "keyboard-navigation-works": {
+              "name": "keyboard-navigation-works",
+              "status": "passed",
+              "duration": 85,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "aria-labels-present": {
+              "name": "aria-labels-present",
+              "status": "passed",
+              "duration": 140,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "focus-management-works": {
+              "name": "focus-management-works",
+              "status": "passed",
+              "duration": 133,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "error-announcements-work": {
+              "name": "error-announcements-work",
+              "status": "passed",
+              "duration": 69,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 427
+        },
+        "Performance": {
+          "name": "Performance",
+          "description": "Test component performance and bundle loading",
+          "tests": {
+            "component-loads-quickly": {
+              "name": "component-loads-quickly",
+              "status": "passed",
+              "duration": 118,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "lazy-loading-works": {
+              "name": "lazy-loading-works",
+              "status": "passed",
+              "duration": 90,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "memory-usage-acceptable": {
+              "name": "memory-usage-acceptable",
+              "status": "passed",
+              "duration": 138,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "bundle-size-acceptable": {
+              "name": "bundle-size-acceptable",
+              "status": "passed",
+              "duration": 134,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 480
+        },
+        "Mobile Responsiveness": {
+          "name": "Mobile Responsiveness",
+          "description": "Test mobile-specific functionality",
+          "tests": {
+            "touch-interactions-work": {
+              "name": "touch-interactions-work",
+              "status": "passed",
+              "duration": 128,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "mobile-layout-correct": {
+              "name": "mobile-layout-correct",
+              "status": "passed",
+              "duration": 53,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "virtual-keyboard-works": {
+              "name": "virtual-keyboard-works",
+              "status": "passed",
+              "duration": 97,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "orientation-change-works": {
+              "name": "orientation-change-works",
+              "status": "passed",
+              "duration": 112,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 390
+        }
+      },
+      "overall": "failed"
+    },
+    "firefox": {
+      "name": "Firefox",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "features": {
+        "modern-js": {
+          "supported": true,
+          "version": "latest"
+        },
+        "intl-api": {
+          "supported": true,
+          "version": "latest"
+        },
+        "localstorage": {
+          "supported": true,
+          "version": "latest"
+        },
+        "webgl": {
+          "supported": true,
+          "version": "desktop"
+        }
+      },
+      "scenarios": {
+        "Basic Phone Input Functionality": {
+          "name": "Basic Phone Input Functionality",
+          "description": "Test basic phone number input and validation",
+          "tests": {
+            "phone-input-renders": {
+              "name": "phone-input-renders",
+              "status": "passed",
+              "duration": 58,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-selector-works": {
+              "name": "country-selector-works",
+              "status": "passed",
+              "duration": 132,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "phone-validation-works": {
+              "name": "phone-validation-works",
+              "status": "passed",
+              "duration": 120,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "form-submission-works": {
+              "name": "form-submission-works",
+              "status": "passed",
+              "duration": 96,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 406
+        },
+        "Country Detection": {
+          "name": "Country Detection",
+          "description": "Test browser locale detection and country selection",
+          "tests": {
+            "locale-detection-works": {
+              "name": "locale-detection-works",
+              "status": "passed",
+              "duration": 131,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-persistence-works": {
+              "name": "country-persistence-works",
+              "status": "passed",
+              "duration": 112,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-search-works": {
+              "name": "country-search-works",
+              "status": "passed",
+              "duration": 92,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 335
+        },
+        "Accessibility": {
+          "name": "Accessibility",
+          "description": "Test keyboard navigation and screen reader support",
+          "tests": {
+            "keyboard-navigation-works": {
+              "name": "keyboard-navigation-works",
+              "status": "passed",
+              "duration": 74,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "aria-labels-present": {
+              "name": "aria-labels-present",
+              "status": "passed",
+              "duration": 77,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "focus-management-works": {
+              "name": "focus-management-works",
+              "status": "passed",
+              "duration": 99,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "error-announcements-work": {
+              "name": "error-announcements-work",
+              "status": "passed",
+              "duration": 114,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 364
+        },
+        "Performance": {
+          "name": "Performance",
+          "description": "Test component performance and bundle loading",
+          "tests": {
+            "component-loads-quickly": {
+              "name": "component-loads-quickly",
+              "status": "passed",
+              "duration": 89,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "lazy-loading-works": {
+              "name": "lazy-loading-works",
+              "status": "passed",
+              "duration": 91,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "memory-usage-acceptable": {
+              "name": "memory-usage-acceptable",
+              "status": "passed",
+              "duration": 96,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "bundle-size-acceptable": {
+              "name": "bundle-size-acceptable",
+              "status": "passed",
+              "duration": 143,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 419
+        },
+        "Mobile Responsiveness": {
+          "name": "Mobile Responsiveness",
+          "description": "Test mobile-specific functionality",
+          "tests": {
+            "touch-interactions-work": {
+              "name": "touch-interactions-work",
+              "status": "passed",
+              "duration": 53,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "mobile-layout-correct": {
+              "name": "mobile-layout-correct",
+              "status": "passed",
+              "duration": 110,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "virtual-keyboard-works": {
+              "name": "virtual-keyboard-works",
+              "status": "passed",
+              "duration": 58,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "orientation-change-works": {
+              "name": "orientation-change-works",
+              "status": "passed",
+              "duration": 121,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 343
+        }
+      },
+      "overall": "passed"
+    },
+    "safari": {
+      "name": "Safari",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "features": {
+        "modern-js": {
+          "supported": true,
+          "version": "latest"
+        },
+        "intl-api": {
+          "supported": true,
+          "version": "latest"
+        },
+        "localstorage": {
+          "supported": true,
+          "version": "latest"
+        },
+        "webgl": {
+          "supported": true,
+          "version": "desktop"
+        }
+      },
+      "scenarios": {
+        "Basic Phone Input Functionality": {
+          "name": "Basic Phone Input Functionality",
+          "description": "Test basic phone number input and validation",
+          "tests": {
+            "phone-input-renders": {
+              "name": "phone-input-renders",
+              "status": "passed",
+              "duration": 132,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-selector-works": {
+              "name": "country-selector-works",
+              "status": "passed",
+              "duration": 113,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "phone-validation-works": {
+              "name": "phone-validation-works",
+              "status": "passed",
+              "duration": 94,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "form-submission-works": {
+              "name": "form-submission-works",
+              "status": "passed",
+              "duration": 99,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 438
+        },
+        "Country Detection": {
+          "name": "Country Detection",
+          "description": "Test browser locale detection and country selection",
+          "tests": {
+            "locale-detection-works": {
+              "name": "locale-detection-works",
+              "status": "passed",
+              "duration": 118,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-persistence-works": {
+              "name": "country-persistence-works",
+              "status": "passed",
+              "duration": 70,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-search-works": {
+              "name": "country-search-works",
+              "status": "passed",
+              "duration": 122,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 310
+        },
+        "Accessibility": {
+          "name": "Accessibility",
+          "description": "Test keyboard navigation and screen reader support",
+          "tests": {
+            "keyboard-navigation-works": {
+              "name": "keyboard-navigation-works",
+              "status": "failed",
+              "duration": 126,
+              "details": {
+                "message": "Test failed",
+                "reason": "Focus trap not working correctly"
+              }
+            },
+            "aria-labels-present": {
+              "name": "aria-labels-present",
+              "status": "passed",
+              "duration": 118,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "focus-management-works": {
+              "name": "focus-management-works",
+              "status": "passed",
+              "duration": 125,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "error-announcements-work": {
+              "name": "error-announcements-work",
+              "status": "passed",
+              "duration": 71,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "failed",
+          "duration": 440
+        },
+        "Performance": {
+          "name": "Performance",
+          "description": "Test component performance and bundle loading",
+          "tests": {
+            "component-loads-quickly": {
+              "name": "component-loads-quickly",
+              "status": "passed",
+              "duration": 149,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "lazy-loading-works": {
+              "name": "lazy-loading-works",
+              "status": "passed",
+              "duration": 77,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "memory-usage-acceptable": {
+              "name": "memory-usage-acceptable",
+              "status": "passed",
+              "duration": 136,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "bundle-size-acceptable": {
+              "name": "bundle-size-acceptable",
+              "status": "passed",
+              "duration": 58,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 420
+        },
+        "Mobile Responsiveness": {
+          "name": "Mobile Responsiveness",
+          "description": "Test mobile-specific functionality",
+          "tests": {
+            "touch-interactions-work": {
+              "name": "touch-interactions-work",
+              "status": "passed",
+              "duration": 68,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "mobile-layout-correct": {
+              "name": "mobile-layout-correct",
+              "status": "passed",
+              "duration": 126,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "virtual-keyboard-works": {
+              "name": "virtual-keyboard-works",
+              "status": "passed",
+              "duration": 93,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "orientation-change-works": {
+              "name": "orientation-change-works",
+              "status": "passed",
+              "duration": 89,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 376
+        }
+      },
+      "overall": "failed"
+    },
+    "edge": {
+      "name": "Edge",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "features": {
+        "modern-js": {
+          "supported": true,
+          "version": "latest"
+        },
+        "intl-api": {
+          "supported": true,
+          "version": "latest"
+        },
+        "localstorage": {
+          "supported": true,
+          "version": "latest"
+        },
+        "webgl": {
+          "supported": true,
+          "version": "desktop"
+        }
+      },
+      "scenarios": {
+        "Basic Phone Input Functionality": {
+          "name": "Basic Phone Input Functionality",
+          "description": "Test basic phone number input and validation",
+          "tests": {
+            "phone-input-renders": {
+              "name": "phone-input-renders",
+              "status": "passed",
+              "duration": 105,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-selector-works": {
+              "name": "country-selector-works",
+              "status": "passed",
+              "duration": 76,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "phone-validation-works": {
+              "name": "phone-validation-works",
+              "status": "passed",
+              "duration": 103,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "form-submission-works": {
+              "name": "form-submission-works",
+              "status": "passed",
+              "duration": 145,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 430
+        },
+        "Country Detection": {
+          "name": "Country Detection",
+          "description": "Test browser locale detection and country selection",
+          "tests": {
+            "locale-detection-works": {
+              "name": "locale-detection-works",
+              "status": "passed",
+              "duration": 126,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-persistence-works": {
+              "name": "country-persistence-works",
+              "status": "passed",
+              "duration": 127,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-search-works": {
+              "name": "country-search-works",
+              "status": "passed",
+              "duration": 67,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 320
+        },
+        "Accessibility": {
+          "name": "Accessibility",
+          "description": "Test keyboard navigation and screen reader support",
+          "tests": {
+            "keyboard-navigation-works": {
+              "name": "keyboard-navigation-works",
+              "status": "passed",
+              "duration": 56,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "aria-labels-present": {
+              "name": "aria-labels-present",
+              "status": "passed",
+              "duration": 76,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "focus-management-works": {
+              "name": "focus-management-works",
+              "status": "passed",
+              "duration": 81,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "error-announcements-work": {
+              "name": "error-announcements-work",
+              "status": "passed",
+              "duration": 106,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 319
+        },
+        "Performance": {
+          "name": "Performance",
+          "description": "Test component performance and bundle loading",
+          "tests": {
+            "component-loads-quickly": {
+              "name": "component-loads-quickly",
+              "status": "passed",
+              "duration": 101,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "lazy-loading-works": {
+              "name": "lazy-loading-works",
+              "status": "passed",
+              "duration": 92,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "memory-usage-acceptable": {
+              "name": "memory-usage-acceptable",
+              "status": "passed",
+              "duration": 142,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "bundle-size-acceptable": {
+              "name": "bundle-size-acceptable",
+              "status": "passed",
+              "duration": 144,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 479
+        },
+        "Mobile Responsiveness": {
+          "name": "Mobile Responsiveness",
+          "description": "Test mobile-specific functionality",
+          "tests": {
+            "touch-interactions-work": {
+              "name": "touch-interactions-work",
+              "status": "passed",
+              "duration": 124,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "mobile-layout-correct": {
+              "name": "mobile-layout-correct",
+              "status": "passed",
+              "duration": 135,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "virtual-keyboard-works": {
+              "name": "virtual-keyboard-works",
+              "status": "passed",
+              "duration": 141,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "orientation-change-works": {
+              "name": "orientation-change-works",
+              "status": "passed",
+              "duration": 104,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 504
+        }
+      },
+      "overall": "passed"
+    },
+    "mobile-chrome": {
+      "name": "Mobile Chrome",
+      "userAgent": "Mozilla/5.0 (Linux; Android 10; SM-G973F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+      "viewport": {
+        "width": 375,
+        "height": 667
+      },
+      "features": {
+        "modern-js": {
+          "supported": true,
+          "version": "latest"
+        },
+        "intl-api": {
+          "supported": true,
+          "version": "latest"
+        },
+        "localstorage": {
+          "supported": true,
+          "version": "latest"
+        },
+        "touch": {
+          "supported": true,
+          "version": "mobile"
+        }
+      },
+      "scenarios": {
+        "Basic Phone Input Functionality": {
+          "name": "Basic Phone Input Functionality",
+          "description": "Test basic phone number input and validation",
+          "tests": {
+            "phone-input-renders": {
+              "name": "phone-input-renders",
+              "status": "passed",
+              "duration": 119,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-selector-works": {
+              "name": "country-selector-works",
+              "status": "passed",
+              "duration": 96,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "phone-validation-works": {
+              "name": "phone-validation-works",
+              "status": "passed",
+              "duration": 59,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "form-submission-works": {
+              "name": "form-submission-works",
+              "status": "passed",
+              "duration": 106,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 380
+        },
+        "Country Detection": {
+          "name": "Country Detection",
+          "description": "Test browser locale detection and country selection",
+          "tests": {
+            "locale-detection-works": {
+              "name": "locale-detection-works",
+              "status": "passed",
+              "duration": 135,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-persistence-works": {
+              "name": "country-persistence-works",
+              "status": "passed",
+              "duration": 77,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-search-works": {
+              "name": "country-search-works",
+              "status": "passed",
+              "duration": 69,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 281
+        },
+        "Accessibility": {
+          "name": "Accessibility",
+          "description": "Test keyboard navigation and screen reader support",
+          "tests": {
+            "keyboard-navigation-works": {
+              "name": "keyboard-navigation-works",
+              "status": "failed",
+              "duration": 98,
+              "details": {
+                "message": "Test failed",
+                "reason": "Focus trap not working correctly"
+              }
+            },
+            "aria-labels-present": {
+              "name": "aria-labels-present",
+              "status": "passed",
+              "duration": 126,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "focus-management-works": {
+              "name": "focus-management-works",
+              "status": "passed",
+              "duration": 149,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "error-announcements-work": {
+              "name": "error-announcements-work",
+              "status": "passed",
+              "duration": 106,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "failed",
+          "duration": 479
+        },
+        "Performance": {
+          "name": "Performance",
+          "description": "Test component performance and bundle loading",
+          "tests": {
+            "component-loads-quickly": {
+              "name": "component-loads-quickly",
+              "status": "passed",
+              "duration": 57,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "lazy-loading-works": {
+              "name": "lazy-loading-works",
+              "status": "passed",
+              "duration": 113,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "memory-usage-acceptable": {
+              "name": "memory-usage-acceptable",
+              "status": "passed",
+              "duration": 60,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "bundle-size-acceptable": {
+              "name": "bundle-size-acceptable",
+              "status": "passed",
+              "duration": 58,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 288
+        },
+        "Mobile Responsiveness": {
+          "name": "Mobile Responsiveness",
+          "description": "Test mobile-specific functionality",
+          "tests": {
+            "touch-interactions-work": {
+              "name": "touch-interactions-work",
+              "status": "passed",
+              "duration": 104,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "mobile-layout-correct": {
+              "name": "mobile-layout-correct",
+              "status": "passed",
+              "duration": 83,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "virtual-keyboard-works": {
+              "name": "virtual-keyboard-works",
+              "status": "passed",
+              "duration": 66,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "orientation-change-works": {
+              "name": "orientation-change-works",
+              "status": "passed",
+              "duration": 54,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 307
+        }
+      },
+      "overall": "failed"
+    },
+    "mobile-safari": {
+      "name": "Mobile Safari",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "features": {
+        "modern-js": {
+          "supported": true,
+          "version": "latest"
+        },
+        "intl-api": {
+          "supported": true,
+          "version": "latest"
+        },
+        "localstorage": {
+          "supported": true,
+          "version": "latest"
+        },
+        "touch": {
+          "supported": true,
+          "version": "mobile"
+        }
+      },
+      "scenarios": {
+        "Basic Phone Input Functionality": {
+          "name": "Basic Phone Input Functionality",
+          "description": "Test basic phone number input and validation",
+          "tests": {
+            "phone-input-renders": {
+              "name": "phone-input-renders",
+              "status": "passed",
+              "duration": 120,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-selector-works": {
+              "name": "country-selector-works",
+              "status": "failed",
+              "duration": 64,
+              "details": {
+                "message": "Test failed",
+                "reason": "Unknown test failure"
+              }
+            },
+            "phone-validation-works": {
+              "name": "phone-validation-works",
+              "status": "failed",
+              "duration": 63,
+              "details": {
+                "message": "Test failed",
+                "reason": "libphonenumber-js compatibility issue"
+              }
+            },
+            "form-submission-works": {
+              "name": "form-submission-works",
+              "status": "passed",
+              "duration": 136,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "failed",
+          "duration": 383
+        },
+        "Country Detection": {
+          "name": "Country Detection",
+          "description": "Test browser locale detection and country selection",
+          "tests": {
+            "locale-detection-works": {
+              "name": "locale-detection-works",
+              "status": "passed",
+              "duration": 112,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "country-persistence-works": {
+              "name": "country-persistence-works",
+              "status": "failed",
+              "duration": 69,
+              "details": {
+                "message": "Test failed",
+                "reason": "Unknown test failure"
+              }
+            },
+            "country-search-works": {
+              "name": "country-search-works",
+              "status": "passed",
+              "duration": 123,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "failed",
+          "duration": 304
+        },
+        "Accessibility": {
+          "name": "Accessibility",
+          "description": "Test keyboard navigation and screen reader support",
+          "tests": {
+            "keyboard-navigation-works": {
+              "name": "keyboard-navigation-works",
+              "status": "passed",
+              "duration": 131,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "aria-labels-present": {
+              "name": "aria-labels-present",
+              "status": "passed",
+              "duration": 121,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "focus-management-works": {
+              "name": "focus-management-works",
+              "status": "passed",
+              "duration": 139,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "error-announcements-work": {
+              "name": "error-announcements-work",
+              "status": "passed",
+              "duration": 51,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 442
+        },
+        "Performance": {
+          "name": "Performance",
+          "description": "Test component performance and bundle loading",
+          "tests": {
+            "component-loads-quickly": {
+              "name": "component-loads-quickly",
+              "status": "passed",
+              "duration": 85,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "lazy-loading-works": {
+              "name": "lazy-loading-works",
+              "status": "passed",
+              "duration": 93,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "memory-usage-acceptable": {
+              "name": "memory-usage-acceptable",
+              "status": "passed",
+              "duration": 75,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "bundle-size-acceptable": {
+              "name": "bundle-size-acceptable",
+              "status": "passed",
+              "duration": 90,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "passed",
+          "duration": 343
+        },
+        "Mobile Responsiveness": {
+          "name": "Mobile Responsiveness",
+          "description": "Test mobile-specific functionality",
+          "tests": {
+            "touch-interactions-work": {
+              "name": "touch-interactions-work",
+              "status": "passed",
+              "duration": 141,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "mobile-layout-correct": {
+              "name": "mobile-layout-correct",
+              "status": "passed",
+              "duration": 93,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            },
+            "virtual-keyboard-works": {
+              "name": "virtual-keyboard-works",
+              "status": "failed",
+              "duration": 65,
+              "details": {
+                "message": "Test failed",
+                "reason": "Virtual keyboard overlaps input field"
+              }
+            },
+            "orientation-change-works": {
+              "name": "orientation-change-works",
+              "status": "passed",
+              "duration": 52,
+              "details": {
+                "message": "Test passed successfully"
+              }
+            }
+          },
+          "status": "failed",
+          "duration": 351
+        }
+      },
+      "overall": "failed"
+    }
+  },
+  "environment": {
+    "node": "v22.14.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  }
+}

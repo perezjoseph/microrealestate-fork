@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { FaEnvelope } from 'react-icons/fa';
+import useTranslation from 'next-translate/useTranslation';
+import { toast } from 'sonner';
+
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -7,19 +10,16 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from './ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { toast } from 'sonner';
-import useTranslation from 'next-translate/useTranslation';
+
 import config from '../config';
 
 function EnvelopeIcon() {
-  return (
-    <FaEnvelope className="text-primary size-4 mx-1" />
-  );
+  return <FaEnvelope className="text-primary size-4 mx-1" />;
 }
 
 export default function FeedbackForm({ className }) {
@@ -35,7 +35,7 @@ export default function FeedbackForm({ className }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
@@ -43,7 +43,7 @@ export default function FeedbackForm({ className }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Validate required fields
     if (!formData.name || !formData.email || !formData.message) {
       toast.error(t('Please fill in all required fields'));
@@ -51,19 +51,21 @@ export default function FeedbackForm({ className }) {
     }
 
     // Create mailto link with form data
-    const subject = encodeURIComponent(formData.subject || 'MicroRealEstate Feedback');
+    const subject = encodeURIComponent(
+      formData.subject || 'MicroRealEstate Feedback'
+    );
     const body = encodeURIComponent(
       `Name: ${formData.name}\n` +
-      `Email: ${formData.email}\n` +
-      `Company: ${formData.company || 'Not specified'}\n\n` +
-      `Message:\n${formData.message}`
+        `Email: ${formData.email}\n` +
+        `Company: ${formData.company || 'Not specified'}\n\n` +
+        `Message:\n${formData.message}`
     );
-    
+
     const mailtoLink = `mailto:${config.FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
-    
+
     // Open email client
     window.location.href = mailtoLink;
-    
+
     // Reset form and close dialog
     setFormData({
       name: '',
@@ -73,7 +75,7 @@ export default function FeedbackForm({ className }) {
       message: ''
     });
     setIsOpen(false);
-    
+
     toast.success(t('Email client opened with your feedback'));
   };
 
@@ -92,7 +94,9 @@ export default function FeedbackForm({ className }) {
         <DialogHeader>
           <DialogTitle>{t('Send feedback')}</DialogTitle>
           <DialogDescription>
-            {t('Share your thoughts, suggestions, or report issues with MicroRealEstate')}
+            {t(
+              'Share your thoughts, suggestions, or report issues with MicroRealEstate'
+            )}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -121,7 +125,7 @@ export default function FeedbackForm({ className }) {
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="company">{t('Company/Organization')}</Label>
             <Input
@@ -132,7 +136,7 @@ export default function FeedbackForm({ className }) {
               placeholder={t('Your company or organization (optional)')}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="subject">{t('Subject')}</Label>
             <Input
@@ -143,7 +147,7 @@ export default function FeedbackForm({ className }) {
               placeholder={t('Brief description of your feedback')}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="message">{t('Message')} *</Label>
             <Textarea
@@ -151,12 +155,14 @@ export default function FeedbackForm({ className }) {
               name="message"
               value={formData.message}
               onChange={handleInputChange}
-              placeholder={t('Please share your feedback, suggestions, or describe any issues you encountered...')}
+              placeholder={t(
+                'Please share your feedback, suggestions, or describe any issues you encountered...'
+              )}
               rows={4}
               required
             />
           </div>
-          
+
           <div className="flex justify-end space-x-2">
             <Button
               type="button"
@@ -165,9 +171,7 @@ export default function FeedbackForm({ className }) {
             >
               {t('Cancel')}
             </Button>
-            <Button type="submit">
-              {t('Send feedback')}
-            </Button>
+            <Button type="submit">{t('Send feedback')}</Button>
           </div>
         </form>
       </DialogContent>

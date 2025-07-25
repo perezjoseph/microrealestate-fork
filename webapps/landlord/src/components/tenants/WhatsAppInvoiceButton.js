@@ -1,17 +1,23 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button, CircularProgress, Tooltip } from '@material-ui/core';
 import { WhatsApp as WhatsAppIcon } from '@material-ui/icons';
-import { useContext } from 'react';
-import { StoreContext } from '../../store';
-import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
+import useTranslation from 'next-translate/useTranslation';
 import { toast } from 'sonner';
+import { useTheme } from '@microrealestate/commonui/hooks/useTheme';
 
-export default function WhatsAppInvoiceButton({ tenant, rent, disabled = false }) {
+import { StoreContext } from '../../store';
+
+export default function WhatsAppInvoiceButton({
+  tenant,
+  rent,
+  disabled = false
+}) {
   const { t } = useTranslation('common');
   const router = useRouter();
   const store = useContext(StoreContext);
   const [sending, setSending] = useState(false);
+  const { resolvedTheme } = useTheme();
 
   // Get current locale
   const currentLocale = router.locale || 'en';
@@ -19,7 +25,7 @@ export default function WhatsAppInvoiceButton({ tenant, rent, disabled = false }
   // Get WhatsApp-enabled phone numbers
   const getWhatsAppNumbers = () => {
     const numbers = [];
-    tenant.contacts?.forEach(contact => {
+    tenant.contacts?.forEach((contact) => {
       if (contact.phone1 && contact.whatsapp1) {
         numbers.push({
           phone: contact.phone1,
@@ -46,28 +52,35 @@ export default function WhatsAppInvoiceButton({ tenant, rent, disabled = false }
     try {
       // Generate invoice URL
       const invoiceUrl = `${window.location.origin}/api/v2/documents/invoice/${tenant._id}/${rent.term}`;
-      
+
       // Prepare phone numbers array
-      const phoneNumbers = whatsappNumbers.map(item => item.phone);
-      
+      const phoneNumbers = whatsappNumbers.map((item) => item.phone);
+
       // Call WhatsApp service API
       const response = await fetch('/api/v2/whatsapp/send-invoice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${store.user.accessToken}`,
-          'organizationId': store.organization.selected._id
+          Authorization: `Bearer ${store.user.accessToken}`,
+          organizationId: store.organization.selected._id
         },
         body: JSON.stringify({
           phoneNumbers,
           tenantName: tenant.name,
-          invoicePeriod: new Date(rent.term.toString().substring(0, 4), rent.term.toString().substring(4, 6) - 1).toLocaleDateString(currentLocale, { month: 'long', year: 'numeric' }),
+          invoicePeriod: new Date(
+            rent.term.toString().substring(0, 4),
+            rent.term.toString().substring(4, 6) - 1
+          ).toLocaleDateString(currentLocale, {
+            month: 'long',
+            year: 'numeric'
+          }),
           totalAmount: rent.totalWithVAT || rent.total,
           currency: store.organization.selected.currency || 'RD$',
           invoiceUrl,
-          organizationName: store.organization.selected.name || 'MicroRealEstate',
+          organizationName:
+            store.organization.selected.name || 'MicroRealEstate',
           locale: currentLocale,
-          templateName: 'invoice'  // Add template name for invoice
+          templateName: 'invoice' // Add template name for invoice
         })
       });
 
@@ -75,41 +88,62 @@ export default function WhatsAppInvoiceButton({ tenant, rent, disabled = false }
 
       if (result.success) {
         const { summary } = result;
-        
+
         if (summary?.apiSuccess > 0) {
-          toast.success(t('Invoice sent via WhatsApp to {{count}} number(s)', { 
-            count: summary.apiSuccess 
-          }));
+          toast.success(
+            t('Invoice sent via WhatsApp to {{count}} number(s)', {
+              count: summary.apiSuccess
+            })
+          );
         }
-        
+
         if (summary?.urlFallback > 0) {
           // Open WhatsApp URLs for fallback cases
           result.results
-            .filter(r => r.method === 'url')
+            .filter((r) => r.method === 'url')
             .forEach((r, index) => {
               setTimeout(() => {
                 window.open(r.whatsappURL, '_blank');
               }, index * 1000);
             });
-          
-          toast.info(t('Opening WhatsApp for {{count}} additional number(s)', { 
-            count: summary.urlFallback 
-          }));
+
+          toast.info(
+            t('Opening WhatsApp for {{count}} additional number(s)', {
+              count: summary.urlFallback
+            })
+          );
         }
-        
+
         console.log('WhatsApp invoice sent:', result);
       } else {
         throw new Error(result.error || 'Failed to send WhatsApp invoice');
       }
-
     } catch (error) {
       console.error('WhatsApp send error:', error);
-      toast.error(t('whatsapp_send_error', { 
-        error: error.message 
-      }));
+      toast.error(
+        t('whatsapp_send_error', {
+          error: error.message
+        })
+      );
     } finally {
       setSending(false);
     }
+  };
+
+  const whatsappButtonStyle = {
+    color: '#25D366',
+    borderColor: '#25D366',
+    '&:hover': {
+      backgroundColor: resolvedTheme === 'dark' 
+        ? 'rgba(37, 211, 102, 0.1)' 
+        : 'rgba(37, 211, 102, 0.04)',
+      borderColor: '#25D366'
+    }
+  };
+
+  const disabledWhatsappStyle = {
+    ...whatsappButtonStyle,
+    opacity: 0.5
   };
 
   if (!hasWhatsApp) {
@@ -121,7 +155,7 @@ export default function WhatsAppInvoiceButton({ tenant, rent, disabled = false }
             size="small"
             disabled={true}
             startIcon={<WhatsAppIcon />}
-            style={{ color: '#25D366', borderColor: '#25D366', opacity: 0.5 }}
+            style={disabledWhatsappStyle}
           >
             WhatsApp
           </Button>
@@ -131,20 +165,18 @@ export default function WhatsAppInvoiceButton({ tenant, rent, disabled = false }
   }
 
   return (
-    <Tooltip title={t('Send invoice via WhatsApp to {{count}} number(s)', { count: whatsappNumbers.length })}>
+    <Tooltip
+      title={t('Send invoice via WhatsApp to {{count}} number(s)', {
+        count: whatsappNumbers.length
+      })}
+    >
       <Button
         variant="outlined"
         size="small"
         onClick={sendWhatsAppInvoice}
         disabled={disabled || sending}
         startIcon={sending ? <CircularProgress size={16} /> : <WhatsAppIcon />}
-        style={{ 
-          color: '#25D366', 
-          borderColor: '#25D366',
-          '&:hover': {
-            backgroundColor: 'rgba(37, 211, 102, 0.04)'
-          }
-        }}
+        style={whatsappButtonStyle}
       >
         {sending ? t('whatsapp_sending') : 'WhatsApp'}
       </Button>

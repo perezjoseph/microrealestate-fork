@@ -23,7 +23,7 @@ function createRuntimeEnvFile() {
   const workingDir = process.cwd();
   const publicDir = path.join(workingDir, 'public');
   const envFilePath = path.join(publicDir, '__ENV.js');
-  
+
   console.log(`Creating runtime environment file at: ${envFilePath}`);
   console.log('Environment variables:', browserEnvVars);
 
@@ -37,12 +37,11 @@ function createRuntimeEnvFile() {
     // Write environment variables to file (overwrite placeholder)
     const envContent = `window.__ENV = ${JSON.stringify(browserEnvVars, null, 2)}`;
     fs.writeFileSync(envFilePath, envContent);
-    
+
     console.log('Successfully created runtime environment file');
-    
   } catch (error) {
     console.error(`Error creating runtime environment file: ${error.message}`);
-    
+
     // Try to create a fallback file in the working directory
     try {
       const fallbackPath = path.join(workingDir, '__ENV.js');

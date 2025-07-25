@@ -1,31 +1,32 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
+  Button,
   Chip,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Button,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
-  IconButton,
-  Tooltip
+  Tooltip,
+  Typography
 } from '@material-ui/core';
 import {
-  Info as InfoIcon,
-  NewReleases as ReleaseIcon,
-  Security as SecurityIcon,
   BugReport as BugIcon,
   Build as BuildIcon,
-  Phone as WhatsAppIcon,
-  Language as LanguageIcon
+  Info as InfoIcon,
+  Language as LanguageIcon,
+  NewReleases as ReleaseIcon,
+  Security as SecurityIcon,
+  Phone as WhatsAppIcon
 } from '@material-ui/icons';
 import useTranslation from 'next-translate/useTranslation';
+
 import { VERSION_INFO } from '../version';
 
 const releaseFeatures = [
@@ -42,7 +43,8 @@ const releaseFeatures = [
   {
     icon: <LanguageIcon color="primary" />,
     title: 'Multi-language Support',
-    description: 'Support for 6 languages including Spanish (Dominican Republic)'
+    description:
+      'Support for 6 languages including Spanish (Dominican Republic)'
   },
   {
     icon: <BugIcon color="success" />,
@@ -113,19 +115,17 @@ export function VersionInfo({ compact = false }) {
             </div>
           </Box>
         </DialogTitle>
-        
+
         <DialogContent>
           <Typography variant="h6" gutterBottom>
-            What's New in This Release
+            What&apos;s New in This Release
           </Typography>
-          
+
           <List>
             {releaseFeatures.map((feature, index) => (
               <React.Fragment key={index}>
                 <ListItem>
-                  <ListItemIcon>
-                    {feature.icon}
-                  </ListItemIcon>
+                  <ListItemIcon>{feature.icon}</ListItemIcon>
                   <ListItemText
                     primary={feature.title}
                     secondary={feature.description}
@@ -141,43 +141,52 @@ export function VersionInfo({ compact = false }) {
               Production Features
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>Complete Property Management:</strong> Full-featured system for landlords and property managers
+              • <strong>Complete Property Management:</strong> Full-featured
+              system for landlords and property managers
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>WhatsApp Integration:</strong> Automated messaging, invoice delivery, and tenant communication
+              • <strong>WhatsApp Integration:</strong> Automated messaging,
+              invoice delivery, and tenant communication
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>Multi-language Support:</strong> Available in English, French, German, Spanish, Portuguese, and more
+              • <strong>Multi-language Support:</strong> Available in English,
+              French, German, Spanish, Portuguese, and more
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>Microservices Architecture:</strong> Scalable, containerized infrastructure with 9+ specialized services
+              • <strong>Microservices Architecture:</strong> Scalable,
+              containerized infrastructure with 9+ specialized services
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>Enhanced Security:</strong> Rate limiting, JWT authentication, NoSQL injection protection
+              • <strong>Enhanced Security:</strong> Rate limiting, JWT
+              authentication, NoSQL injection protection
             </Typography>
           </Box>
 
           <Box mt={3}>
             <Typography variant="h6" gutterBottom>
-              🏗️ Infrastructure Services
+              Infrastructure Services
             </Typography>
             <Typography variant="body2" paragraph>
               • <strong>Gateway Service:</strong> API routing and load balancing
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>Authentication Service:</strong> Secure user management and JWT handling
+              • <strong>Authentication Service:</strong> Secure user management
+              and JWT handling
             </Typography>
             <Typography variant="body2" paragraph>
               • <strong>Core API:</strong> Business logic and data management
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>WhatsApp Service:</strong> Messaging and notification delivery
+              • <strong>WhatsApp Service:</strong> Messaging and notification
+              delivery
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>PDF Generator:</strong> Document creation and template processing
+              • <strong>PDF Generator:</strong> Document creation and template
+              processing
             </Typography>
             <Typography variant="body2" paragraph>
-              • <strong>Email Service:</strong> Automated email notifications and receipts
+              • <strong>Email Service:</strong> Automated email notifications
+              and receipts
             </Typography>
           </Box>
 
@@ -195,14 +204,15 @@ export function VersionInfo({ compact = false }) {
               • Enhanced form state management with proper Formik integration
             </Typography>
             <Typography variant="body2" paragraph>
-              • Improved container stability and production deployment reliability
+              • Improved container stability and production deployment
+              reliability
             </Typography>
             <Typography variant="body2" paragraph>
               • Comprehensive security vulnerability patches and updates
             </Typography>
           </Box>
         </DialogContent>
-        
+
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)} color="primary">
             Close

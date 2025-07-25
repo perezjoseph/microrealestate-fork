@@ -1,7 +1,14 @@
 import type { LocaleMap, LocalizedMessages, TFunction } from '@/types';
 import { Locale } from '@microrealestate/types';
 
-export const LOCALES = ['de-DE', 'en', 'fr-FR', 'pt-BR', 'es-CO', 'es-DO'] as const;
+export const LOCALES = [
+  'de-DE',
+  'en',
+  'fr-FR',
+  'pt-BR',
+  'es-CO',
+  'es-DO'
+] as const;
 export const DEFAULT_LOCALE = 'es-CO' as const;
 const MESSAGES_CACHE = new Map() as LocaleMap;
 

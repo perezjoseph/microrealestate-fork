@@ -1,12 +1,12 @@
-# 🎯 CI Strategy Decision Guide
+#  CI Strategy Decision Guide
 
-## 🚨 Current Situation
+##  Current Situation
 
 The GitHub Actions CI is still failing due to yarn dependency resolution conflicts between:
 - **Local Environment**: Node.js v12.22.9 (generated yarn.lock)
 - **CI Environment**: Node.js 22 (trying to use yarn.lock from v12)
 
-## 🔧 Two Strategies Deployed
+##  Two Strategies Deployed
 
 ### Strategy 1: Enhanced Workspace CI (Current `ci.yml`)
 **What it does:**
@@ -15,14 +15,14 @@ The GitHub Actions CI is still failing due to yarn dependency resolution conflic
 - Uses fallback strategies for yarn install
 
 **Pros:**
-- ✅ Tests the full workspace as intended
-- ✅ Catches dependency issues early
-- ✅ More comprehensive testing
+-  Tests the full workspace as intended
+-  Catches dependency issues early
+-  More comprehensive testing
 
 **Cons:**
-- ❌ Still subject to Node.js version conflicts
-- ❌ May continue to fail until yarn.lock is regenerated
-- ❌ Requires local Node.js upgrade for permanent fix
+-  Still subject to Node.js version conflicts
+-  May continue to fail until yarn.lock is regenerated
+-  Requires local Node.js upgrade for permanent fix
 
 ### Strategy 2: Docker-Focused CI (`ci-docker-focused.yml`)
 **What it does:**
@@ -31,24 +31,24 @@ The GitHub Actions CI is still failing due to yarn dependency resolution conflic
 - Each Docker container handles its own dependencies with Node.js 22
 
 **Pros:**
-- ✅ Bypasses yarn.lock conflicts completely
-- ✅ More representative of production environment
-- ✅ Faster feedback for Docker issues
-- ✅ Works regardless of local Node.js version
+-  Bypasses yarn.lock conflicts completely
+-  More representative of production environment
+-  Faster feedback for Docker issues
+-  Works regardless of local Node.js version
 
 **Cons:**
-- ❌ Doesn't test workspace-level issues
-- ❌ May miss some development-time problems
-- ❌ Less comprehensive than full workspace testing
+-  Doesn't test workspace-level issues
+-  May miss some development-time problems
+-  Less comprehensive than full workspace testing
 
-## 🎯 Recommended Decision Path
+##  Recommended Decision Path
 
 ### Option A: Try Enhanced Workspace CI First (5 minutes)
 **Current Status**: The enhanced `ci.yml` is already active and will run automatically.
 
 **Monitor**: Check if the verbose logging shows the exact validation errors.
 
-**If it works**: ✅ Great! You have full workspace testing.
+**If it works**:  Great! You have full workspace testing.
 **If it fails**: Move to Option B.
 
 ### Option B: Switch to Docker-Focused CI (2 minutes)
@@ -72,7 +72,7 @@ git commit -m "Update yarn.lock for Node.js 22 compatibility"
 git push origin feature/nodejs-v22-modernization
 ```
 
-## 🔍 How to Monitor
+##  How to Monitor
 
 ### Check GitHub Actions Tab
 1. Go to your repository
@@ -83,25 +83,25 @@ git push origin feature/nodejs-v22-modernization
 
 **Enhanced Workspace CI Success Signs:**
 ```
-✅ Standard install succeeded
-🔨 Building types...
-✅ Types built successfully
+ Standard install succeeded
+ Building types...
+ Types built successfully
 ```
 
 **Enhanced Workspace CI Failure Signs:**
 ```
-⚠️ Standard install failed, trying without immutable flag...
-❌ All install strategies failed
+ Standard install failed, trying without immutable flag...
+ All install strategies failed
 ```
 
 **Docker-Focused CI Success Signs:**
 ```
-✅ Found Dockerfile: webapps/tenant/Dockerfile
-🔨 Building test stack...
-✅ Gateway health check passed
+ Found Dockerfile: webapps/tenant/Dockerfile
+ Building test stack...
+ Gateway health check passed
 ```
 
-## 🎯 My Recommendation
+##  My Recommendation
 
 **For Immediate Success**: Use **Option B (Docker-Focused CI)**
 
@@ -119,7 +119,7 @@ git push origin feature/nodejs-v22-modernization
 3. Enables full workspace testing
 4. Better development experience
 
-## 🚀 Quick Decision Matrix
+##  Quick Decision Matrix
 
 | Scenario | Recommended Action |
 |----------|-------------------|
@@ -128,7 +128,7 @@ git push origin feature/nodejs-v22-modernization
 | **Have time for proper fix** | Option C |
 | **Team development** | Option C (standardizes environment) |
 
-## 📞 Next Steps
+##  Next Steps
 
 ### Immediate (Choose One):
 
@@ -159,6 +159,6 @@ git push origin feature/nodejs-v22-modernization
 
 ---
 
-**Status**: 🎯 Ready for decision  
+**Status**:  Ready for decision  
 **Recommendation**: Docker-Focused CI for immediate success  
 **Long-term**: Upgrade to Node.js 22 locally

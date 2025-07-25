@@ -17,7 +17,7 @@ function createBuildTimeEnvFile() {
   const workingDir = process.cwd();
   const publicDir = path.join(workingDir, 'public');
   const envFilePath = path.join(publicDir, '__ENV.js');
-  
+
   console.log(`Creating build-time environment template at: ${envFilePath}`);
 
   try {
@@ -29,9 +29,10 @@ function createBuildTimeEnvFile() {
     // Write the template file
     fs.writeFileSync(envFilePath, envTemplate);
     console.log('Successfully created build-time environment template');
-    
   } catch (error) {
-    console.error(`Error creating build-time environment template: ${error.message}`);
+    console.error(
+      `Error creating build-time environment template: ${error.message}`
+    );
     process.exit(1);
   }
 }

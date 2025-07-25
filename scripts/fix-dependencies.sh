@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🔧 Fixing Node.js Version Dependency Issues"
+echo " Fixing Node.js Version Dependency Issues"
 echo "==========================================="
 
 # Colors for output
@@ -16,15 +16,15 @@ NC='\033[0m' # No Color
 
 print_status() {
     if [ $1 -eq 0 ]; then
-        echo -e "${GREEN}✅ $2${NC}"
+        echo -e "${GREEN} $2${NC}"
     else
-        echo -e "${RED}❌ $2${NC}"
+        echo -e "${RED} $2${NC}"
         return 1
     fi
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️ $1${NC}"
+    echo -e "${YELLOW} $1${NC}"
 }
 
 echo "1. Checking current Node.js version..."
@@ -38,7 +38,7 @@ elif [[ $node_version == v20* ]]; then
 else
     print_warning "Node.js $node_version detected. This may cause dependency issues."
     echo ""
-    echo "💡 To fix this issue:"
+    echo " To fix this issue:"
     echo "   Option 1 - Install Node.js 22:"
     echo "     - Download from: https://nodejs.org/"
     echo "     - Or use nvm: nvm install 22 && nvm use 22"
@@ -82,7 +82,7 @@ if yarn install; then
 else
     print_status 1 "Dependency installation failed"
     echo ""
-    echo "🔍 Common solutions:"
+    echo " Common solutions:"
     echo "   1. Upgrade to Node.js 22"
     echo "   2. Check for conflicting global packages"
     echo "   3. Clear npm cache: npm cache clean --force"
@@ -116,7 +116,7 @@ else
 fi
 
 echo ""
-echo "🎉 Dependency Fix Complete!"
+echo " Dependency Fix Complete!"
 echo "=========================="
 echo ""
 echo "Summary:"

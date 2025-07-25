@@ -19,7 +19,9 @@ import useTranslation from '@/utils/i18n/client/useTranslation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const whatsappSignInFormSchema = z.object({
-  phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
+  phoneNumber: z
+    .string()
+    .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
 });
 type WhatsAppSignInFormValues = z.infer<typeof whatsappSignInFormSchema>;
 
@@ -49,9 +51,13 @@ export default function WhatsAppSignIn() {
         if (response.status >= 200 && response.status < 300) {
           toast({
             title: t('WhatsApp OTP Sent'),
-            description: t('Please check your WhatsApp for the verification code.')
+            description: t(
+              'Please check your WhatsApp for the verification code.'
+            )
           });
-          return router.replace(`/whatsapp-otp/${encodeURIComponent(values.phoneNumber)}`);
+          return router.replace(
+            `/whatsapp-otp/${encodeURIComponent(values.phoneNumber)}`
+          );
         }
       } catch (error) {
         console.error(error);

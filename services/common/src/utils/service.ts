@@ -98,13 +98,21 @@ export default class Service {
       this.expressServer.use(Express.json());
       this.expressServer.use(_methodOverride());
       if (this.useMongo) {
-        this.expressServer.use(mongoSanitize({
-          allowDots: true,
-          replaceWith: '_',
-          onSanitize: ({ req, key }: { req: Express.Request; key: string }) => {
-            console.warn(`request[${key}] has been sanitized`, req);
-          }
-        }));
+        this.expressServer.use(
+          mongoSanitize({
+            allowDots: true,
+            replaceWith: '_',
+            onSanitize: ({
+              req,
+              key
+            }: {
+              req: Express.Request;
+              key: string;
+            }) => {
+              console.warn(`request[${key}] has been sanitized`, req);
+            }
+          })
+        );
       }
     }
 

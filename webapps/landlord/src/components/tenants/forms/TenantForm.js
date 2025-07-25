@@ -15,50 +15,60 @@ import { Section } from '../../formfields/Section';
 import { StoreContext } from '../../../store';
 import useTranslation from 'next-translate/useTranslation';
 
-const createValidationSchema = (t) => Yup.object().shape({
-  name: Yup.string().required(t('This field is required')),
-  isCompany: Yup.string().required(t('This field is required')),
-  legalRepresentative: Yup.string().when('isCompany', {
-    is: 'true',
-    then: (schema) => schema.required(t('This field is required')),
-    otherwise: (schema) => schema
-  }),
-  legalStructure: Yup.string().when('isCompany', {
-    is: 'true',
-    then: (schema) => schema.required(t('This field is required')),
-    otherwise: (schema) => schema
-  }),
-  ein: Yup.string().when('isCompany', {
-    is: 'true',
-    then: (schema) => schema.required(t('This field is required')),
-    otherwise: (schema) => schema
-  }),
-  dos: Yup.string().when('isCompany', {
-    is: 'true',
-    then: (schema) => schema,
-    otherwise: (schema) => schema
-  }),
-  contacts: Yup.array().of(
-    Yup.object().shape({
-      contact: Yup.string().required(t('This field is required')),
-      email: Yup.string().email(t('Please enter a valid email address')).required(t('This field is required')),
-      phone1: Yup.string(),
-      phone2: Yup.string(),
-      whatsapp1: Yup.boolean(),
-      whatsapp2: Yup.boolean()
+const createValidationSchema = (t) =>
+  Yup.object().shape({
+    name: Yup.string().required(t('This field is required')),
+    isCompany: Yup.string().required(t('This field is required')),
+    legalRepresentative: Yup.string().when('isCompany', {
+      is: 'true',
+      then: (schema) => schema.required(t('This field is required')),
+      otherwise: (schema) => schema
+    }),
+    legalStructure: Yup.string().when('isCompany', {
+      is: 'true',
+      then: (schema) => schema.required(t('This field is required')),
+      otherwise: (schema) => schema
+    }),
+    ein: Yup.string().when('isCompany', {
+      is: 'true',
+      then: (schema) => schema.required(t('This field is required')),
+      otherwise: (schema) => schema
+    }),
+    dos: Yup.string().when('isCompany', {
+      is: 'true',
+      then: (schema) => schema,
+      otherwise: (schema) => schema
+    }),
+    contacts: Yup.array().of(
+      Yup.object().shape({
+        contact: Yup.string().required(t('This field is required')),
+        email: Yup.string()
+          .email(t('Please enter a valid email address'))
+          .required(t('This field is required')),
+        phone1: Yup.string(),
+        phone2: Yup.string(),
+        whatsapp1: Yup.boolean(),
+        whatsapp2: Yup.boolean()
+      })
+    ),
+    address: Yup.object().shape({
+      street1: Yup.string().required(t('This field is required')),
+      street2: Yup.string(),
+      city: Yup.string().required(t('This field is required')),
+      zipCode: Yup.string().required(t('This field is required')),
+      state: Yup.string(),
+      country: Yup.string().required(t('This field is required'))
     })
-  ),
-  address: Yup.object().shape({
-    street1: Yup.string().required(t('This field is required')),
-    street2: Yup.string(),
-    city: Yup.string().required(t('This field is required')),
-    zipCode: Yup.string().required(t('This field is required')),
-    state: Yup.string(),
-    country: Yup.string().required(t('This field is required'))
-  })
-});
+  });
 
-const emptyContact = { contact: '', email: '', phone1: '', phone2: '', whatsapp1: false, whatsapp2: false };
+const emptyContact = {
+  contact: '',
+  email: '',
+  phone1: '',
+  phone2: '',
+  whatsapp1: false,
+  whatsapp2: false
+};
 
 const initValues = (tenant) => {
   return {
@@ -70,14 +80,24 @@ const initValues = (tenant) => {
     dos: tenant?.rcs || '',
     capital: tenant?.capital || '',
     contacts: tenant?.contacts?.length
-      ? tenant.contacts.map(({ contact, email, phone, phone1, phone2, whatsapp1, whatsapp2 }) => ({
-          contact,
-          email,
-          phone1: phone1 || phone,
-          phone2: phone2 || '',
-          whatsapp1: whatsapp1 || false,
-          whatsapp2: whatsapp2 || false
-        }))
+      ? tenant.contacts.map(
+          ({
+            contact,
+            email,
+            phone,
+            phone1,
+            phone2,
+            whatsapp1,
+            whatsapp2
+          }) => ({
+            contact,
+            email,
+            phone1: phone1 || phone,
+            phone2: phone2 || '',
+            whatsapp1: whatsapp1 || false,
+            whatsapp2: whatsapp2 || false
+          })
+        )
       : [emptyContact],
     address: {
       street1: tenant?.street1 || '',
@@ -103,10 +123,7 @@ const TenantForm = observer(({ readOnly, onSubmit }) => {
     [store.tenant?.selected]
   );
 
-  const validationSchema = useMemo(
-    () => createValidationSchema(t),
-    [t]
-  );
+  const validationSchema = useMemo(() => createValidationSchema(t), [t]);
 
   const _onSubmit = async (tenant) => {
     await onSubmit({

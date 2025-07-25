@@ -11,9 +11,10 @@ export async function fetchOneTenant(tenantId: string): Promise<Lease | null> {
     data = Mocks.getOneTenant;
   } else {
     try {
-      const response = await getApiFetcher().get<TenantAPI.GetOneTenant.Response>(
-        `/tenantapi/tenant/${tenantId}`
-      );
+      const response =
+        await getApiFetcher().get<TenantAPI.GetOneTenant.Response>(
+          `/tenantapi/tenant/${tenantId}`
+        );
       data = response.data;
     } catch (error) {
       console.error('Error fetching tenant:', error);
@@ -39,11 +40,12 @@ export async function fetchAllTenants(): Promise<Lease[]> {
     data = Mocks.getAllTenants;
   } else {
     try {
-      const response = await getApiFetcher().get<TenantAPI.GetAllTenants.Response>(
-        `/tenantapi/tenants`
-      );
+      const response =
+        await getApiFetcher().get<TenantAPI.GetAllTenants.Response>(
+          `/tenantapi/tenants`
+        );
       data = response.data;
-      
+
       // Check if the response indicates no contract
       if (data.status === 'no_contract') {
         console.log('No contract associated with this account');

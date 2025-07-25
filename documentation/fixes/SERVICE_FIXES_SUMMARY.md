@@ -67,7 +67,7 @@ Both failing services had **file system permission issues** when running as non-
 3. **Include all required files** (templates, data directories)
 4. **Switch to non-root user** only after setting up permissions
 
-### 🧪 Validation Results
+###  Validation Results
 
 **HTTP Endpoint Tests**:
 -  Gateway: `http://localhost:8080` - Responding (HTTP 401 - Expected)

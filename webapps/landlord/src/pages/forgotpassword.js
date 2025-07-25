@@ -7,10 +7,11 @@ import { LuCheckCircle } from 'react-icons/lu';
 import SignInUpLayout from '../components/SignInUpLayout';
 import { StoreContext } from '../store';
 import { SubmitButton } from '@microrealestate/commonui/components';
-import { TextField } from '../components/formfields/TextField';
-import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
+import { toast } from 'sonner';
+
+import { TextField } from '../components/formfields/TextField';
 import { getLocalizedValidationSchema } from '../utils/validation';
 
 const initialValues = {
@@ -20,7 +21,7 @@ const initialValues = {
 export default function ForgotPassword() {
   const { t } = useTranslation('common');
   const store = useContext(StoreContext);
-  
+
   // Create localized validation schema
   const validationSchema = getLocalizedValidationSchema(t).forgotPassword;
   const [emailSent, setEmailSent] = useState('');

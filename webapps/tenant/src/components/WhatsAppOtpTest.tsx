@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { Input } from '@/components/ui/input';
+
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export default function WhatsAppOtpTest() {
   const [otp, setOtp] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,20 +34,20 @@ export default function WhatsAppOtpTest() {
             onChange={handleInputChange}
             placeholder="Enter 6-digit OTP"
             maxLength={6}
-            disabled={loading}
+            disabled={false}
             className="w-full"
           />
           <p className="text-sm text-gray-500 mt-1">
-            Current value: "{otp}" (Length: {otp.length})
+            Current value: &quot;{otp}&quot; (Length: {otp.length})
           </p>
         </div>
-        <Button type="submit" className="w-full" disabled={loading || otp.length < 6}>
+        <Button type="submit" className="w-full" disabled={otp.length < 6}>
           Test Submit (OTP: {otp})
         </Button>
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="w-full" 
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
           onClick={() => setOtp('')}
         >
           Clear

@@ -19,8 +19,8 @@ import Head from 'next/head';
 import { InjectStoreContext } from '../store';
 import moment from 'moment';
 import { Roboto } from 'next/font/google';
-import theme from '../styles/theme';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { MaterialUIThemeProvider } from '../components/theme/MaterialUIThemeProvider';
+import { ThemeProvider as NextThemeProvider } from '../components/theme/ThemeProvider';
 import { useEffect } from 'react';
 
 const queryClient = new QueryClient();
@@ -73,7 +73,7 @@ function MyApp(props) {
       <Head>
         <title>{APP_TITLE.join(' - ')}</title>
         {/* PWA primary color */}
-        <meta name="theme-color" content={theme.palette.primary.main} />
+        <meta name="theme-color" content="#2563eb" />
         <meta
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width"
@@ -81,17 +81,19 @@ function MyApp(props) {
         <link rel="shortcut icon" href={`${config.BASE_PATH}/favicon.svg`} />
       </Head>
       <main className={roboto.className}>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <QueryClientProvider client={queryClient}>
-            <InjectStoreContext initialData={pageProps.initialState?.store}>
-              <Application {...pageProps}>
-                <Component {...pageProps} />
-              </Application>
-            </InjectStoreContext>
-          </QueryClientProvider>
-        </ThemeProvider>
+        <NextThemeProvider>
+          <MaterialUIThemeProvider>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
+            <QueryClientProvider client={queryClient}>
+              <InjectStoreContext initialData={pageProps.initialState?.store}>
+                <Application {...pageProps}>
+                  <Component {...pageProps} />
+                </Application>
+              </InjectStoreContext>
+            </QueryClientProvider>
+          </MaterialUIThemeProvider>
+        </NextThemeProvider>
       </main>
     </>
   );

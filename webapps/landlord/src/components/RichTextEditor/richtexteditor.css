@@ -6,6 +6,22 @@
   --tiptap-page-height: 297mm;
   --tiptap-page-width: 210mm;
   --tiptap-page-break-height: 10px;
+  --tiptap-text-color: #000;
+  --tiptap-border-color: rgba(0, 0, 0, 0.8);
+  --tiptap-table-header-bg: #f1f3f5;
+  --tiptap-blockquote-border: rgba(13, 13, 13, 0.1);
+  --tiptap-template-bg: #e0e0e0;
+}
+
+.dark {
+  --tiptap-page-color: #1e293b;
+  --tiptap-page-bg-color: #0f172a;
+  --tiptap-page-border: 1px solid #334155;
+  --tiptap-text-color: #f8fafc;
+  --tiptap-border-color: rgba(248, 250, 252, 0.6);
+  --tiptap-table-header-bg: #334155;
+  --tiptap-blockquote-border: rgba(248, 250, 252, 0.2);
+  --tiptap-template-bg: #475569;
 }
 
 .editor-wrapper {
@@ -133,13 +149,14 @@
   padding: 0 30mm;
   border: var(--tiptap-page-border);
   background-color: var(--tiptap-page-color);
+  color: var(--tiptap-text-color);
   overflow: hidden;
   min-height: var(--tiptap-page-height);
 }
 
 .ProseMirror blockquote {
   padding-left: 1rem;
-  border-left: 2px solid rgba(13, 13, 13, 0.1);
+  border-left: 2px solid var(--tiptap-blockquote-border);
 }
 
 .ProseMirror table {
@@ -152,7 +169,7 @@
 
 .ProseMirror table th,
 .ProseMirror table td {
-  border: 1pt solid rgba(0, 0, 0, 0.8);
+  border: 1pt solid var(--tiptap-border-color);
   box-sizing: border-box;
   min-width: 1em;
   padding: 3px 5px;
@@ -161,7 +178,7 @@
 }
 
 .ProseMirror table th {
-  background-color: #f1f3f5;
+  background-color: var(--tiptap-table-header-bg);
   font-weight: bold;
   text-align: left;
 }
@@ -193,7 +210,7 @@
 }
 
 .ProseMirror .template {
-  background-color: #e0e0e0;
+  background-color: var(--tiptap-template-bg);
   padding: 1px 6px;
   border-radius: 16px;
 }

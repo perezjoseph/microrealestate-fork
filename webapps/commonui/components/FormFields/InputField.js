@@ -34,7 +34,7 @@ export function InputField({
   // Try to translate the error message, fallback to original if translation doesn't exist
   const getErrorMessage = (error) => {
     if (!error) return '';
-    
+
     // Check if the error message has a translation
     const translatedError = t(error, { fallback: error });
     return translatedError;

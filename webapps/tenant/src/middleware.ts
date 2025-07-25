@@ -49,23 +49,25 @@ function getRequestLocale(request: NextRequest) {
   request.headers.forEach((value, key) => {
     requestHeaders[key] = value;
   });
-  
+
   // Get languages from request headers
   let languages = new Negotiator({ headers: requestHeaders }).languages();
-  
+
   // Debug logging to help diagnose issues
   console.debug('Available locales:', LOCALES);
   console.debug('Browser languages:', languages);
-  
+
   // Filter out invalid language values
-  languages = languages.filter(lang => lang !== '*' && lang !== undefined && lang !== null);
-  
+  languages = languages.filter(
+    (lang) => lang !== '*' && lang !== undefined && lang !== null
+  );
+
   // If no valid languages, use default
   if (!languages.length) {
     console.debug('No valid languages found, using default:', DEFAULT_LOCALE);
     return DEFAULT_LOCALE;
   }
-  
+
   try {
     // Try to match the browser language to our available locales
     const matchedLocale = match(languages, LOCALES, DEFAULT_LOCALE) as Locale;
@@ -91,12 +93,20 @@ function injectLocale(request: NextRequest) {
     console.debug('====>', pathname, 'redirected to', request.nextUrl.pathname);
     return NextResponse.redirect(request.nextUrl);
   }
-  
+
   // If the locale in the pathname is not valid, redirect to the default locale
-  if (pathnameLocale && !LOCALES.includes(pathnameLocale as any)) {
-    const newPath = pathname.replace(`/${pathnameLocale}`, `/${DEFAULT_LOCALE}`);
+  if (pathnameLocale && !LOCALES.includes(pathnameLocale as Locale)) {
+    const newPath = pathname.replace(
+      `/${pathnameLocale}`,
+      `/${DEFAULT_LOCALE}`
+    );
     request.nextUrl.pathname = newPath;
-    console.debug('Invalid locale redirect:', pathname, 'to', request.nextUrl.pathname);
+    console.debug(
+      'Invalid locale redirect:',
+      pathname,
+      'to',
+      request.nextUrl.pathname
+    );
     return NextResponse.redirect(request.nextUrl);
   }
 }

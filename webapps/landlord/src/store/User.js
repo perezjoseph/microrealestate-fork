@@ -74,7 +74,7 @@ export default class User {
     } catch (error) {
       const status = error.response?.status;
       const data = error.response?.data;
-      
+
       // Return detailed error information for rate limiting
       if (status === 429 && data) {
         return {
@@ -85,7 +85,7 @@ export default class User {
           type: data.type
         };
       }
-      
+
       return { status };
     }
   }
@@ -105,7 +105,7 @@ export default class User {
     } catch (error) {
       const status = error.response?.status;
       const data = error.response?.data;
-      
+
       // Return detailed error information for rate limiting
       if (status === 429 && data) {
         return {
@@ -116,7 +116,7 @@ export default class User {
           type: data.type
         };
       }
-      
+
       return { status };
     }
   }
@@ -187,7 +187,7 @@ export default class User {
     } catch (error) {
       const status = error.response?.status;
       const data = error.response?.data;
-      
+
       // Return detailed error information for rate limiting
       if (status === 429 && data) {
         return {
@@ -198,7 +198,7 @@ export default class User {
           type: data.type
         };
       }
-      
+
       return { status };
     }
   }

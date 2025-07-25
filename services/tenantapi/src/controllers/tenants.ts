@@ -9,7 +9,8 @@ import {
 import moment from 'moment';
 
 // Email validation regex - RFC 5322 compliant, stricter version
-const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 /**
  * Validates and sanitizes email input to prevent injection attacks
@@ -23,18 +24,20 @@ function validateAndSanitizeEmail(email: string): string {
 
   // Trim and convert to lowercase
   const sanitizedEmail = email.trim().toLowerCase();
-  
+
   // Check for maximum length to prevent DoS
   if (sanitizedEmail.length > 254) {
     throw new ServiceError('Email too long', 400);
   }
 
   // Additional security checks for malformed emails
-  if (sanitizedEmail.includes('..') || 
-      sanitizedEmail.startsWith('.') || 
-      sanitizedEmail.endsWith('.') ||
-      sanitizedEmail.includes('@.') ||
-      sanitizedEmail.includes('.@')) {
+  if (
+    sanitizedEmail.includes('..') ||
+    sanitizedEmail.startsWith('.') ||
+    sanitizedEmail.endsWith('.') ||
+    sanitizedEmail.includes('@.') ||
+    sanitizedEmail.includes('.@')
+  ) {
     throw new ServiceError('Invalid email format', 400);
   }
 
@@ -55,12 +58,12 @@ export async function getOneTenant(
   const user = req.user as UserServicePrincipal;
   const email = user.email;
   const phone = user.phone;
-  
+
   if (!email && !phone) {
     logger.error('missing email or phone field');
     throw new ServiceError('unauthorized', 401);
   }
-  
+
   const tenantId = req.params.tenantId;
 
   // Validate tenantId format (MongoDB ObjectId)
@@ -68,8 +71,8 @@ export async function getOneTenant(
     throw new ServiceError('Invalid tenant ID format', 400);
   }
 
-  let query: any = { _id: tenantId };
-  
+  const query: Record<string, unknown> = { _id: tenantId };
+
   // Build query based on available authentication method
   if (email && !email.includes('@whatsapp.tenant')) {
     // Email-based authentication
@@ -114,14 +117,14 @@ export async function getAllTenants(
   const user = req.user as UserServicePrincipal;
   const email = user.email;
   const phone = user.phone;
-  
+
   if (!email && !phone) {
     logger.error('missing email or phone field');
     throw new ServiceError('unauthorized', 401);
   }
 
-  let query: any = {};
-  
+  const query: Record<string, unknown> = {};
+
   // Build query based on available authentication method
   if (email && !email.includes('@whatsapp.tenant')) {
     // Email-based authentication
@@ -146,7 +149,7 @@ export async function getAllTenants(
   }>(['realmId', 'leaseId']);
 
   // If no tenants found or no lease associated, return a specific response
-  if (!dbTenants.length || dbTenants.some(tenant => !tenant.leaseId)) {
+  if (!dbTenants.length || dbTenants.some((tenant) => !tenant.leaseId)) {
     return res.status(404).json({
       status: 'no_contract',
       message: 'No contract associated with this account'
@@ -171,15 +174,15 @@ function _toTenantResponse(
   const totalChargesAmount = firstRent?.total.charges || 0;
   const totalVatAmount = firstRent?.total.vat || 0;
   const totalAmount = totalPreTaxAmount + totalChargesAmount + totalVatAmount;
-  
+
   // Check if lease exists before computing remaining iterations
   const lease = tenant.leaseId as CollectionTypes.Lease;
-  const { remainingIterations, remainingIterationsToPay } = lease 
+  const { remainingIterations, remainingIterationsToPay } = lease
     ? _computeRemainingIterations(tenant, lastTerm, totalAmount)
     : { remainingIterations: 0, remainingIterationsToPay: 0 };
-    
+
   const landlord = tenant.realmId as CollectionTypes.Realm;
-  
+
   return {
     tenant: {
       id: tenant._id,
@@ -284,7 +287,7 @@ function _computeRemainingIterations(
     logger.error('Lease or timeRange is undefined for tenant', tenant._id);
     return { remainingIterations: 0, remainingIterationsToPay: 0 };
   }
-  
+
   const timeRange = lease.timeRange;
   const remainingIterations = Math.ceil(
     moment(tenant.terminationDate || tenant.endDate).diff(

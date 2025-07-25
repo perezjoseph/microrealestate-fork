@@ -4,7 +4,7 @@
   "description": "Monitors the root directory for AI-generated summary files (*.md files with CI_, DOCKER_, WHATSAPP_, etc. prefixes) and test scripts. When detected, either moves them to appropriate documentation folders or deletes them if they're outdated. Also ensures test scripts are moved to a test directory that won't be pushed to version control.",
   "version": "1",
   "when": {
-    "type": "userTriggered",
+    "type": "fileCreated",
     "patterns": [
       "*.md",
       "*test*.sh",

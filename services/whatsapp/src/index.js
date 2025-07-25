@@ -211,12 +211,12 @@ ${data.organizationName}`,
 
     rentcall: (data) => `Dear ${data.tenantName},
 
-🔔 PAYMENT REMINDER
+ PAYMENT REMINDER
 
 Your rent for period ${data.invoicePeriod} is pending payment.
 
  Amount: ${data.currency} ${data.totalAmount}
-📅 Due date: ${data.dueDate}
+ Due date: ${data.dueDate}
 
 ${data.invoiceUrl ? ` View invoice: ${data.invoiceUrl}` : ''}
 
@@ -231,8 +231,8 @@ ${data.organizationName}`,
 Your rent for period ${data.invoicePeriod} remains pending.
 
  Amount: ${data.currency} ${data.totalAmount}
-📅 Due date: ${data.dueDate}
-⏰ Days overdue: ${data.daysOverdue}
+ Due date: ${data.dueDate}
+ Days overdue: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` View invoice: ${data.invoiceUrl}` : ''}
 
@@ -247,8 +247,8 @@ ${data.organizationName}`,
 Your rent for period ${data.invoicePeriod} is in arrears.
 
  Amount: ${data.currency} ${data.totalAmount}
-📅 Due date: ${data.dueDate}
-⏰ Days overdue: ${data.daysOverdue}
+ Due date: ${data.dueDate}
+ Days overdue: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` View invoice: ${data.invoiceUrl}` : ''}
 
@@ -274,12 +274,12 @@ ${data.organizationName}`,
 
     rentcall: (data) => `Estimado/a ${data.tenantName},
 
-🔔 RECORDATORIO DE PAGO
+ RECORDATORIO DE PAGO
 
 Su renta del período ${data.invoicePeriod} está pendiente de pago.
 
  Monto: ${data.currency} ${data.totalAmount}
-📅 Fecha límite: ${data.dueDate}
+ Fecha límite: ${data.dueDate}
 
 ${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
@@ -294,8 +294,8 @@ ${data.organizationName}`,
 Su renta del período ${data.invoicePeriod} continúa pendiente.
 
  Monto: ${data.currency} ${data.totalAmount}
-📅 Fecha límite: ${data.dueDate}
-⏰ Días de retraso: ${data.daysOverdue}
+ Fecha límite: ${data.dueDate}
+ Días de retraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
@@ -310,8 +310,8 @@ ${data.organizationName}`,
 Su renta del período ${data.invoicePeriod} está en mora.
 
  Monto: ${data.currency} ${data.totalAmount}
-📅 Fecha límite: ${data.dueDate}
-⏰ Días de retraso: ${data.daysOverdue}
+ Fecha límite: ${data.dueDate}
+ Días de retraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Ver factura: ${data.invoiceUrl}` : ''}
 
@@ -337,12 +337,12 @@ ${data.organizationName}`,
 
     rentcall: (data) => `Cher/Chère ${data.tenantName},
 
-🔔 RAPPEL DE PAIEMENT
+ RAPPEL DE PAIEMENT
 
 Votre loyer pour la période ${data.invoicePeriod} est en attente de paiement.
 
  Montant: ${data.currency} ${data.totalAmount}
-📅 Date limite: ${data.dueDate}
+ Date limite: ${data.dueDate}
 
 ${data.invoiceUrl ? ` Voir la facture: ${data.invoiceUrl}` : ''}
 
@@ -357,8 +357,8 @@ ${data.organizationName}`,
 Votre loyer pour la période ${data.invoicePeriod} reste en attente.
 
  Montant: ${data.currency} ${data.totalAmount}
-📅 Date limite: ${data.dueDate}
-⏰ Jours de retard: ${data.daysOverdue}
+ Date limite: ${data.dueDate}
+ Jours de retard: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Voir la facture: ${data.invoiceUrl}` : ''}
 
@@ -373,8 +373,8 @@ ${data.organizationName}`,
 Votre loyer pour la période ${data.invoicePeriod} est en retard.
 
  Montant: ${data.currency} ${data.totalAmount}
-📅 Date limite: ${data.dueDate}
-⏰ Jours de retard: ${data.daysOverdue}
+ Date limite: ${data.dueDate}
+ Jours de retard: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Voir la facture: ${data.invoiceUrl}` : ''}
 
@@ -400,12 +400,12 @@ ${data.organizationName}`,
 
     rentcall: (data) => `Liebe/r ${data.tenantName},
 
-🔔 ZAHLUNGSERINNERUNG
+ ZAHLUNGSERINNERUNG
 
 Ihre Miete für den Zeitraum ${data.invoicePeriod} steht noch aus.
 
  Betrag: ${data.currency} ${data.totalAmount}
-📅 Fälligkeitsdatum: ${data.dueDate}
+ Fälligkeitsdatum: ${data.dueDate}
 
 ${data.invoiceUrl ? ` Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
@@ -420,8 +420,8 @@ ${data.organizationName}`,
 Ihre Miete für den Zeitraum ${data.invoicePeriod} ist weiterhin ausstehend.
 
  Betrag: ${data.currency} ${data.totalAmount}
-📅 Fälligkeitsdatum: ${data.dueDate}
-⏰ Tage überfällig: ${data.daysOverdue}
+ Fälligkeitsdatum: ${data.dueDate}
+ Tage überfällig: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
@@ -436,8 +436,8 @@ ${data.organizationName}`,
 Ihre Miete für den Zeitraum ${data.invoicePeriod} ist im Rückstand.
 
  Betrag: ${data.currency} ${data.totalAmount}
-📅 Fälligkeitsdatum: ${data.dueDate}
-⏰ Tage überfällig: ${data.daysOverdue}
+ Fälligkeitsdatum: ${data.dueDate}
+ Tage überfällig: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Rechnung anzeigen: ${data.invoiceUrl}` : ''}
 
@@ -463,12 +463,12 @@ ${data.organizationName}`,
 
     rentcall: (data) => `Caro/a ${data.tenantName},
 
-🔔 LEMBRETE DE PAGAMENTO
+ LEMBRETE DE PAGAMENTO
 
 Seu aluguel do período ${data.invoicePeriod} está pendente de pagamento.
 
  Valor: ${data.currency} ${data.totalAmount}
-📅 Data limite: ${data.dueDate}
+ Data limite: ${data.dueDate}
 
 ${data.invoiceUrl ? ` Ver fatura: ${data.invoiceUrl}` : ''}
 
@@ -483,8 +483,8 @@ ${data.organizationName}`,
 Seu aluguel do período ${data.invoicePeriod} continua pendente.
 
  Valor: ${data.currency} ${data.totalAmount}
-📅 Data limite: ${data.dueDate}
-⏰ Dias em atraso: ${data.daysOverdue}
+ Data limite: ${data.dueDate}
+ Dias em atraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Ver fatura: ${data.invoiceUrl}` : ''}
 
@@ -499,8 +499,8 @@ ${data.organizationName}`,
 Seu aluguel do período ${data.invoicePeriod} está em atraso.
 
  Valor: ${data.currency} ${data.totalAmount}
-📅 Data limite: ${data.dueDate}
-⏰ Dias em atraso: ${data.daysOverdue}
+ Data limite: ${data.dueDate}
+ Dias em atraso: ${data.daysOverdue}
 
 ${data.invoiceUrl ? ` Ver fatura: ${data.invoiceUrl}` : ''}
 
@@ -1123,7 +1123,7 @@ app.post('/webhook', (req, res) => {
             // Handle incoming messages (for future use)
             if (value.messages) {
               value.messages.forEach(message => {
-                console.log(`📨 Incoming message from ${message.from}: ${message.text?.body || '[media]'}`);
+                console.log(` Incoming message from ${message.from}: ${message.text?.body || '[media]'}`);
               });
             }
           }

@@ -4,6 +4,7 @@ import EnvironmentBar from './EnvironmentBar';
 import OrganizationMenu from './organization/OrganizationMenu';
 import { StoreContext } from '../store';
 import { Toaster } from '../components/ui/sonner';
+import { ThemeToggle } from '@microrealestate/commonui/components/ThemeToggle';
 import { useContext } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
 
@@ -29,6 +30,7 @@ export default function Layout({ hideMenu, children }) {
                 {!isXLorGreater ? (
                   <HamburgerMenu className="flex flex-grow items-center" />
                 ) : null}
+                <ThemeToggle size="sm" className="mr-2" />
                 <OrganizationMenu />
               </div>
             ) : null}

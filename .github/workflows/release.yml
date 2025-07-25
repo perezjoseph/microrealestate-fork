@@ -88,13 +88,13 @@ jobs:
         
         ## Features
         
-        - 🏠 Complete property management system
-        - 📱 WhatsApp integration for notifications and OTP authentication
-        - 🌍 Multi-language support (EN, ES, FR, DE, PT)
-        - 🔐 Enhanced security with JWT and rate limiting
-        - 📊 Modern UI with shadcn/ui components
-        - 🐳 Full Docker containerization
-        - 🏗️ Microservices architecture
+        -  Complete property management system
+        -  WhatsApp integration for notifications and OTP authentication
+        -  Multi-language support (EN, ES, FR, DE, PT)
+        -  Enhanced security with JWT and rate limiting
+        -  Modern UI with shadcn/ui components
+        -  Full Docker containerization
+        -  Microservices architecture
         EOF
 
     - name: Create Release
@@ -194,43 +194,43 @@ jobs:
         #!/bin/bash
         set -e
         
-        echo "🚀 Installing MicroRealEstate ${{ needs.create-release.outputs.version }}"
+        echo " Installing MicroRealEstate ${{ needs.create-release.outputs.version }}"
         echo ""
         
         # Check if Docker is installed
         if ! command -v docker &> /dev/null; then
-            echo "❌ Docker is not installed. Please install Docker first."
+            echo " Docker is not installed. Please install Docker first."
             exit 1
         fi
         
         # Check if Docker Compose is installed
         if ! command -v docker compose &> /dev/null; then
-            echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+            echo " Docker Compose is not installed. Please install Docker Compose first."
             exit 1
         fi
         
         # Create .env file if it doesn't exist
         if [ ! -f .env ]; then
-            echo "📝 Creating .env file from template..."
+            echo " Creating .env file from template..."
             cp .env.example .env
-            echo "⚠️  Please edit the .env file and configure your secrets and tokens!"
+            echo "  Please edit the .env file and configure your secrets and tokens!"
             echo "   Required: JWT_SECRET, CIPHER_KEY, CIPHER_IV_KEY"
             echo "   Optional: WhatsApp, Email, and other service configurations"
             echo ""
         fi
         
-        echo "🐳 Starting MicroRealEstate..."
+        echo " Starting MicroRealEstate..."
         docker compose --profile local up -d
         
         echo ""
-        echo "✅ MicroRealEstate is starting up!"
+        echo " MicroRealEstate is starting up!"
         echo ""
-        echo "🌐 Access your application at:"
+        echo " Access your application at:"
         echo "   Landlord Interface: http://localhost:8080/landlord"
         echo "   Tenant Interface: http://localhost:8080/tenant"
         echo ""
-        echo "📋 Check status with: docker compose --profile local ps"
-        echo "📊 View logs with: docker compose --profile local logs -f"
+        echo " Check status with: docker compose --profile local ps"
+        echo " View logs with: docker compose --profile local logs -f"
         EOF
         
         chmod +x deployment-package/install.sh
@@ -254,9 +254,9 @@ jobs:
     steps:
     - name: Release Summary
       run: |
-        echo "🎉 Release ${{ needs.create-release.outputs.version }} completed successfully!"
+        echo " Release ${{ needs.create-release.outputs.version }} completed successfully!"
         echo ""
-        echo "📦 Docker Images Published:"
+        echo " Docker Images Published:"
         echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api:${{ needs.create-release.outputs.version }}"
         echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-authenticator:${{ needs.create-release.outputs.version }}"
         echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-emailer:${{ needs.create-release.outputs.version }}"
@@ -267,6 +267,6 @@ jobs:
         echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-tenantapi:${{ needs.create-release.outputs.version }}"
         echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-whatsapp:${{ needs.create-release.outputs.version }}"
         echo ""
-        echo "📋 Deployment package: microrealestate-${{ needs.create-release.outputs.version }}.tar.gz"
+        echo " Deployment package: microrealestate-${{ needs.create-release.outputs.version }}.tar.gz"
         echo ""
-        echo "🚀 Ready for production deployment!"
+        echo " Ready for production deployment!"

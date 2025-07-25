@@ -46,9 +46,9 @@ function displaySponsorMessage() {
   console.log(chalk.dim('#'.repeat(80)));
   console.log(
     chalk.dim('#' + ' '.repeat(8)),
-    chalk.red.bold('❤'),
+    chalk.red.bold(''),
     chalk.white('If you like this project, please consider sponsoring it'),
-    chalk.red.bold('❤'),
+    chalk.red.bold(''),
     chalk.dim(' '.repeat(9) + '#')
   );
   console.log(
@@ -61,7 +61,7 @@ function displaySponsorMessage() {
   console.log(
     chalk.dim('#' + ' '.repeat(32)),
     chalk.white('Thank you'),
-    chalk.white('🙏'),
+    chalk.white(''),
     chalk.dim(' '.repeat(32) + '#')
   );
   console.log(chalk.dim('#'.repeat(80)));
@@ -213,7 +213,7 @@ async function checkHealth() {
   }
 
   if (!healthcheckSuccess) {
-    console.log(chalk.red('💣 Application did not start successfully'));
+    console.log(chalk.red(' Application did not start successfully'));
     displayConfigWarningsAndErrors();
   } else {
     console.log(chalk.green(' application started\n'));

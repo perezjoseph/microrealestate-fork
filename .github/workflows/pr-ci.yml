@@ -39,22 +39,22 @@ jobs:
 
       - name: Install dependencies
         run: |
-          echo "📦 Installing workspace dependencies..."
+          echo " Installing workspace dependencies..."
           if ! yarn install --immutable --check-cache; then
-            echo "⚠️ Immutable install failed, trying without immutable flag..."
+            echo " Immutable install failed, trying without immutable flag..."
             yarn cache clean --all
             yarn install
           fi
 
       - name: Build types
         run: |
-          echo "🔨 Building types..."
+          echo " Building types..."
           yarn workspace @microrealestate/types run build
 
       - name: Lint
         run: |
-          echo "🔍 Running linting across workspace..."
-          yarn lint || echo "⚠️ Some linting issues found (non-critical)"
+          echo " Running linting across workspace..."
+          yarn lint || echo " Some linting issues found (non-critical)"
 
   test-services:
     runs-on: ubuntu-latest
@@ -76,14 +76,14 @@ jobs:
       - name: Install dependencies
         run: |
           if ! yarn install --immutable --check-cache; then
-            echo "⚠️ Immutable install failed, trying without immutable flag..."
+            echo " Immutable install failed, trying without immutable flag..."
             yarn cache clean --all
             yarn install
           fi
 
       - name: Test services
         run: |
-          echo "🧪 Testing individual services..."
+          echo " Testing individual services..."
           
           # Test services that have test scripts
           for service in services/*/package.json webapps/*/package.json; do
@@ -94,9 +94,9 @@ jobs:
               
               cd "$dir"
               if npm test --if-present 2>/dev/null; then
-                echo "✅ Tests passed for $service_name"
+                echo " Tests passed for $service_name"
               else
-                echo "⚠️ No tests or tests failed for $service_name"
+                echo " No tests or tests failed for $service_name"
               fi
               cd - > /dev/null
             fi
@@ -109,9 +109,9 @@ jobs:
     steps:
       - name: PR CI Summary
         run: |
-          echo "🎉 PR CI Pipeline Completed!"
+          echo " PR CI Pipeline Completed!"
           echo ""
-          echo "✅ Code linting completed"
-          echo "✅ Service tests completed"
+          echo " Code linting completed"
+          echo " Service tests completed"
           echo ""
-          echo "🔍 PR is ready for review!"
+          echo " PR is ready for review!"

@@ -141,9 +141,13 @@ export default function WhatsAppOtp({
               )}
             />
             <div className="text-secondary-foreground">
-              {t('This code expires shortly, so please check your WhatsApp soon.')}
+              {t(
+                'This code expires shortly, so please check your WhatsApp soon.'
+              )}
               <br />
-              {t("If you haven't received the message, you can request a new code.")}
+              {t(
+                "If you haven't received the message, you can request a new code."
+              )}
             </div>
           </form>
         </Form>
