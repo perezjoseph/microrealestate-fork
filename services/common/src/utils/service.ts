@@ -6,6 +6,7 @@ import {
 } from '@microrealestate/types';
 import _cookieParser from 'cookie-parser';
 import _methodOverride from 'method-override';
+import { Application } from 'express';
 import EnvironmentConfig from './environmentconfig.js';
 import Express from 'express';
 import expressWinston from 'express-winston';
@@ -93,20 +94,18 @@ export default class Service {
     }
 
     if (this.useRequestParsers) {
-      this.expressServer.use(_cookieParser());
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.expressServer as any).use(_cookieParser());
       this.expressServer.use(Express.urlencoded({ extended: true }));
       this.expressServer.use(Express.json());
-      this.expressServer.use(_methodOverride());
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.expressServer as any).use(_methodOverride());
       if (this.useMongo) {
-        this.expressServer.use(
-          mongoSanitize({
-            allowDots: true,
-            replaceWith: '_',
-            onSanitize: (payload: any) => {
-              console.warn(`request[${payload.key}] has been sanitized`, payload.req);
-            }
-          })
-        );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (this.expressServer as any).use(mongoSanitize({
+          allowDots: true,
+          replaceWith: '_'
+        }));
       }
     }
 
