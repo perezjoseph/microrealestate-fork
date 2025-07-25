@@ -102,14 +102,8 @@ export default class Service {
           mongoSanitize({
             allowDots: true,
             replaceWith: '_',
-            onSanitize: ({
-              req,
-              key
-            }: {
-              req: Express.Request;
-              key: string;
-            }) => {
-              console.warn(`request[${key}] has been sanitized`, req);
+            onSanitize: (payload: any) => {
+              console.warn(`request[${payload.key}] has been sanitized`, payload.req);
             }
           })
         );

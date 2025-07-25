@@ -1,8 +1,8 @@
 import {
   CountryCode,
-  PhoneNumber,
   isValidPhoneNumber,
-  parsePhoneNumber
+  parsePhoneNumber,
+  PhoneNumber
 } from 'libphonenumber-js';
 
 export interface PhoneValidationResult {

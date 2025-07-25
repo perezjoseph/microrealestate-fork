@@ -1,6 +1,6 @@
 import React from 'react';
-import { CountrySelector, CompactCountrySelector } from '../CountrySelector';
-import { CountryData, Country } from '../../../utils/phone/Countries';
+import { CompactCountrySelector, CountrySelector } from '../CountrySelector';
+import { Country, CountryData } from '../../../utils/phone/Countries';
 
 // Mock the utils
 jest.mock('../../../utils', () => ({

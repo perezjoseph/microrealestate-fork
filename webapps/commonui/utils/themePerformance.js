@@ -216,13 +216,13 @@ export class ThemeBundleAnalyzer {
     if (typeof window === 'undefined') return null;
     
     // Estimate bundle size impact of theme system
-    const themeModules = [
-      'ThemeToggle',
-      'ThemeProvider', 
-      'useTheme',
-      'themeErrorHandling',
-      'themePerformance'
-    ];
+    // const themeModules = [
+    //   'ThemeToggle',
+    //   'ThemeProvider', 
+    //   'useTheme',
+    //   'themeErrorHandling',
+    //   'themePerformance'
+    // ]; // Unused for now
     
     // This is an approximation - in a real implementation,
     // you would integrate with your bundler's analysis tools

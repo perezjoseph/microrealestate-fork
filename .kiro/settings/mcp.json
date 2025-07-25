@@ -25,18 +25,16 @@
       "autoApprove": []
     },
     "github": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e",
-        "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "ghcr.io/github/github-mcp-server"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
-      }
+      "command": ".kiro/scripts/github-mcp.sh",
+      "args": [],
+      "disabled": false,
+      "autoApprove": [
+        "get_me",
+        "list_workflows",
+        "list_workflow_runs",
+        "get_workflow_run",
+        "list_workflow_jobs"
+      ]
     }
   }
 }

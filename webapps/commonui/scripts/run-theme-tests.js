@@ -107,7 +107,7 @@ const runTestSuite = (suite, options = {}) => {
     
     log(`\nRunning: ${jestCommand}`, 'blue');
     
-    const result = execSync(jestCommand, {
+    execSync(jestCommand, {
       cwd,
       stdio: 'inherit',
       encoding: 'utf8'

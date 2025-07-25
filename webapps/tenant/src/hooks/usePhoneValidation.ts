@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 import {
-    OptimizedPhoneValidator as PhoneValidator,
-    PhoneValidationResult
+    PhoneValidationResult,
+    OptimizedPhoneValidator as PhoneValidator
 } from '../utils/phone/PhoneValidatorOptimized';
 import { Country } from '../utils/phone/Countries';
 import { PHONE_VALIDATION_MESSAGES } from '../utils/phone/PhoneValidationMessages';

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { CountrySelector, CompactCountrySelector } from '../CountrySelector';
-import { CountryData, Country } from '../../../utils/phone/Countries';
+import { CompactCountrySelector, CountrySelector } from '../CountrySelector';
+import { Country, CountryData } from '../../../utils/phone/Countries';
 
 // Mock the utils
 jest.mock('../../../utils', () => ({

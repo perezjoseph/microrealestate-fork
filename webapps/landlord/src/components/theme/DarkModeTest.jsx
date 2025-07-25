@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Button, CircularProgress, Tooltip } from '@material-ui/core';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { useTheme } from '@microrealestate/commonui/hooks/useTheme';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '../ui/chart';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, RadialBarChart, RadialBar, Legend } from 'recharts';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { Bar, BarChart, Legend, RadialBar, RadialBarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 const testData = [

@@ -4,15 +4,15 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import ThemeErrorBoundary from '@microrealestate/commonui/components/ThemeErrorBoundary';
 import {
+  resolveTheme,
+  SafeStorage,
+  SafeThemeApplicator,
+  SystemThemeDetector,
+  THEME_ERROR_SEVERITY,
+  THEME_ERROR_TYPES,
   ThemeError,
   ThemeErrorLogger,
-  SafeStorage,
-  SystemThemeDetector,
-  SafeThemeApplicator,
-  validateTheme,
-  resolveTheme,
-  THEME_ERROR_TYPES,
-  THEME_ERROR_SEVERITY
+  validateTheme
 } from '@microrealestate/commonui/utils/themeErrorHandling';
 
 type Theme = 'light' | 'dark' | 'system';
@@ -203,11 +203,6 @@ export function ThemeProvider({
     SafeThemeApplicator.resetToDefault();
   };
 
-  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   const contextValue: ThemeContextValue = {
     theme,
     setTheme,
@@ -234,6 +229,11 @@ export function ThemeProvider({
       );
     }
   }, [contextValue]);
+
+  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <ThemeErrorBoundary onError={handleThemeError}>

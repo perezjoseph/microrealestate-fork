@@ -300,7 +300,7 @@ function validateAccessibility() {
       console.log(`\n${themeName.toUpperCase()} THEME:`);
       console.log('-'.repeat(20));
       
-      Object.entries(report.themes[themeName]).forEach(([key, result]) => {
+      Object.entries(report.themes[themeName]).forEach(([, result]) => {
         if (result.ratio) {
           const status = result.passed ? '✅' : '❌';
           console.log(`${status} ${result.name}: ${result.ratio}:1`);

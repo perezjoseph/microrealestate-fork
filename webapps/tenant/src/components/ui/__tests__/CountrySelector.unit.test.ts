@@ -1,4 +1,4 @@
-import { CountryData, Country } from '../../../utils/phone/Countries';
+import { Country, CountryData } from '../../../utils/phone/Countries';
 
 describe('CountrySelector Component Dependencies', () => {
     describe('CountryData Integration', () => {

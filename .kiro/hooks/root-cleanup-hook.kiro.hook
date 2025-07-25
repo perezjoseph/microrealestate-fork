@@ -6,9 +6,7 @@
   "when": {
     "type": "fileCreated",
     "patterns": [
-      "*.md",
-      "*test*.sh",
-      "*test*.js"
+      "./"
     ]
   },
   "then": {

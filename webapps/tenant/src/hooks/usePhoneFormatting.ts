@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { CountryCode } from 'libphonenumber-js';
 import { PhoneValidator } from '../utils/phone/PhoneValidator';
 import { Country } from '../utils/phone/Countries';

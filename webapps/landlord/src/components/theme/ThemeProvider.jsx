@@ -2,11 +2,11 @@ import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import ThemeErrorBoundary from '@microrealestate/commonui/components/ThemeErrorBoundary';
 import {
-  ThemeError,
-  ThemeErrorLogger,
   SafeThemeApplicator,
+  THEME_ERROR_SEVERITY,
   THEME_ERROR_TYPES,
-  THEME_ERROR_SEVERITY
+  ThemeError,
+  ThemeErrorLogger
 } from '@microrealestate/commonui/utils/themeErrorHandling';
 
 /**

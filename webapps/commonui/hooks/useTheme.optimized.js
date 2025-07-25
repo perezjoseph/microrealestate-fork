@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  announceThemeChange,
+  resolveTheme,
+  SafeStorage,
+  SafeThemeApplicator,
+  SystemThemeDetector,
+  THEME_ERROR_SEVERITY,
+  THEME_ERROR_TYPES,
   ThemeError,
   ThemeErrorLogger,
-  SafeStorage,
-  SystemThemeDetector,
-  SafeThemeApplicator,
-  validateTheme,
-  resolveTheme,
-  announceThemeChange,
-  THEME_ERROR_TYPES,
-  THEME_ERROR_SEVERITY
+  validateTheme
 } from '../utils/themeErrorHandling';
 
 // Cache for theme context detection to avoid repeated checks

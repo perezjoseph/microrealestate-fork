@@ -4,7 +4,7 @@
   "description": "Monitors for new feature additions and updates the documentation accordingly",
   "version": "1",
   "when": {
-    "type": "fileEdited",
+    "type": "fileCreated",
     "patterns": [
       "services/*/src/**/*.js",
       "services/*/src/**/*.ts",
