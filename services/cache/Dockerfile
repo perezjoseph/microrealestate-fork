@@ -3,11 +3,11 @@ FROM node:22-bookworm-slim
 WORKDIR /usr/app
 
 # Copy package files and install dependencies
-COPY services/cache/package.json ./
+COPY package.json ./
 RUN npm install --only=production
 
 # Copy cache service files
-COPY services/cache/index.js services/cache/logger.js ./
+COPY index.js logger.js ./
 
 # Expose port (if needed)
 EXPOSE 6380
