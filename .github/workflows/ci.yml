@@ -91,6 +91,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ matrix.image }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push to GitHub Container Registry
         uses: docker/build-push-action@v5
@@ -98,5 +103,6 @@ jobs:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
-          tags: '${{ matrix.image }}:${{ github.sha }}'
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
