@@ -167,7 +167,7 @@ jobs:
               if [ -n "$FINAL_TAGS" ]; then
                 FINAL_TAGS="$FINAL_TAGS,"
               fi
-              FINAL_TAGS="$FINAL_TAGS${{ matrix.image }}:$tag"
+              FINAL_TAGS="${FINAL_TAGS}${{ matrix.image }}:${tag}"
             fi
           done
           
