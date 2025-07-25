@@ -109,6 +109,12 @@ const value = await RedisClient.get('key');
 - Base config: `base.env`, Local overrides: `.env` (not committed)
 - Docker: Use `APP_DOMAIN` and `APP_PROTOCOL`
 
+### Container Registry
+- **GitHub Container Registry**: `ghcr.io/perezjoseph/microrealestate-whatsapp/`
+- **Authentication**: `docker login ghcr.io`
+- **Push Script**: `./push-to-ghcr.sh` (pushes all services)
+- **Services Available**: gateway, authenticator, api, tenantapi, pdfgenerator, emailer, whatsapp, landlord-frontend, tenant-frontend
+
 ### Locked Versions (DO NOT CHANGE)
 - Node.js 22.17.1 (exact - see `.nvmrc`)
 - Yarn 3.3.0 (NO npm allowed)
@@ -125,12 +131,86 @@ yarn mre build           # Production build
 yarn workspaces foreach  # Cross-workspace commands
 ```
 
+### Local Docker Development
+
+#### Option 1: Build from Source (Recommended for Development)
+```bash
+# Start all services locally with local builds
+APP_PORT=8080 docker-compose --profile local up -d
+
+# Build and start (if images need rebuilding)
+APP_PORT=8080 docker-compose --profile local up -d --build
+
+# Rebuild specific services (e.g., after frontend changes)
+docker-compose build --parallel landlord-frontend tenant-frontend
+APP_PORT=8080 docker-compose --profile local up -d
+
+# Stop all services
+docker-compose down
+```
+
+#### Option 2: Use Pre-built Images (Faster Startup)
+```bash
+# Start with pre-built images from GitHub Container Registry
+docker-compose -f docker-compose.local.yml up -d
+
+# Stop services
+docker-compose -f docker-compose.local.yml down
+```
+
+#### Option 3: Use Custom GitHub Container Registry
+```bash
+# First, authenticate with GitHub Container Registry
+docker login ghcr.io
+
+# Push local images to your registry (after building)
+./push-to-ghcr.sh
+
+# Start with your custom registry images
+APP_PORT=8080 docker-compose -f docker-compose.ghcr.yml up -d
+
+# Stop services
+docker-compose -f docker-compose.ghcr.yml down
+```
+
+#### Monitoring and Debugging
+```bash
+# View logs for specific service
+docker-compose logs -f gateway
+docker-compose logs -f landlord-frontend
+docker-compose logs -f tenant-frontend
+
+# Check service status
+docker-compose ps
+
+# Follow all logs
+docker-compose logs -f
+```
+
+#### Application Access
+- **Landlord Dashboard**: http://localhost:8080/landlord
+- **Tenant Portal**: http://localhost:8080/tenant
+- **WhatsApp Service**: http://localhost:8500 (direct access)
+- **Gateway API**: http://localhost:8080 (404 on root is expected)
+
 ### Testing
 ```bash
 # Local testing environment
-APP_PORT=8080 docker-compose -p local up -d
-docker-compose -p local logs -f [service-name]
-docker-compose -p local down
+APP_PORT=8080 docker-compose --profile local up -d
+docker-compose logs -f [service-name]
+docker-compose down
+
+# Application URLs (after running locally)
+# Landlord Dashboard: http://localhost:8080/landlord
+# Tenant Portal: http://localhost:8080/tenant
+# Gateway API: http://localhost:8080 (404 on root is expected)
+# WhatsApp Service: http://localhost:8500
+
+# Monitor all services
+docker-compose logs -f
+
+# Check service status
+docker-compose ps
 ```
 
 ### Performance Optimization

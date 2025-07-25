@@ -1,73 +1,5 @@
 services:
   ###############################################################################
-  # Cache Service
-  ###############################################################################
-  cache:
-    restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/cache:latest'
-    environment:
-      NODE_ENV: production
-      PORT: 8600
-      LOGGER_LEVEL: info
-      REDIS_URL: redis://valkey:6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
-      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-access_token_secret}
-    expose:
-      - '8600'
-    networks:
-      - net
-    depends_on:
-      valkey:
-        condition: service_started
-  ###############################################################################
-  # Reset Service
-  ###############################################################################
-  resetservice:
-    restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/resetservice:latest'
-    environment:
-      NODE_ENV: production
-      PORT: 8700
-      LOGGER_LEVEL: info
-      MONGO_URL: ${MONGO_URL:-mongodb://mongo/mredb}
-      REDIS_URL: redis://valkey:6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
-      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-access_token_secret}
-      CIPHER_KEY: ${CIPHER_KEY:-cipher_key}
-      CIPHER_IV_KEY: ${CIPHER_IV_KEY:-cipher_iv_key}
-    expose:
-      - '8700'
-    networks:
-      - net
-    depends_on:
-      mongo:
-        condition: service_started
-      valkey:
-        condition: service_started
-  ###############################################################################
-  # Monitoring Service
-  ###############################################################################
-  monitoring:
-    restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/monitoring:latest'
-    environment:
-      NODE_ENV: production
-      PORT: 8800
-      LOGGER_LEVEL: info
-      MONGO_URL: ${MONGO_URL:-mongodb://mongo/mredb}
-      REDIS_URL: redis://valkey:6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
-      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-access_token_secret}
-    expose:
-      - '8800'
-    networks:
-      - net
-    depends_on:
-      mongo:
-        condition: service_started
-      valkey:
-        condition: service_started
-  ###############################################################################
   # Valkey (Redis-compatible)
   ###############################################################################
   valkey:
@@ -127,7 +59,7 @@ services:
   # WhatsApp Service
   ###############################################################################
   whatsapp:
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/whatsapp:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/whatsapp:latest
     ports:
       - "8500:8500"
     environment:
@@ -165,7 +97,7 @@ services:
   ###############################################################################
   gateway:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/gateway:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/gateway:latest
     environment:
       NODE_ENV: production
       LOGGER_LEVEL: info
@@ -176,9 +108,6 @@ services:
       PDFGENERATOR_URL: http://pdfgenerator:8300/pdfgenerator
       EMAILER_URL: http://emailer:8400/emailer
       WHATSAPP_URL: http://whatsapp:8500
-      CACHE_URL: http://cache:8600
-      RESETSERVICE_URL: http://resetservice:8700
-      MONITORING_URL: http://monitoring:8800
       LANDLORD_FRONTEND_URL: http://landlord-frontend:8180
       LANDLORD_BASE_PATH: /landlord
       TENANT_FRONTEND_URL: http://tenant-frontend:8190
@@ -203,18 +132,12 @@ services:
         condition: service_started
       whatsapp:
         condition: service_started
-      cache:
-        condition: service_started
-      resetservice:
-        condition: service_started
-      monitoring:
-        condition: service_started
   ###############################################################################
   # Authenticator
   ###############################################################################
   authenticator:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/authenticator:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/authenticator:latest
     environment:
       NODE_ENV: production
       PORT: 8000
@@ -253,7 +176,7 @@ services:
   ###############################################################################
   pdfgenerator:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/pdfgenerator:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/pdfgenerator:latest
     environment:
       NODE_ENV: production
       PORT: 8300
@@ -275,7 +198,7 @@ services:
   ###############################################################################
   emailer:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/emailer:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/emailer:latest
     environment:
       NODE_ENV: production
       ALLOW_SENDING_EMAILS: 'true'
@@ -327,7 +250,7 @@ services:
   ###############################################################################
   api:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/api:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/api:latest
     volumes:
       - ./backup:/usr/app/backup
     environment:
@@ -357,7 +280,7 @@ services:
   ###############################################################################
   tenantapi:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/tenantapi:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/tenantapi:latest
     environment:
       NODE_ENV: production
       PORT: 8250
@@ -376,7 +299,7 @@ services:
   ###############################################################################
   landlord-frontend:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/landlord-frontend:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/landlord-frontend:latest
     environment:
       BASE_PATH: /landlord
       PORT: 8180
@@ -398,7 +321,7 @@ services:
   ###############################################################################
   tenant-frontend:
     restart: unless-stopped
-    image: 'ghcr.io/perezjoseph/microrealestate-whatsapp/tenant-frontend:latest'
+    image: ghcr.io/perezjoseph/microrealestate-whatsapp/tenant-frontend:latest
     environment:
       BASE_PATH: /tenant
       PORT: 8190
