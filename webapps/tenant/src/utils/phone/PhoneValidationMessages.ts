@@ -1,3 +1,5 @@
+import { CountryCode } from 'libphonenumber-js';
+
 /**
  * Phone validation error message keys for internationalization
  * These keys correspond to translations in locale files

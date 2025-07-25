@@ -280,6 +280,7 @@ export const useBatchPhoneValidation = (country: Country) => {
  * Hook for validating phone number on form submission
  */
 export const usePhoneSubmissionValidation = (country: Country) => {
+    const { t } = useTranslation();
     const [submissionError, setSubmissionError] = useState<string | null>(null);
 
     const validateForSubmission = useCallback(
@@ -335,7 +336,7 @@ export const usePhoneSubmissionValidation = (country: Country) => {
                 e164: result.e164
             };
         },
-        [country.code]
+        [country.code, t]
     );
 
     const clearSubmissionError = useCallback(() => {
