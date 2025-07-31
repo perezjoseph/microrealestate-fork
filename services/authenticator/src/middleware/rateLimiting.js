@@ -1,6 +1,6 @@
 import { logger } from '@microrealestate/common';
-import rateLimit from 'express-rate-limit';
-import slowDown from 'express-slow-down';
+import { rateLimit } from 'express-rate-limit';
+import { slowDown } from 'express-slow-down';
 
 console.log(' Rate limiting middleware loading...');
 

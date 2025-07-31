@@ -40,6 +40,7 @@ export default function SignIn() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [loginMethod, setLoginMethod] = useState<'email' | 'whatsapp'>('email');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
 
   const emailForm = useForm<SignInFormValues>({
@@ -186,7 +187,7 @@ export default function SignIn() {
             <FormField
               control={whatsappForm.control}
               name="phoneNumber"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormControl>
                     <PhoneInputFormField

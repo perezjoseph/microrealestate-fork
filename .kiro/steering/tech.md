@@ -45,6 +45,11 @@
 - **express-validator**: 7.0.1 - Input validation and sanitization
 - **nodemon**: 3.1.4 - Development hot reload (dev dependency)
 
+### Cache Service
+- **redis**: 4.6.10 - Redis client for Valkey/Redis caching operations
+- **nodemon**: 3.1.4 - Development hot reload (dev dependency)
+- **eslint**: 8.57.0 - Code linting and quality assurance (dev dependency)
+
 ### Common Service
 - **mongoose**: 6.13.6 - MongoDB ODM shared across all services
 - **express**: 4.21.1 - Web framework foundation
@@ -117,7 +122,7 @@ docker-compose down
 - **Database Configuration**: Unified `MONGO_URL` used by all services for consistency (consolidated December 2024)
 
 ## Code Quality
-- **ESLint**: Consistent code style across all workspaces
+- **ESLint**: Consistent code style across all workspaces (now includes all services including cache)
 - **Prettier**: Automated code formatting
 - **Husky**: Git hooks for pre-commit linting and formatting
 - **TypeScript**: Type safety for backend services and shared types

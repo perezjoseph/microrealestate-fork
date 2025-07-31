@@ -34,7 +34,7 @@ export interface CountrySelectorProps {
   groupByRegion?: boolean;
 }
 
-export const CountrySelector: React.FC<CountrySelectorProps> = memo(({
+export const CountrySelector: React.FC<CountrySelectorProps> = memo(function CountrySelector({
   selectedCountry,
   onCountrySelect,
   disabled = false,
@@ -43,6 +43,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = memo(({
   className,
   showDialCode = true,
   showFlag = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   groupByRegion = false
 }) => {
   const { t } = useTranslation();

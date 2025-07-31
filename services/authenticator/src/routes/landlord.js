@@ -11,8 +11,8 @@ import crypto from 'crypto';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import locale from 'locale';
-import rateLimit from 'express-rate-limit';
-import slowDown from 'express-slow-down';
+import { rateLimit } from 'express-rate-limit';
+import { slowDown } from 'express-slow-down';
 
 console.log(' LANDLORD MODULE: Loading successfully...');
 
@@ -240,6 +240,7 @@ const rateLimitWarning = (req, res, next) => {
 const _generateTokens = async (dbAccount) => {
   const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET, PRODUCTION } =
     Service.getInstance().envConfig.getValues();
+  // eslint-disable-next-line no-unused-vars
   const { _id, password, ...account } = dbAccount;
   const refreshToken = jwt.sign({ account }, REFRESH_TOKEN_SECRET, {
     expiresIn: PRODUCTION ? '600s' : '12h'

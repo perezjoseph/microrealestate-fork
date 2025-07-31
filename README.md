@@ -165,7 +165,7 @@ yarn ci
 
 ```bash
 # Navigate to a service
-cd services/whatsapp
+cd services/cache
 
 # Install dependencies
 npm install
@@ -175,6 +175,9 @@ npm run dev
 
 # Build service
 npm run build
+
+# Lint service code
+npm run lint
 ```
 
 ### Docker Commands
@@ -202,6 +205,7 @@ docker-compose up -d --build
 ## 📚 Documentation
 
 ### Service Documentation
+- [Cache Service](services/cache/README.md) - Valkey/Redis caching service with ESLint integration
 - [WhatsApp Service](services/whatsapp/README.md) - WhatsApp Business API integration
 - [WhatsApp API](services/whatsapp/API.md) - Complete API documentation
 
@@ -261,8 +265,12 @@ yarn test
 cd services/whatsapp
 npm test
 
-# Run linting
+# Run linting (all services)
 yarn lint
+
+# Run linting for specific service
+cd services/cache
+npm run lint
 
 # Run formatting check
 yarn format:check
@@ -294,6 +302,7 @@ Access monitoring dashboard at: http://localhost:8800
 - Update documentation for changes
 - Ensure all services pass health checks
 - Follow ESLint and Prettier configurations
+- All services now include ESLint for consistent code quality
 
 ## 📄 License
 
