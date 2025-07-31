@@ -241,7 +241,7 @@ function Actions({ values, onDone }) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${store.user.accessToken}`,
+              Authorization: `Bearer ${store.user.token}`,
               organizationId: store.organization.selected._id
             },
             body: JSON.stringify({
@@ -339,7 +339,7 @@ function Actions({ values, onDone }) {
     selectedWhatsAppDocument,
     tenantsWithWhatsApp,
     store.organization.selected,
-    store.user.accessToken,
+    store.user.token,
     t
   ]);
 

@@ -10,6 +10,7 @@ import {
 import { Form, Formik } from 'formik';
 import { useContext, useMemo } from 'react';
 import { ArrayField } from '../../formfields/ArrayField';
+import { nanoid } from 'nanoid';
 import { observer } from 'mobx-react-lite';
 import { Section } from '../../formfields/Section';
 import { StoreContext } from '../../../store';
@@ -40,16 +41,40 @@ const createValidationSchema = (t) =>
       otherwise: (schema) => schema
     }),
     contacts: Yup.array().of(
-      Yup.object().shape({
-        contact: Yup.string().required(t('This field is required')),
-        email: Yup.string()
-          .email(t('Please enter a valid email address'))
-          .required(t('This field is required')),
-        phone1: Yup.string(),
-        phone2: Yup.string(),
-        whatsapp1: Yup.boolean(),
-        whatsapp2: Yup.boolean()
-      })
+      Yup.object()
+        .shape({
+          key: Yup.string().required(),
+          contact: Yup.string().required(t('This field is required')),
+          email: Yup.string()
+            .email(t('Please enter a valid email address'))
+            .when(['phone1', 'phone2', 'whatsapp1', 'whatsapp2'], {
+              is: (phone1, phone2, whatsapp1, whatsapp2) => {
+                // Email is required only if no WhatsApp-enabled phone is provided
+                const hasWhatsAppPhone =
+                  (phone1 && whatsapp1) || (phone2 && whatsapp2);
+                return !hasWhatsAppPhone;
+              },
+              then: (schema) => schema.required(t('This field is required')),
+              otherwise: (schema) => schema
+            }),
+          phone1: Yup.string(),
+          phone2: Yup.string(),
+          whatsapp1: Yup.boolean(),
+          whatsapp2: Yup.boolean()
+        })
+        .test(
+          'contact-method',
+          t('Either email or WhatsApp phone number is required'),
+          function (value) {
+            const { email, phone1, phone2, whatsapp1, whatsapp2 } = value;
+            const hasEmail = email && email.trim() !== '';
+            const hasWhatsAppPhone =
+              (phone1 && whatsapp1) || (phone2 && whatsapp2);
+
+            // At least one contact method must be available
+            return hasEmail || hasWhatsAppPhone;
+          }
+        )
     ),
     address: Yup.object().shape({
       street1: Yup.string().required(t('This field is required')),
@@ -62,6 +87,7 @@ const createValidationSchema = (t) =>
   });
 
 const emptyContact = {
+  key: nanoid(),
   contact: '',
   email: '',
   phone1: '',
@@ -90,6 +116,7 @@ const initValues = (tenant) => {
             whatsapp1,
             whatsapp2
           }) => ({
+            key: nanoid(),
             contact,
             email,
             phone1: phone1 || phone,
@@ -98,7 +125,7 @@ const initValues = (tenant) => {
             whatsapp2: whatsapp2 || false
           })
         )
-      : [emptyContact],
+      : [{ ...emptyContact }],
     address: {
       street1: tenant?.street1 || '',
       street2: tenant?.street2 || '',
@@ -231,7 +258,7 @@ const TenantForm = observer(({ readOnly, onSubmit }) => {
               <ArrayField
                 name="contacts"
                 addLabel={t('Add a contact')}
-                emptyItem={emptyContact}
+                emptyItem={() => ({ ...emptyContact, key: nanoid() })}
                 items={values.contacts}
                 readOnly={readOnly}
                 renderTitle={(contact, index) =>

@@ -1,4 +1,3 @@
-import * as Yup from 'yup';
 import { Form, Formik, validateYupSchema, yupToFormErrors } from 'formik';
 import { mergeOrganization, updateStoreOrganization } from './utils';
 import {
@@ -17,90 +16,9 @@ import { StoreContext } from '../../store';
 import { SwitchField } from '../formfields/SwitchField';
 import { toast } from 'sonner';
 import useTranslation from 'next-translate/useTranslation';
-
-const validationSchema = Yup.object().shape({
-  emailDeliveryServiceActive: Yup.boolean().required(),
-  emailDeliveryServiceName: Yup.string().when('emailDeliveryServiceActive', {
-    is: true,
-    then: Yup.string().required()
-  }),
-
-  gmail_email: Yup.string().when('emailDeliveryServiceName', {
-    is: 'gmail',
-    then: Yup.string().email().required()
-  }),
-  gmail_appPassword: Yup.string().when('emailDeliveryServiceName', {
-    is: 'gmail',
-    then: Yup.string().required()
-  }),
-
-  smtp_server: Yup.string().when('emailDeliveryServiceName', {
-    is: 'smtp',
-    then: Yup.string().email().required()
-  }),
-  smtp_port: Yup.string().when('emailDeliveryServiceName', {
-    is: 'smtp',
-    then: Yup.number().required().integer().min(1).max(65535)
-  }),
-  smtp_secure: Yup.string().when('emailDeliveryServiceName', {
-    is: 'smtp',
-    then: Yup.boolean().required()
-  }),
-  smtp_authentication: Yup.string().when('emailDeliveryServiceName', {
-    is: 'smtp',
-    then: Yup.boolean().required()
-  }),
-  smtp_username: Yup.string().when(
-    ['emailDeliveryServiceName', 'smtp_authentication'],
-    {
-      is: (scheme, auth) => scheme === 'smtp' && auth,
-      then: Yup.string().required()
-    }
-  ),
-  smtp_password: Yup.string().when(
-    ['emailDeliveryServiceName', 'smtp_authentication'],
-    {
-      is: (scheme, auth) => scheme === 'smtp' && auth,
-      then: Yup.string().required()
-    }
-  ),
-
-  mailgun_apiKey: Yup.string().when('emailDeliveryServiceName', {
-    is: 'mailgun',
-    then: Yup.string().required()
-  }),
-  mailgun_domain: Yup.string().when('emailDeliveryServiceName', {
-    is: 'mailgun',
-    then: Yup.string().required()
-  }),
-
-  fromEmail: Yup.string().email().when('emailDeliveryServiceActive', {
-    is: true,
-    then: Yup.string().email().required()
-  }),
-  replyToEmail: Yup.string().email().when('emailDeliveryServiceActive', {
-    is: true,
-    then: Yup.string().email().required()
-  }),
-
-  b2Active: Yup.boolean().required(),
-  keyId: Yup.string().when('b2Active', {
-    is: true,
-    then: Yup.string().required()
-  }),
-  applicationKey: Yup.string().when('b2Active', {
-    is: true,
-    then: Yup.string().required()
-  }),
-  endpoint: Yup.string().when('b2Active', {
-    is: true,
-    then: Yup.string().required()
-  }),
-  bucket: Yup.string().when('b2Active', {
-    is: true,
-    then: Yup.string().required()
-  })
-});
+import { thirdPartiesValidationSchema } from './validationSchemas';
+import { createInitialValues } from './initialValuesUtils';
+import { createThirdPartyConfig } from './thirdPartyConfigUtils';
 
 export default function ThirdPartiesForm({ organization }) {
   const { t } = useTranslation('common');
@@ -162,6 +80,29 @@ export default function ThirdPartiesForm({ organization }) {
       fromEmail,
       replyToEmail,
 
+      // WhatsApp configuration
+      whatsappActive:
+        !!organization.thirdParties?.whatsapp?.selected ||
+        !!organization.thirdParties?.whatsapp?.accessToken,
+      whatsappAccessToken:
+        organization.thirdParties?.whatsapp?.accessToken || '',
+      whatsappPhoneNumberId:
+        organization.thirdParties?.whatsapp?.phoneNumberId || '',
+      whatsappBusinessAccountId:
+        organization.thirdParties?.whatsapp?.businessAccountId || '',
+      whatsappInvoiceTemplate:
+        organization.thirdParties?.whatsapp?.templates?.invoice?.name || '',
+      whatsappPaymentNoticeTemplate:
+        organization.thirdParties?.whatsapp?.templates?.paymentNotice?.name ||
+        '',
+      whatsappPaymentReminderTemplate:
+        organization.thirdParties?.whatsapp?.templates?.paymentReminder?.name ||
+        '',
+      whatsappFinalNoticeTemplate:
+        organization.thirdParties?.whatsapp?.templates?.finalNotice?.name || '',
+      whatsappTemplateLanguage:
+        organization.thirdParties?.whatsapp?.defaultLanguage || 'en_US',
+
       b2Active: !!organization.thirdParties?.b2?.keyId,
       keyId: organization.thirdParties?.b2?.keyId,
       applicationKey: organization.thirdParties?.b2?.applicationKey,
@@ -192,102 +133,32 @@ export default function ThirdPartiesForm({ organization }) {
     organization.thirdParties?.smtp?.secure,
     organization.thirdParties?.smtp?.selected,
     organization.thirdParties?.smtp?.server,
-    organization.thirdParties?.smtp?.username
+    organization.thirdParties?.smtp?.username,
+    organization.thirdParties?.whatsapp?.selected,
+    organization.thirdParties?.whatsapp?.accessToken,
+    organization.thirdParties?.whatsapp?.phoneNumberId,
+    organization.thirdParties?.whatsapp?.businessAccountId,
+    organization.thirdParties?.whatsapp?.defaultLanguage,
+    organization.thirdParties?.whatsapp?.templates?.invoice?.name,
+    organization.thirdParties?.whatsapp?.templates?.paymentNotice?.name,
+    organization.thirdParties?.whatsapp?.templates?.paymentReminder?.name,
+    organization.thirdParties?.whatsapp?.templates?.finalNotice?.name
   ]);
 
   const onSubmit = useCallback(
-    async ({
-      emailDeliveryServiceActive,
-      emailDeliveryServiceName,
-      gmail_email,
-      gmail_appPassword,
-      smtp_server,
-      smtp_port,
-      smtp_secure,
-      smtp_authentication,
-      smtp_username,
-      smtp_password,
-      mailgun_apiKey,
-      mailgun_domain,
-      fromEmail,
-      replyToEmail,
-      b2Active,
-      keyId,
-      applicationKey,
-      endpoint,
-      bucket
-    }) => {
-      const formData = { thirdParties: {} };
-      if (emailDeliveryServiceActive) {
-        formData.thirdParties.gmail = {
-          selected: emailDeliveryServiceName === 'gmail',
-          email: gmail_email,
-          appPassword: gmail_appPassword,
-          appPasswordUpdated:
-            gmail_appPassword !== initialValues.gmail_appPassword,
-          fromEmail,
-          replyToEmail
-        };
-
-        formData.thirdParties.smtp = {
-          selected: emailDeliveryServiceName === 'smtp',
-          server: smtp_server,
-          port: smtp_port,
-          secure: smtp_secure,
-          authentication: smtp_authentication,
-          username: smtp_username,
-          password: smtp_password,
-          passwordUpdated: smtp_password !== initialValues.smtp_password,
-          fromEmail,
-          replyToEmail
-        };
-
-        formData.thirdParties.mailgun = {
-          selected: emailDeliveryServiceName === 'mailgun',
-          apiKey: mailgun_apiKey,
-          apiKeyUpdated: mailgun_apiKey !== initialValues.mailgun_apiKey,
-          domain: mailgun_domain,
-          fromEmail,
-          replyToEmail
-        };
-      } else {
-        formData.thirdParties.gmail = null;
-        formData.thirdParties.smtp = null;
-        formData.thirdParties.mailgun = null;
-      }
-      if (b2Active) {
-        formData.thirdParties.b2 = {
-          keyId,
-          applicationKey,
-          keyIdUpdated: keyId !== initialValues.keyId,
-          applicationKeyUpdated:
-            applicationKey !== initialValues.applicationKey,
-          endpoint,
-          bucket
-        };
-      } else {
-        formData.thirdParties.b2 = null;
-      }
+    async (values) => {
+      const formData = createThirdPartyConfig(values, initialValues);
       await mutateAsync({
         store,
         organization: mergeOrganization(organization, formData)
       });
     },
-    [
-      mutateAsync,
-      store,
-      organization,
-      initialValues.gmail_appPassword,
-      initialValues.smtp_password,
-      initialValues.mailgun_apiKey,
-      initialValues.keyId,
-      initialValues.applicationKey
-    ]
+    [mutateAsync, store, organization, initialValues]
   );
 
   const handleFormValidation = useCallback((value) => {
     try {
-      validateYupSchema(value, validationSchema, true, value);
+      validateYupSchema(value, thirdPartiesValidationSchema, true, value);
     } catch (err) {
       console.error(err);
       return yupToFormErrors(err); //for rendering validation errors
@@ -307,7 +178,7 @@ export default function ThirdPartiesForm({ organization }) {
             <Section
               label={t('Email delivery service')}
               description={t(
-                'Configuration required for sending invoices, notices and all kind of communication to the tenants'
+                'Configuration required for sending invoices, notices and all kind of communication to the tenants via email'
               )}
               withSwitch
               switchName="emailDeliveryServiceActive"
@@ -404,6 +275,69 @@ export default function ThirdPartiesForm({ organization }) {
                   )}
                   <TextField label={t('From Email')} name="fromEmail" />
                   <TextField label={t('Reply to email')} name="replyToEmail" />
+                </>
+              ) : null}
+            </Section>
+            <Section
+              label={t('WhatsApp Business API')}
+              description={t(
+                'Configuration for sending invoices, notices and communication via WhatsApp'
+              )}
+              withSwitch
+              switchName="whatsappActive"
+            >
+              {values?.whatsappActive ? (
+                <>
+                  <Link
+                    href="https://developers.facebook.com/docs/whatsapp/business-management-api/get-started"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="my-2"
+                  >
+                    {t('How to set up WhatsApp Business API')}
+                  </Link>
+                  <TextField
+                    label={t('Access Token')}
+                    name="whatsappAccessToken"
+                    type="password"
+                    showHidePassword={
+                      values.whatsappAccessToken !==
+                      initialValues.whatsappAccessToken
+                    }
+                  />
+                  <TextField
+                    label={t('Phone Number ID')}
+                    name="whatsappPhoneNumberId"
+                  />
+                  <TextField
+                    label={t('Business Account ID')}
+                    name="whatsappBusinessAccountId"
+                  />
+                  <TextField
+                    label={t('Invoice Template Name')}
+                    name="whatsappInvoiceTemplate"
+                    placeholder="invoice_notification"
+                  />
+                  <TextField
+                    label={t('Payment Notice Template Name')}
+                    name="whatsappPaymentNoticeTemplate"
+                    placeholder="payment_notice"
+                  />
+                  <TextField
+                    label={t('Payment Reminder Template Name')}
+                    name="whatsappPaymentReminderTemplate"
+                    placeholder="payment_reminder"
+                  />
+                  <TextField
+                    label={t('Final Notice Template Name')}
+                    name="whatsappFinalNoticeTemplate"
+                    placeholder="final_notice"
+                  />
+                  <TextField
+                    label={t('Template Language Code')}
+                    name="whatsappTemplateLanguage"
+                    placeholder="en_US"
+                  />
                 </>
               ) : null}
             </Section>

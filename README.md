@@ -1,240 +1,316 @@
 # MicroRealEstate
 
-[![Continuous Integration](https://github.com/perezjoseph/microrealestate-whatsapp/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/perezjoseph/microrealestate-whatsapp/actions/workflows/ci.yml)
+An open-source property management application that helps landlords manage their property rents and tenant relationships with automated WhatsApp and email notifications.
 
-MicroRealEstate is an open-source property management platform designed to help landlords efficiently manage their properties, tenants, and rental operations with integrated WhatsApp notifications.
+## 🏠 Overview
 
-## Key Features
+MicroRealEstate is a comprehensive property management solution built with a microservices architecture. It provides landlords with tools to manage properties, track rent payments, and communicate with tenants through automated notifications via WhatsApp Business API and email.
 
-### Core Property Management
-- **Property & Tenant Management** - Centralized database for properties, tenants, and lease agreements
-- **Rent Tracking & Invoicing** - Automated rent collection with payment tracking and reminders
-- **Document Generation** - Create custom leases, notices, and rental documents
-- **Team Collaboration** - Multi-user support for property management teams
+## ✨ Key Features
 
-### WhatsApp Integration
-- **Invoice Notifications** - Send rent invoices directly via WhatsApp
-- **Payment Reminders** - Automated WhatsApp reminders for overdue payments
-- **OTP Authentication** - Secure tenant login using WhatsApp OTP codes
-- **Multi-language Support** - Templates available in Spanish, English, and more
-- **Dominican Republic Support** - Optimized for DR phone number formatting
+- **Property & Tenant Management**: Complete property portfolio and tenant relationship management
+- **Rent Collection & Tracking**: Automated rent collection with payment tracking and reporting
+- **WhatsApp Integration**: Automated payment notices and reminders via WhatsApp Business API with comprehensive middleware stack
+- **Email Notifications**: Multi-provider email support (Gmail, Mailgun, SMTP)
+- **PDF Generation**: Automated invoice and document generation
+- **Multi-tenant Architecture**: Separate portals for landlords and tenants
+- **Multilingual Support**: Spanish and English language support
+- **Real-time Monitoring**: System health monitoring and logging
 
-### Technical Features
-- **Modern Architecture** - Microservices-based with Docker containerization
-- **Multi-language Support** - Available in English, Spanish, French, German, and Portuguese
-- **Responsive Design** - Works on desktop, tablet, and mobile devices
-- **Security** - JWT authentication, rate limiting, and SQL injection protection
+## 🏗️ Architecture
 
-## Screenshots
+MicroRealEstate follows a microservices architecture with the following services:
 
-|                                                                                                                           |                                                                                                                                   |                                                                                                                                       |
-| :-----------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------: |
-|                                                      **Rents page**                                                       |                                                **Send notices, receipt by email**                                                 |                                                            **Pay a rent**                                                             |
-|      [<img src="./documentation/pictures/rents.png" alt="drawing" width="200"/>](./documentation/pictures/rents.png)      | [<img src="./documentation/pictures/sendmassemails.png" alt="drawing" width="200"/>](./documentation/pictures/sendmassemails.png) |          [<img src="./documentation/pictures/payment.png" alt="drawing" width="200"/>](./documentation/pictures/payment.png)          |
-|                                                     **Tenants page**                                                      |                                                        **Tenant details**                                                         |                                                                                                                                       |
-|    [<img src="./documentation/pictures/tenants.png" alt="drawing" width="200"/>](./documentation/pictures/tenants.png)    | [<img src="./documentation/pictures/tenantcontract.png" alt="drawing" width="200"/>](./documentation/pictures/tenantcontract.png) |                                                                                                                                       |
-|                                                    **Properties page**                                                    |                                                       **Property details**                                                        |                                                                                                                                       |
-| [<img src="./documentation/pictures/properties.png" alt="drawing" width="200"/>](./documentation/pictures/properties.png) |       [<img src="./documentation/pictures/property.png" alt="drawing" width="200"/>](./documentation/pictures/property.png)       |                                                                                                                                       |
+- **Gateway** (8080): API gateway and reverse proxy
+- **Authenticator** (8000): Authentication and user management
+- **API** (8200): Main business logic and data management
+- **Tenant API** (8250): Tenant-specific endpoints
+- **PDF Generator** (8300): Document generation service
+- **Emailer** (8400): Email notification service
+- **WhatsApp** (8500): WhatsApp Business API integration with enhanced security middleware
+- **Cache** (8600): Redis-compatible caching service
+- **Monitoring** (8800): System monitoring and health checks
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
-- [Docker and Docker Compose](https://docs.docker.com/compose/install)
-- WhatsApp Business API credentials (optional, for WhatsApp features)
+
+- **Node.js**: >=22.17.1
+- **Yarn**: 3.3.0
+- **Docker**: Latest version
+- **Docker Compose**: Latest version
 
 ### Installation
 
-1. **Download the application files:**
-```shell
-mkdir mre
-cd mre
-curl https://raw.githubusercontent.com/perezjoseph/microrealestate-whatsapp/master/docker-compose.yml > docker-compose.yml
-curl https://raw.githubusercontent.com/perezjoseph/microrealestate-whatsapp/master/.env.domain > .env
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/microrealestate/microrealestate.git
+   cd microrealestate
+   ```
+
+2. **Install dependencies**
+   ```bash
+   yarn install
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   # Copy example environment files
+   cp .env.example .env
+   cp services/whatsapp/.env.example services/whatsapp/.env
+   
+   # Edit configuration files with your settings
+   ```
+
+4. **Start the development environment**
+   ```bash
+   # Start all services with Docker Compose (recommended for development)
+   docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
+   
+   # Or start individual services for development
+   yarn dev
+   
+   # Verify all services are running
+   docker-compose ps
+   ```
+
+5. **Access the applications**
+   - **Landlord Portal**: http://localhost:8080/landlord
+   - **Tenant Portal**: http://localhost:8080/tenant
+   - **API Gateway**: http://localhost:8080
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Runtime**: Node.js 22.17.1+
+- **Framework**: Express.js with TypeScript support
+- **Database**: MongoDB 7 with Mongoose 6.13.6 (Common Service) / 8.16.5 (WhatsApp Service)
+- **Cache**: Valkey (Redis-compatible)
+- **Authentication**: JWT with refresh token rotation
+- **Package Manager**: Yarn 3.3.0 with workspaces
+
+### Frontend
+- **Framework**: Next.js 14.2.26 (React 18.2.0)
+- **UI Libraries**: Material-UI 4.12.4, Radix UI, Tailwind CSS 3.4.10
+- **State Management**: MobX 6.12.3
+- **Forms**: Formik with Yup validation
+- **Internationalization**: next-translate
+
+### Key Integrations
+- **WhatsApp**: Facebook Graph API with enhanced security middleware
+- **Email**: Nodemailer with multiple providers
+- **PDF Generation**: Puppeteer, pdfjs-dist
+- **Monitoring**: Custom health checks and logging
+
+## 📁 Project Structure
+
+```
+microrealestate/
+├── services/               # Backend microservices
+│   ├── api/               # Main business logic API
+│   ├── authenticator/     # Authentication service
+│   ├── gateway/           # API gateway
+│   ├── whatsapp/          # WhatsApp integration
+│   ├── emailer/           # Email service
+│   └── ...
+├── webapps/               # Frontend applications
+│   ├── landlord/          # Landlord management portal
+│   ├── tenant/            # Tenant self-service portal
+│   └── commonui/          # Shared UI components
+├── types/                 # Shared TypeScript definitions
+├── cli/                   # Development CLI tools
+└── docker-compose.yml     # Container orchestration
 ```
 
-2. **Configure environment variables:**
-Edit the `.env` file and update the secrets and tokens at the end of the file.
+## 🔧 Development
 
-**Required Configuration:**
+### Docker Compose Configuration
+
+The project uses two Docker Compose files:
+- `docker-compose.yml`: Production configuration with pre-built images
+- `docker-compose.local.yml`: Development overrides with local volumes and build contexts
+
+Key features of the development setup:
+- **Health Checks**: MongoDB and Valkey services include health checks for reliable startup
+- **Service Dependencies**: Proper dependency ordering ensures services start in the correct sequence
+- **Volume Mounting**: Local code is mounted for hot-reload development
+- **Network Isolation**: All services communicate through a dedicated Docker network
+
+### Available Commands
+
 ```bash
-# Basic Configuration
-MONGO_URL=mongodb://mongo/mredb
-REDIS_URL=redis://valkey:6379
-JWT_SECRET=your_jwt_secret_here
+# Development mode (all services)
+yarn dev
 
-# WhatsApp Configuration (Optional)
-WHATSAPP_ACCESS_TOKEN=your_whatsapp_access_token
-WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-WHATSAPP_TEMPLATE_NAME=factura2
-WHATSAPP_TEMPLATE_LANGUAGE=es
-WHATSAPP_LOGIN_TEMPLATE_NAME=otpcode
-WHATSAPP_LOGIN_TEMPLATE_LANGUAGE=es
+# Build all services
+yarn build
+
+# Start production services
+yarn start
+
+# Stop all services
+yarn stop
+
+# Lint all workspaces
+yarn lint
+
+# Format code
+yarn format
+
+# Run CI pipeline
+yarn ci
 ```
 
-**IMPORTANT**: If you previously ran the application, the secrets, tokens, and MONGO_URL must be copied from the previous .env file to maintain database connectivity and login credentials.
+### Service-Specific Development
 
-## Deployment Options
-
-### Localhost Setup
-```shell
-APP_PORT=8080 docker compose --profile local up
-```
-- **Landlord Interface**: http://localhost:8080/landlord
-- **Tenant Interface**: http://localhost:8080/tenant
-
-### Development Setup (Build from Source)
-```shell
-APP_PORT=8080 docker compose --profile dev up
-```
-This profile builds the frontend applications from source code, useful for development with custom changes.
-
-### Production Setup
-
-#### IP Address Setup
-```shell
-sudo APP_DOMAIN=x.x.x.x docker compose up
-```
-- **Landlord Interface**: http://x.x.x.x/landlord
-- **Tenant Interface**: http://x.x.x.x/tenant
-
-#### Domain with HTTPS Setup
-```shell
-sudo APP_DOMAIN=app.example.com APP_PROTOCOL=https docker compose up
-```
-- **Landlord Interface**: https://app.example.com/landlord
-- **Tenant Interface**: https://app.example.com/tenant
-
-## WhatsApp Integration Setup
-
-### Prerequisites
-1. **WhatsApp Business API Account** - Set up through Meta Business
-2. **Approved Templates** - Ensure you have these templates approved:
-   - `factura2` - For rent invoices and notifications
-   - `otpcode` - For OTP authentication
-
-### Configuration
-Add to your `.env` file:
 ```bash
-# WhatsApp Business API Configuration
-WHATSAPP_ACCESS_TOKEN=your_whatsapp_access_token
-WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-
-# WhatsApp Templates
-WHATSAPP_TEMPLATE_NAME=factura2
-WHATSAPP_TEMPLATE_LANGUAGE=es
-WHATSAPP_LOGIN_TEMPLATE_NAME=otpcode
-WHATSAPP_LOGIN_TEMPLATE_LANGUAGE=es
-```
-
-### Features Enabled
-- **Rent Notifications** - Send rent invoices and reminders via WhatsApp
-- **OTP Authentication** - Secure tenant login using WhatsApp OTP
-- **Multi-language Support** - Templates support multiple languages
-- **Dominican Republic Optimization** - Proper phone number formatting
-
-## Architecture
-
-MicroRealEstate follows a microservices architecture:
-
-### Core Services
-- **Gateway** (Port 8080) - API gateway and reverse proxy
-- **API** (Port 8200) - Main business logic and data management
-- **Authenticator** (Port 8100) - Authentication service with JWT and OTP support
-- **TenantAPI** (Port 8300) - Tenant-specific API endpoints
-
-### Communication Services
-- **WhatsApp** (Port 8500) - WhatsApp Business API integration
-- **Emailer** (Port 8083) - Email notification service
-- **PDFGenerator** (Port 8082) - Document generation service
-
-### Frontend Applications
-- **Landlord Frontend** - Property management interface (Next.js)
-- **Tenant Frontend** - Tenant portal interface (Next.js)
-
-### Data Layer
-- **MongoDB** - Primary database for application data
-- **Valkey** - Redis-compatible caching and session management
-
-## Data Management
-
-### Backup
-```shell
-docker compose run mongo /usr/bin/mongodump --uri=mongodb://mongo/mredb --gzip --archive=./backup/mredb-$(date +%F_%T).dump
-```
-
-### Restore
-```shell
-docker compose run mongo /usr/bin/mongorestore --uri=mongodb://mongo/mredb --drop --gzip --archive=./backup/mredb-XXXX.dump 
-```
-
-## Development
-
-To run the application in development mode:
-
-```shell
-# Clone the repository
-git clone https://github.com/perezjoseph/microrealestate-whatsapp.git
-cd microrealestate-whatsapp
+# Navigate to a service
+cd services/whatsapp
 
 # Install dependencies
-yarn install
+npm install
 
-# Start development environment
-yarn dev
+# Start development server
+npm run dev
+
+# Build service
+npm run build
 ```
 
-For detailed development setup, see the [Developer Guide](./documentation/DEVELOPER.md)
+### Docker Commands
 
-For comprehensive deployment instructions, see the [Deployment Guide](./documentation/DEPLOYMENT.md)
+```bash
+# Start all services (production)
+docker-compose up -d
 
-## Contributing
+# Start with local development overrides
+docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
 
-We welcome contributions! Areas for contribution:
-- New language translations
-- WhatsApp template improvements
-- Security enhancements
-- UI/UX improvements
-- Documentation updates
+# View logs for specific service
+docker-compose logs -f [service-name]
 
-## License
+# View logs for all services
+docker-compose logs -f
 
-This project is licensed under the GNU Affero General Public License (AGPL) v3.
+# Stop all services
+docker-compose down
 
-The AGPL is a copyleft license that ensures the software remains free and open source, even when used in network services. If you modify this software and provide it as a network service, you must make the source code available to users of that service.
+# Rebuild and start services
+docker-compose up -d --build
+```
 
-[View License](./LICENSE)
+## 📚 Documentation
 
-## Support
+### Service Documentation
+- [WhatsApp Service](services/whatsapp/README.md) - WhatsApp Business API integration
+- [WhatsApp API](services/whatsapp/API.md) - Complete API documentation
 
-For support and questions:
-- Create an issue on GitHub
-- Check the [documentation](./documentation/) folder
-- Review the [deployment guide](./documentation/DEPLOYMENT.md)
-- Consult the [developer guide](./documentation/DEVELOPER.md)
+### Architecture Documentation
+- [Project Structure](.kiro/steering/structure.md) - Detailed project organization
+- [Technology Stack](.kiro/steering/tech.md) - Complete technology overview
+- [Product Overview](.kiro/steering/product.md) - Business domain and features
 
-## Recent Updates
+### Migration Documentation
+- [Configuration Standardization](CONFIGURATION_STANDARDIZATION.md) - Recent environment variable standardization
+- [Mongoose Upgrade Notes](MONGOOSE_UPGRADE_NOTES.md) - Mongoose 6.x to 8.x upgrade details
+- [WhatsApp Migration](MIGRATION_WHATSAPP.md) - WhatsApp configuration migration guide
+- [Database Consolidation](DATABASE_CONSOLIDATION_UPDATE.md) - Database configuration consolidation details
 
-### WhatsApp Integration
-- Complete WhatsApp Business API integration
-- Dominican Republic phone number formatting
-- Spanish invoice templates
-- OTP authentication via WhatsApp
-- Rate limiting and security improvements
+## 🔐 Configuration
 
-### Security Enhancements
-- JWT security improvements
-- NoSQL injection protection
-- Rate limiting implementation
-- Enhanced authentication middleware
+### Environment Variables
 
-### Technical Improvements
-- Microservices architecture optimization
-- Docker containerization improvements
-- Valkey integration (Redis-compatible)
-- Code quality and linting improvements
+Key configuration variables for the main services:
+
+#### Database (Consolidated Configuration)
+```bash
+# Primary database connection (used by all services)
+MONGO_URL=mongodb://localhost:27017/mredb
+
+# Cache/Session storage
+REDIS_URL=redis://localhost:6379
+```
+
+#### WhatsApp Service
+```bash
+WHATSAPP_API_URL=https://graph.facebook.com/v18.0
+WHATSAPP_ACCESS_TOKEN=your_access_token
+WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
+WHATSAPP_TEMPLATE_LANGUAGE=es
+```
+
+#### Authentication
+```bash
+ACCESS_TOKEN_SECRET=your_jwt_secret
+REFRESH_TOKEN_SECRET=your_refresh_secret
+RESET_TOKEN_SECRET=your_reset_secret
+APPCREDZ_TOKEN_SECRET=your_appcredz_secret
+```
+
+**Note**: All services now use a unified database configuration via `MONGO_URL` for improved consistency and simplified management. Authentication configuration has been standardized to use consistent environment variable names across all services, eliminating duplicate configurations.
+
+See individual service documentation for complete configuration options.
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+yarn test
+
+# Run tests for specific service
+cd services/whatsapp
+npm test
+
+# Run linting
+yarn lint
+
+# Run formatting check
+yarn format:check
+```
+
+## 📊 Monitoring
+
+The system includes comprehensive monitoring:
+
+- **Health Checks**: Each service provides `/health` endpoints
+- **Logging**: Structured logging with request context
+- **Metrics**: Service performance and usage metrics
+- **Error Tracking**: Detailed error reporting and tracking
+
+Access monitoring dashboard at: http://localhost:8800
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow existing code structure and patterns
+- Add tests for new functionality
+- Update documentation for changes
+- Ensure all services pass health checks
+- Follow ESLint and Prettier configurations
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: Check service-specific README files
+- **Issues**: Report bugs and feature requests on GitHub
+- **Discussions**: Join community discussions for help and ideas
+
+## 🙏 Acknowledgments
+
+- Built with modern web technologies and best practices
+- Inspired by the need for affordable property management solutions
+- Community-driven development and feedback
 
 ---
 
-**Version**: 1.0.0  
-**Author**: Joseph Pérez  
-**Repository**: https://github.com/perezjoseph/microrealestate-whatsapp
+**MicroRealEstate** - Making property management accessible and automated.

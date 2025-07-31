@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/generate-version.js",
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint --no-cache",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css}'",
-    "generateStrings": "node scripts/extractlocalizedstrings.js"
+    "generateStrings": "node scripts/extractlocalizedstrings.js",
+    "generate-version": "node scripts/generate-version.js"
   },
   "dependencies": {
     "@date-io/core": "1.3.13",

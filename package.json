@@ -18,7 +18,7 @@
     "payment-notices"
   ],
   "author": "Joseph Pérez",
-  "license": "AGPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/perezjoseph/microrealestate-whatsapp/issues"
   },
@@ -34,11 +34,18 @@
     "lint": "yarn workspaces foreach -pv run lint",
     "dev": "cross-env MRE_VERSION=dev node cli/src/index.js dev",
     "mre": "cross-env MRE_VERSION=local node cli/src/index.js",
+    "prebuild": "node webapps/landlord/scripts/generate-version.js && node webapps/tenant/scripts/generate-version.js",
     "build": "yarn run mre build",
     "start": "yarn run mre start",
     "stop": "yarn run mre stop",
     "ci": "yarn run mre ci",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "migrate:whatsapp": "node migration-whatsapp-config.js",
+    "migrate:whatsapp:dry-run": "node migration-whatsapp-config.js --dry-run",
+    "migrate:whatsapp:rollback": "node migration-whatsapp-config.js --rollback",
+    "migrate:whatsapp:rollback:dry-run": "node migration-whatsapp-config.js --rollback --dry-run",
+    "health:check": "curl -f http://localhost:8080/health && curl -f http://localhost:8200/health && curl -f http://localhost:8500/health",
+    "version:check": "echo 'Mongoose versions:' && grep -r '\"mongoose\"' services/*/package.json package.json"
   },
   "lint-staged": {
     "*.{js,ts,tsx,jsx}": [
@@ -69,5 +76,12 @@
   "engines": {
     "node": ">=22.17.1"
   },
-  "packageManager": "yarn@3.3.0"
+  "packageManager": "yarn@3.3.0",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.8.4",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^7.0.5"
+  }
 }

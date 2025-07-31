@@ -85,7 +85,7 @@ async function _fetchTenants(realmId, tenantId) {
     realmId
   };
   if (tenantId) {
-    $match._id = Collections.ObjectId(tenantId);
+    $match._id = new Collections.ObjectId(tenantId);
   }
 
   const tenants = await Collections.Tenant.aggregate([
@@ -199,7 +199,7 @@ function _propertiesHaveRentData(properties) {
 ////////////////////////////////////////////////////////////////////////////////
 export async function add(req, res) {
   const realm = req.realm;
-  const { _id, ...occupant } = _formatTenant(req.body);
+  const occupant = _formatTenant(req.body);
 
   if (!occupant.name) {
     logger.error('missing tenant name');

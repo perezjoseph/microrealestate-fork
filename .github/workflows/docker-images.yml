@@ -111,9 +111,7 @@ jobs:
           - appname: pdfgenerator
             image: ghcr.io/${{ github.repository }}/pdfgenerator
             dockerfile: services/pdfgenerator/Dockerfile
-          - appname: resetservice
-            image: ghcr.io/${{ github.repository }}/resetservice
-            dockerfile: services/resetservice/Dockerfile
+
           - appname: tenantapi
             image: ghcr.io/${{ github.repository }}/tenantapi
             dockerfile: services/tenantapi/Dockerfile
@@ -208,7 +206,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [api, authenticator, cache, emailer, gateway, monitoring, pdfgenerator, resetservice, tenantapi, whatsapp, landlord-frontend, tenant-frontend]
+        service: [api, authenticator, cache, emailer, gateway, monitoring, pdfgenerator, tenantapi, whatsapp, landlord-frontend, tenant-frontend]
 
     steps:
       - name: Login to GitHub Container Registry

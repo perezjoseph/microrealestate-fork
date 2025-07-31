@@ -29,7 +29,7 @@ const darkColors = {
 // Create theme factory function
 const createAppTheme = (isDark = false) => {
   const colors = isDark ? darkColors : lightColors;
-  
+
   return createTheme({
     palette: {
       type: isDark ? 'dark' : 'light',
@@ -81,7 +81,9 @@ const createAppTheme = (isDark = false) => {
           borderColor: isDark ? '#475569' : '#d1d5db',
           '&:hover': {
             borderColor: colors.primaryColor,
-            backgroundColor: isDark ? 'rgba(59, 130, 246, 0.1)' : 'rgba(37, 99, 235, 0.04)'
+            backgroundColor: isDark
+              ? 'rgba(59, 130, 246, 0.1)'
+              : 'rgba(37, 99, 235, 0.04)'
           }
         }
       },

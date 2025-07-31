@@ -188,13 +188,15 @@ function exposeServices(application: Express.Application) {
   );
 
   // WhatsApp service route - MUST come before the catch-all /api/v2 route
-  application.use(
-    '/api/v2/whatsapp',
-    createProxyMiddleware({
-      target: config.WHATSAPP_URL,
-      pathRewrite: { '^/api/v2/whatsapp': '' }
-    })
-  );
+  if (config.WHATSAPP_URL) {
+    application.use(
+      '/api/v2/whatsapp',
+      createProxyMiddleware({
+        target: config.WHATSAPP_URL,
+        pathRewrite: { '^/api/v2/whatsapp': '' }
+      })
+    );
+  }
 
   application.use(
     '/api/v2',

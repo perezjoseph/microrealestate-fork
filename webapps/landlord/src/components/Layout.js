@@ -7,6 +7,7 @@ import { Toaster } from '../components/ui/sonner';
 import { ThemeToggle } from '@microrealestate/commonui/components/ThemeToggle';
 import { useContext } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
+import VersionInfo from './VersionInfo';
 
 export default function Layout({ hideMenu, children }) {
   const store = useContext(StoreContext);
@@ -30,8 +31,11 @@ export default function Layout({ hideMenu, children }) {
                 {!isXLorGreater ? (
                   <HamburgerMenu className="flex flex-grow items-center" />
                 ) : null}
-                <ThemeToggle size="sm" className="mr-2" />
-                <OrganizationMenu />
+                <div className="flex items-center gap-2 ml-auto">
+                  <VersionInfo compact />
+                  <ThemeToggle size="sm" />
+                  <OrganizationMenu />
+                </div>
               </div>
             ) : null}
           </div>

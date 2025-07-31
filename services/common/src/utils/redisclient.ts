@@ -39,13 +39,13 @@ export default class RedisClient {
   async connect() {
     const config = this.envConfig.getValues();
     const obfuscatedConfig = this.envConfig.getObfuscatedValues();
-    logger.debug(`db connecting to ${obfuscatedConfig.REDIS_URL}...`);
-    if (!config.REDIS_URL) {
-      throw new Error('REDIS_URL is not set');
+    logger.debug(`db connecting to ${obfuscatedConfig.VALKEY_URL}...`);
+    if (!config.VALKEY_URL) {
+      throw new Error('VALKEY_URL is not set');
     }
     this.client = redis.createClient({
-      url: config.REDIS_URL,
-      password: config.REDIS_PASSWORD
+      url: config.VALKEY_URL,
+      password: config.VALKEY_PASSWORD
     });
     this.client.on('error', (err) => logger.error(`Redis Error: ${err}`));
     this.client.on('connect', () => logger.debug('Redis connected'));

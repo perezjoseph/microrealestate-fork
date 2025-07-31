@@ -61,7 +61,7 @@ export default function WhatsAppInvoiceButton({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${store.user.accessToken}`,
+          Authorization: `Bearer ${store.user.token}`,
           organizationId: store.organization.selected._id
         },
         body: JSON.stringify({
@@ -134,9 +134,10 @@ export default function WhatsAppInvoiceButton({
     color: '#25D366',
     borderColor: '#25D366',
     '&:hover': {
-      backgroundColor: resolvedTheme === 'dark' 
-        ? 'rgba(37, 211, 102, 0.1)' 
-        : 'rgba(37, 211, 102, 0.04)',
+      backgroundColor:
+        resolvedTheme === 'dark'
+          ? 'rgba(37, 211, 102, 0.1)'
+          : 'rgba(37, 211, 102, 0.04)',
       borderColor: '#25D366'
     }
   };

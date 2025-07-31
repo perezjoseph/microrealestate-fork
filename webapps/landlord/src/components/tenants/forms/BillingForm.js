@@ -18,7 +18,10 @@ const validationSchema = Yup.object().shape({
   isVat: Yup.boolean().required(),
   vatRatio: Yup.mixed().when('isVat', {
     is: true,
-    then: Yup.number().moreThan(0).max(100)
+    then: Yup.number()
+      .min(0)
+      .max(100)
+      .required('VAT percentage is required when VAT is enabled')
   }),
   discount: Yup.number().min(0)
 });
@@ -27,7 +30,7 @@ const initValues = (tenant) => {
   return {
     reference: tenant?.reference || '',
     isVat: !!tenant?.isVat,
-    vatRatio: tenant?.vatRatio * 100 || 0,
+    vatRatio: tenant?.vatRatio ? tenant.vatRatio * 100 : '',
     discount: tenant?.discount || 0
   };
 };

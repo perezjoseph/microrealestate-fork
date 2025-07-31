@@ -85,6 +85,46 @@ const RealmSchema = new mongoose.Schema<CollectionTypes.Realm>({
       applicationKey: String,
       endpoint: String,
       bucket: String
+    },
+    whatsapp: {
+      selected: Boolean,
+      
+      // API Configuration
+      accessToken: String,
+      phoneNumberId: String,
+      businessAccountId: String,
+      apiUrl: String,
+      webhookVerifyToken: String,
+      
+      // Template Configuration
+      defaultLanguage: String,
+      templates: {
+        invoice: {
+          name: String,
+          language: String,
+          parameters: [String]
+        },
+        paymentNotice: {
+          name: String,
+          language: String,
+          parameters: [String]
+        },
+        paymentReminder: {
+          name: String,
+          language: String,
+          parameters: [String]
+        },
+        finalNotice: {
+          name: String,
+          language: String,
+          parameters: [String]
+        },
+        login: {
+          name: String,
+          language: String,
+          parameters: [String]
+        }
+      }
     }
   },
   locale: String,

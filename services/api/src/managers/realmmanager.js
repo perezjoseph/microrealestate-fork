@@ -45,6 +45,9 @@ function _escapeSecrets(realm) {
   if (realm.thirdParties?.mailgun?.apiKey) {
     realm.thirdParties.mailgun.apiKey = SECRET_PLACEHOLDER;
   }
+  if (realm.thirdParties?.whatsapp?.accessToken) {
+    realm.thirdParties.whatsapp.accessToken = SECRET_PLACEHOLDER;
+  }
   if (realm.thirdParties?.b2?.keyId) {
     realm.thirdParties.b2.keyId = SECRET_PLACEHOLDER;
   }
@@ -81,6 +84,12 @@ export async function add(req, res) {
     );
   }
 
+  if (newRealm.thirdParties?.whatsapp?.accessToken) {
+    newRealm.thirdParties.whatsapp.accessToken = Crypto.encrypt(
+      newRealm.thirdParties.whatsapp.accessToken
+    );
+  }
+
   if (newRealm.thirdParties?.b2?.applicationKey) {
     newRealm.thirdParties.b2.applicationKey = Crypto.encrypt(
       newRealm.thirdParties.b2.applicationKey
@@ -101,6 +110,8 @@ export async function update(req, res) {
     !!req.body.thirdParties?.gmail?.appPasswordUpdated;
   const smtpPasswordUpdated = !!req.body.thirdParties?.smtp?.passwordUpdated;
   const mailgunApiKeyUpdated = !!req.body.thirdParties?.mailgun?.apiKeyUpdated;
+  const whatsappAccessTokenUpdated =
+    !!req.body.thirdParties?.whatsapp?.accessTokenUpdated;
   const b2KeyIdUpdated = !!req.body.thirdParties?.b2?.keyIdUpdated;
   const b2ApplicationKeyUpdated =
     !!req.body.thirdParties?.b2?.applicationKeyUpdated;
@@ -168,6 +179,25 @@ export async function update(req, res) {
     } else {
       updatedRealm.thirdParties.mailgun.apiKey =
         previousRealm.thirdParties.mailgun.apiKey;
+    }
+  }
+
+  if (req.body.thirdParties?.whatsapp) {
+    logger.debug('realm update with WhatsApp third party service');
+
+    // Copy all WhatsApp configuration
+    updatedRealm.thirdParties.whatsapp = {
+      ...req.body.thirdParties.whatsapp
+    };
+
+    // Handle access token encryption
+    if (whatsappAccessTokenUpdated) {
+      updatedRealm.thirdParties.whatsapp.accessToken = Crypto.encrypt(
+        req.body.thirdParties.whatsapp.accessToken
+      );
+    } else {
+      updatedRealm.thirdParties.whatsapp.accessToken =
+        previousRealm.thirdParties.whatsapp?.accessToken;
     }
   }
 

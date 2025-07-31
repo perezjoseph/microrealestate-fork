@@ -3,8 +3,8 @@ export type EnvironmentValues = {
   PRODUCTION?: boolean;
   PORT?: number;
   MONGO_URL?: string;
-  REDIS_URL?: string;
-  REDIS_PASSWORD?: string;
+  VALKEY_URL?: string;
+  VALKEY_PASSWORD?: string;
   ACCESS_TOKEN_SECRET?: string;
   REFRESH_TOKEN_SECRET?: string;
   RESET_TOKEN_SECRET?: string;

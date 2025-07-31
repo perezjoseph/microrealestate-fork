@@ -72,6 +72,17 @@ export namespace CollectionTypes {
         fromEmail: string;
         replyToEmail: string;
       };
+      smtp: {
+        selected: boolean;
+        server: string;
+        port: number;
+        secure: boolean;
+        authentication: boolean;
+        username: string;
+        password: string;
+        fromEmail: string;
+        replyToEmail: string;
+      };
       mailgun: {
         selected: boolean;
         apiKey: string;
@@ -84,6 +95,46 @@ export namespace CollectionTypes {
         applicationKey: string;
         endpoint: string;
         bucket: string;
+      };
+      whatsapp: {
+        selected: boolean;
+        
+        // API Configuration
+        accessToken: string;
+        phoneNumberId: string;
+        businessAccountId: string;
+        apiUrl: string;
+        webhookVerifyToken: string;
+        
+        // Template Configuration
+        defaultLanguage: string;
+        templates: {
+          invoice: {
+            name: string;
+            language: string;
+            parameters: string[];
+          };
+          paymentNotice: {
+            name: string;
+            language: string;
+            parameters: string[];
+          };
+          paymentReminder: {
+            name: string;
+            language: string;
+            parameters: string[];
+          };
+          finalNotice: {
+            name: string;
+            language: string;
+            parameters: string[];
+          };
+          login: {
+            name: string;
+            language: string;
+            parameters: string[];
+          };
+        };
       };
     };
     locale: Locale;
@@ -266,5 +317,23 @@ export namespace CollectionTypes {
     guarantyPayback: number;
 
     stepperMode: boolean;
+  };
+
+  export type WhatsAppMessage = {
+    _id: string;
+    realmId: string;
+    templateName: string;
+    templateType: 'invoice' | 'paymentNotice' | 'paymentReminder' | 'finalNotice' | 'login';
+    recordId: string;
+    parameters: Record<string, unknown>;
+    sentTo: string;
+    sentDate: Date;
+    status: 'sent' | 'delivered' | 'read' | 'failed';
+    messageId: string;
+    method: 'api' | 'url';
+    whatsappURL?: string;
+    errorCode?: string;
+    errorMessage?: string;
+    facebookTraceId?: string;
   };
 }

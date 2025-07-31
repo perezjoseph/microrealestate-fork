@@ -174,7 +174,7 @@ function WhatsAppActions({ values, onDone }) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${store.user.accessToken}`,
+              Authorization: `Bearer ${store.user.token}`,
               organizationId: store.organization.selected._id
             },
             body: JSON.stringify({

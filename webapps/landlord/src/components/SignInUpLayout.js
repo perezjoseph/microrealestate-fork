@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import config from '../config';
 import { SignInUpIllustration } from '../components/Illustrations';
 import useTranslation from 'next-translate/useTranslation';
+import VersionInfo from './VersionInfo';
 
 export default function SignInUpLayout({ children }) {
   const { t } = useTranslation('common');
@@ -18,6 +19,9 @@ export default function SignInUpLayout({ children }) {
       <div className="flex flex-col items-center justify-center w-full relative">
         <div className="lg:hidden text-4xl mb-5">{config.APP_NAME}</div>
         {children}
+        <div className="absolute bottom-4 right-4">
+          <VersionInfo compact />
+        </div>
       </div>
     </div>
   );

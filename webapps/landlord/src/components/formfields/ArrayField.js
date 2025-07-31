@@ -67,7 +67,9 @@ export function ArrayField({
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  arrayHelpers.push(emptyItem);
+                  const newItem =
+                    typeof emptyItem === 'function' ? emptyItem() : emptyItem;
+                  arrayHelpers.push(newItem);
                 }}
                 className="gap-1"
                 data-cy={`add${cyLabel}`}

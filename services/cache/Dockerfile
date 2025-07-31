@@ -7,10 +7,11 @@ COPY services/cache/package.json ./
 RUN npm install --only=production
 
 # Copy cache service files
-COPY services/cache/index.js services/cache/logger.js ./
+COPY services/cache/index.js ./
+COPY services/cache/logger.js ./
 
-# Expose port (if needed)
-EXPOSE 6380
+# Expose port
+EXPOSE 8600
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

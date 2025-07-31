@@ -21,11 +21,19 @@ export function ThemeTest() {
 
   return (
     <div className="p-4 border rounded-lg bg-card text-card-foreground">
-      <h3 className="text-lg font-semibold mb-2">Theme Test Component (Landlord)</h3>
+      <h3 className="text-lg font-semibold mb-2">
+        Theme Test Component (Landlord)
+      </h3>
       <div className="space-y-2 text-sm">
-        <p>Current theme: <strong>{theme}</strong></p>
-        <p>Resolved theme: <strong>{resolvedTheme}</strong></p>
-        <p>System theme: <strong>{systemTheme}</strong></p>
+        <p>
+          Current theme: <strong>{theme}</strong>
+        </p>
+        <p>
+          Resolved theme: <strong>{resolvedTheme}</strong>
+        </p>
+        <p>
+          System theme: <strong>{systemTheme}</strong>
+        </p>
         <div className="flex gap-2 mt-4">
           <button
             onClick={() => setTheme('light')}

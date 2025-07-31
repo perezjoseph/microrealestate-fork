@@ -1,0 +1,369 @@
+/**
+ * SSR Error Handling Styles
+ * Basic styles for error boundaries and fallback components
+ */
+
+/* Error Boundary Styles */
+.ssr-error-boundary {
+  padding: 1rem;
+  border: 1px solid #e53e3e;
+  border-radius: 0.375rem;
+  background-color: #fed7d7;
+  color: #742a2a;
+  margin: 0.5rem 0;
+}
+
+.ssr-error-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ssr-error-content h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.ssr-error-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.ssr-error-retry-button {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.ssr-error-retry-button:hover {
+  background-color: #c53030;
+}
+
+.ssr-error-retry-button:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.ssr-error-details {
+  margin-top: 0.5rem;
+}
+
+.ssr-error-details summary {
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.ssr-error-details pre {
+  background-color: #f7fafc;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  border: 1px solid #e2e8f0;
+}
+
+/* Fallback Component Styles */
+.ssr-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f7fafc;
+  border: 1px dashed #cbd5e0;
+  border-radius: 0.375rem;
+  color: #4a5568;
+  min-height: 100px;
+}
+
+.ssr-placeholder-content {
+  text-align: center;
+}
+
+.ssr-placeholder-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.ssr-placeholder p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Skeleton Loader Styles */
+.ssr-skeleton {
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 0.375rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.ssr-skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ssr-skeleton-line {
+  height: 1rem;
+  background-color: #e2e8f0;
+  border-radius: 0.25rem;
+}
+
+.ssr-skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Hidden Fallback */
+.ssr-hidden {
+  display: none !important;
+}
+
+/* Error Message Styles */
+.ssr-error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #fef5e7;
+  border: 1px solid #f6ad55;
+  border-radius: 0.375rem;
+  color: #744210;
+}
+
+.ssr-error-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.ssr-error-text {
+  flex: 1;
+}
+
+.ssr-error-text p {
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+}
+
+.ssr-error-text small {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.ssr-error-retry {
+  padding: 0.375rem 0.75rem;
+  background-color: #ed8936;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.ssr-error-retry:hover {
+  background-color: #dd6b20;
+}
+
+/* Retry Fallback Styles */
+.ssr-retry-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f0fff4;
+  border: 1px solid #9ae6b4;
+  border-radius: 0.375rem;
+  color: #22543d;
+  min-height: 100px;
+}
+
+.ssr-retry-content {
+  text-align: center;
+}
+
+.ssr-retry-content p {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+}
+
+.ssr-retry-button {
+  padding: 0.5rem 1rem;
+  background-color: #38a169;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.ssr-retry-button:hover {
+  background-color: #2f855a;
+}
+
+/* Theme Fallback Styles */
+.theme-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border-radius: 0.375rem;
+  min-height: 80px;
+}
+
+.theme-fallback--light {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #2d3748;
+}
+
+.theme-fallback--dark {
+  background-color: #1a202c;
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
+}
+
+.theme-fallback-content {
+  text-align: center;
+}
+
+.theme-fallback-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-fallback p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Form Field Fallback Styles */
+.form-field-fallback {
+  margin-bottom: 1rem;
+}
+
+.form-field-fallback-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-field-fallback-input {
+  position: relative;
+}
+
+.form-field-fallback-placeholder {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .ssr-error-boundary,
+  .ssr-placeholder,
+  .ssr-error-message,
+  .ssr-retry-fallback,
+  .theme-fallback {
+    padding: 1rem;
+    margin: 0.25rem 0;
+  }
+  
+  .ssr-error-content {
+    gap: 0.5rem;
+  }
+  
+  .ssr-placeholder {
+    min-height: 80px;
+  }
+  
+  .ssr-retry-fallback {
+    min-height: 80px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .ssr-placeholder {
+    background-color: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+  
+  .ssr-skeleton {
+    background-color: #2d3748;
+  }
+  
+  .ssr-skeleton-line {
+    background-color: #4a5568;
+  }
+  
+  .form-field-fallback-label {
+    color: #e2e8f0;
+  }
+  
+  .form-field-fallback-placeholder {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #9ca3af;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .ssr-error-boundary {
+    border-width: 2px;
+  }
+  
+  .ssr-placeholder {
+    border-width: 2px;
+  }
+  
+  .ssr-error-message {
+    border-width: 2px;
+  }
+  
+  .ssr-retry-fallback {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ssr-skeleton,
+  .form-field-fallback-placeholder {
+    animation: none;
+  }
+  
+  .ssr-error-retry-button,
+  .ssr-error-retry,
+  .ssr-retry-button {
+    transition: none;
+  }
+}

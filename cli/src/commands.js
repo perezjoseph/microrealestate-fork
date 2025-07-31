@@ -616,7 +616,7 @@ function writeDotEnv(promptsConfig, envConfig) {
   // init variables that have to be overwritten
   const cipherKey = envConfig?.CIPHER_KEY || generateRandomToken(32);
   const cipherIvKey = envConfig?.CIPHER_IV_KEY || generateRandomToken(32);
-  const tokenDbPassword = envConfig?.REDIS_PASSWORD || generateRandomToken(64);
+  const tokenDbPassword = envConfig?.VALKEY_PASSWORD || generateRandomToken(64);
   const accessTokenSecret =
     envConfig?.AUTHENTICATOR_ACCESS_TOKEN_SECRET || generateRandomToken(64);
   const refreshTokenSecret =
@@ -688,7 +688,7 @@ function writeDotEnv(promptsConfig, envConfig) {
     delete envConfig.MONGO_URL;
     delete envConfig.CIPHER_KEY;
     delete envConfig.CIPHER_IV_KEY;
-    delete envConfig.REDIS_PASSWORD;
+    delete envConfig.VALKEY_PASSWORD;
     delete envConfig.AUTHENTICATOR_ACCESS_TOKEN_SECRET;
     delete envConfig.AUTHENTICATOR_REFRESH_TOKEN_SECRET;
     delete envConfig.AUTHENTICATOR_RESET_TOKEN_SECRET;
@@ -773,8 +773,8 @@ SMTP_PASSWORD=${smtpPassword}
 ##                                                                           ##
 ############################################################################### 
 
-## Redis
-REDIS_PASSWORD=${tokenDbPassword}
+## Valkey
+VALKEY_PASSWORD=${tokenDbPassword}
 
 ## Mongo
 MONGO_URL=${dbUrl}

@@ -2,7 +2,7 @@ const express = require('express');
 const { createClient } = require('redis');
 
 const app = express();
-const port = process.env.MONITOR_PORT || 8600;
+const port = process.env.MONITOR_PORT || 8800;
 
 let valkeyClient;
 
@@ -10,8 +10,8 @@ let valkeyClient;
 async function initValkey() {
   try {
     valkeyClient = createClient({
-      url: process.env.REDIS_URL || 'redis://valkey:6379',
-      password: process.env.REDIS_PASSWORD
+      url: process.env.VALKEY_URL || 'valkey://valkey:6379',
+      password: process.env.VALKEY_PASSWORD
     });
     
     await valkeyClient.connect();

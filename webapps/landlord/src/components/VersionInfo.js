@@ -64,9 +64,11 @@ export function VersionInfo({ compact = false }) {
 
   if (compact) {
     return (
-      <Tooltip title={`Version ${VERSION_INFO.version} - Click for details`}>
+      <Tooltip
+        title={`Version ${VERSION_INFO.version} (${VERSION_INFO.commit}) - Click for details`}
+      >
         <Chip
-          label={VERSION_INFO.version}
+          label={`${VERSION_INFO.version} (${VERSION_INFO.commit})`}
           size="small"
           color="primary"
           variant="outlined"
@@ -85,7 +87,7 @@ export function VersionInfo({ compact = false }) {
           MicroRealEstate
         </Typography>
         <Chip
-          label={VERSION_INFO.version}
+          label={`${VERSION_INFO.version} (${VERSION_INFO.commit})`}
           size="small"
           color="primary"
           variant="outlined"
@@ -110,7 +112,8 @@ export function VersionInfo({ compact = false }) {
                 MicroRealEstate {VERSION_INFO.version}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Released on {VERSION_INFO.releaseDate} • {VERSION_INFO.codename}
+                Released on {VERSION_INFO.releaseDate} • {VERSION_INFO.codename}{' '}
+                • Commit: {VERSION_INFO.commit}
               </Typography>
             </div>
           </Box>

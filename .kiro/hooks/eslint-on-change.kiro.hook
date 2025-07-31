@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "ESLint Code Quality Check",
+  "description": "Automatically runs ESLint on modified JavaScript and TypeScript files to check for code quality issues, style violations, and potential bugs",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.ts",
+      "**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run ESLint on the modified files to check for code quality issues. Focus on the specific files that were changed and provide a summary of any linting errors or warnings found. If there are issues, suggest fixes or improvements."
+  }
+}

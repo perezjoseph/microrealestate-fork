@@ -25,7 +25,7 @@ function ErrorTrigger({ errorType }) {
 
   const triggerError = () => {
     switch (errorType) {
-      case 'storage':
+      case 'storage': {
         // Simulate localStorage error
         const originalSetItem = localStorage.setItem;
         localStorage.setItem = () => {
@@ -34,8 +34,9 @@ function ErrorTrigger({ errorType }) {
         setTheme('dark');
         localStorage.setItem = originalSetItem;
         break;
+      }
 
-      case 'dom':
+      case 'dom': {
         // Simulate DOM manipulation error
         const originalClassList = document.documentElement.classList;
         document.documentElement.classList = {

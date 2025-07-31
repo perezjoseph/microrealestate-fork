@@ -2,13 +2,25 @@
   "name": "@microrealestate/whatsapp",
   "version": "1.0.0",
   "description": "WhatsApp Business API integration service for MicroRealEstate",
-  "main": "src/index.js",
+  "main": "src/standalone-index.js",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "echo \"WhatsApp service - no build required\" && exit 0",
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "echo \"No tests specified\" && exit 0"
+    "clean:types": "rimraf ../../types/dist",
+    "clean:common": "rimraf ../common/dist",
+    "clean": "npm-run-all clean:types clean:common",
+    "transpile:types": "tsc --build ../../types/tsconfig.json",
+    "transpile:common": "tsc --build ../common/tsconfig.json",
+    "transpile": "npm-run-all transpile:types transpile:common",
+    "build": "npm-run-all clean transpile",
+    "watch:types": "tsc --build ../../types/tsconfig.json --watch --preserveWatchOutput",
+    "watch:common": "tsc --build ../common/tsconfig.json --watch --preserveWatchOutput",
+    "watch:service": "nodemon -w src --inspect=0.0.0.0:9229 --no-colours ./src/standalone-index.js",
+    "start": "node src/standalone-index.js",
+    "dev": "npm-run-all build --parallel watch:types watch:common watch:service",
+    "eslint": "eslint .",
+    "lint": "npm-run-all transpile eslint",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css}'"
   },
   "keywords": [
     "whatsapp",
@@ -19,15 +31,25 @@
   "author": "MicroRealEstate Team",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.8.4",
-    "cors": "^2.8.5",
-    "express": "^4.21.1",
-    "jsonwebtoken": "^9.0.0"
+    "@microrealestate/common": "*",
+    "axios": "1.8.4",
+    "cors": "2.8.5",
+    "express": "4.21.1",
+    "express-rate-limit": "7.1.5",
+    "express-validator": "7.0.1",
+    "helmet": "7.1.0",
+    "jsonwebtoken": "9.0.0",
+    "mongoose": "^8.16.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
-  },
-  "engines": {
-    "node": ">=22.17.1"
+    "@typescript-eslint/eslint-plugin": "7.15.0",
+    "@typescript-eslint/parser": "7.15.0",
+    "eslint": "8.57.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-import": "2.29.1",
+    "nodemon": "3.1.4",
+    "npm-run-all": "4.1.5",
+    "rimraf": "6.0.1",
+    "typescript": "5.5.4"
   }
 }

@@ -24,16 +24,19 @@
       "disabled": false,
       "autoApprove": []
     },
-    "github": {
-      "command": ".kiro/scripts/github-mcp.sh",
-      "args": [],
+    "puppeteer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ],
       "disabled": false,
       "autoApprove": [
-        "get_me",
-        "list_workflows",
-        "list_workflow_runs",
-        "get_workflow_run",
-        "list_workflow_jobs"
+        "puppeteer_navigate",
+        "puppeteer_screenshot",
+        "puppeteer_fill",
+        "puppeteer_click",
+        "puppeteer_evaluate"
       ]
     }
   }

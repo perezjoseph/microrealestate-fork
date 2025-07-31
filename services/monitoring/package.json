@@ -8,7 +8,8 @@
     "build": "echo \"Monitoring service - no build required\" && exit 0",
     "start": "node valkey-monitor.js",
     "dev": "nodemon valkey-monitor.js",
-    "test": "echo \"No tests specified\" && exit 0"
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "eslint ."
   },
   "keywords": [
     "monitoring",

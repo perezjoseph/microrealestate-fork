@@ -56,9 +56,12 @@ export function ThemeProvider({ children, onError, ...props }) {
         THEME_ERROR_SEVERITY.HIGH,
         error
       );
-      ThemeErrorLogger.log(themeError, { operation: 'provider-mount', app: 'landlord' });
+      ThemeErrorLogger.log(themeError, {
+        operation: 'provider-mount',
+        app: 'landlord'
+      });
       setInitError(themeError);
-      
+
       // Apply safe fallback theme
       SafeThemeApplicator.resetToDefault();
       setMounted(true);
@@ -73,11 +76,11 @@ export function ThemeProvider({ children, onError, ...props }) {
       THEME_ERROR_SEVERITY.HIGH,
       error
     );
-    
-    ThemeErrorLogger.log(themeError, { 
-      operation: 'provider-error', 
+
+    ThemeErrorLogger.log(themeError, {
+      operation: 'provider-error',
       app: 'landlord',
-      errorInfo 
+      errorInfo
     });
 
     // Call external error handler if provided
@@ -113,9 +116,7 @@ export function ThemeProvider({ children, onError, ...props }) {
         storageKey="mre-landlord-theme"
         {...props}
       >
-        <ThemeContextBridge>
-          {children}
-        </ThemeContextBridge>
+        <ThemeContextBridge>{children}</ThemeContextBridge>
       </NextThemesProvider>
     </ThemeErrorBoundary>
   );

@@ -1,134 +1,119 @@
 # Project Structure
 
-## Root Level Organization
+## Root Directory Organization
 
 ```
 microrealestate/
-├── cli/                    # Custom CLI for development and deployment
+├── cli/                    # Command-line interface for development
+├── docs/                  # Project documentation and guides
 ├── services/               # Backend microservices
 ├── webapps/               # Frontend applications
 ├── types/                 # Shared TypeScript type definitions
 ├── config/                # Configuration files (Valkey, Logstash)
-├── documentation/         # Project documentation
-├── backup/                # Database backup location
-├── scripts/               # Utility scripts
-└── docker-compose*.yml    # Docker orchestration files
+├── data/                  # Local development data (MongoDB, Valkey)
+├── backup/                # Database backup files
+├── docker-compose.yml     # Production container orchestration
+├── docker-compose.local.yml # Local development overrides
+└── package.json           # Root workspace configuration
 ```
 
-## Services Directory (`services/`)
+## Services Architecture (`services/`)
 
-Each service follows a consistent structure:
+Each service is an independent Node.js application with TypeScript support:
 
-```
-services/
-├── api/                   # Main business logic API
-├── authenticator/         # Authentication service with JWT/OTP
-├── cache/                 # Caching service
-├── common/                # Shared utilities and middleware
-├── emailer/               # Email notification service
-├── gateway/               # API gateway and reverse proxy
-├── monitoring/            # System monitoring
-├── pdfgenerator/          # Document generation service
-├── resetservice/          # Password reset service
-├── tenantapi/             # Tenant-specific API endpoints
-└── whatsapp/              # WhatsApp Business API integration
-```
+- **`api/`** - Main business logic API (port 8200)
+- **`authenticator/`** - Authentication and user management (port 8000)
+- **`cache/`** - Caching service using Valkey (port 8600)
+- **`common/`** - Shared utilities and middleware
+- **`emailer/`** - Email notification service (port 8400)
+- **`gateway/`** - API gateway and reverse proxy (port 8080)
+- **`monitoring/`** - System monitoring and health checks (port 8800)
+- **`pdfgenerator/`** - PDF document generation (port 8300)
+- **`tenantapi/`** - Tenant-specific API endpoints (port 8250)
+- **`whatsapp/`** - WhatsApp Business API integration with enhanced middleware (port 8500)
 
 ### Service Structure Pattern
 ```
-service-name/
-├── src/                   # Source code
-│   ├── index.js/ts       # Entry point
-│   ├── routes.js/ts      # Route definitions
-│   └── ...               # Service-specific modules
-├── Dockerfile            # Production container
-├── dev.Dockerfile        # Development container
-├── package.json          # Dependencies and scripts
-└── README.md             # Service documentation
+services/[service-name]/
+├── src/
+│   ├── index.js           # Entry point
+│   ├── routes/            # Express route handlers
+│   ├── models/            # Database models
+│   └── utils/             # Service-specific utilities
+├── package.json           # Service dependencies
+└── Dockerfile             # Container configuration
 ```
 
 ## Frontend Applications (`webapps/`)
 
-```
-webapps/
-├── commonui/              # Shared UI components and utilities
-├── landlord/              # Property management interface
-└── tenant/                # Tenant portal interface
-```
+- **`landlord/`** - Landlord management portal (Next.js)
+- **`tenant/`** - Tenant self-service portal (Next.js)
+- **`commonui/`** - Shared UI components and utilities
+- **`performance-tools/`** - Development and testing tools
 
 ### Frontend Structure Pattern
 ```
-webapp-name/
-├── src/                   # Source code
+webapps/[app-name]/
+├── src/
 │   ├── components/        # React components
 │   ├── pages/            # Next.js pages
-│   ├── hooks/            # Custom React hooks
-│   ├── store/            # State management
-│   ├── styles/           # Styling files
-│   └── utils/            # Utility functions
-├── locales/              # Internationalization files
+│   ├── utils/            # Client-side utilities
+│   └── styles/           # CSS and styling
 ├── public/               # Static assets
-├── scripts/              # Build and utility scripts
-├── Dockerfile            # Production container
-├── dev.Dockerfile        # Development container
-├── package.json          # Dependencies and scripts
+├── package.json          # App dependencies
 └── next.config.js        # Next.js configuration
 ```
 
-## Shared Modules
+## Shared Resources
 
 ### Types (`types/`)
-- Shared TypeScript definitions
-- API contract types
-- Common data structures
+- Centralized TypeScript type definitions
+- Shared across all services and frontends
+- Compiled to `dist/` for consumption
 
-### Common UI (`webapps/commonui/`)
-- Reusable React components
-- Form field components
-- Shared utilities and hooks
+### CLI (`cli/`)
+- Development workflow automation
+- Service orchestration commands
+- Environment management
 
-### Common Services (`services/common/`)
-- Database connections (MongoDB, Valkey)
-- Authentication middleware
-- Logging utilities
-- HTTP interceptors
+### Documentation (`docs/`)
+- Project documentation and guides
+- API documentation
+- Setup and deployment instructions
+- Architecture diagrams and technical specifications
 
-## Configuration Files
-
-- `docker-compose.yml` - Main production orchestration
-- `docker-compose.local.yml` - Local development
-- `docker-compose.microservices.*.yml` - Microservices-specific configs
-- `base.env` - Base environment variables
-- `.env` - Local environment overrides (not versioned)
-
-## Development Conventions
-
-### File Naming
-- Use kebab-case for directories and files
-- TypeScript files use `.ts` extension
-- React components use PascalCase
-
-### Import/Export Patterns
-- Use ES modules (`import/export`)
-- Barrel exports in index files
-- Relative imports for local modules
+## Configuration Patterns
 
 ### Environment Variables
-- Prefix service-specific vars with service name
-- Use SCREAMING_SNAKE_CASE
-- Document all variables in service README
+- Service-specific environment configuration
+- Centralized in Docker Compose files
+- Local overrides in `.env` files
 
-### Docker Conventions
-- Each service has production and development Dockerfiles
-- Multi-stage builds for optimization
-- Consistent port exposure patterns
+### Networking
+- Internal Docker network for service communication
+- Gateway service handles external routing
+- Port mapping defined in Docker Compose
 
-## Workspace Configuration
+## Development Workflow
 
-The project uses Yarn workspaces with these packages:
-- `cli` - Command line interface
-- `services/*` - All backend services
-- `webapps/*` - All frontend applications  
-- `types` - Shared type definitions
+### Workspace Management
+- Yarn workspaces for dependency management
+- Shared scripts at root level
+- Individual service development possible
 
-Scripts run across workspaces using `yarn workspaces foreach`.
+### Build Process
+1. TypeScript compilation for shared types
+2. Service-specific builds (if needed)
+3. Docker image creation for deployment
+
+### Code Organization Principles
+- **Separation of Concerns**: Each service has single responsibility
+- **Shared Dependencies**: Common utilities in `services/common/`
+- **Type Safety**: Shared types ensure consistency
+- **Modular Frontend**: Reusable components in `commonui/`
+
+## File Naming Conventions
+- **Services**: kebab-case directory names
+- **Components**: PascalCase for React components
+- **Utilities**: camelCase for JavaScript/TypeScript files
+- **Configuration**: lowercase with extensions (.yml, .json, .env)

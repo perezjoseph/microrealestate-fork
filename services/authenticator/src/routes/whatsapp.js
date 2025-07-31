@@ -16,9 +16,9 @@ const WHATSAPP_API_URL =
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const WHATSAPP_LOGIN_TEMPLATE_NAME =
-  process.env.WHATSAPP_LOGIN_TEMPLATE_NAME || 'otpcode';
+  process.env.WHATSAPP_LOGIN_TEMPLATE_NAME;
 const WHATSAPP_LOGIN_TEMPLATE_LANGUAGE =
-  process.env.WHATSAPP_LOGIN_TEMPLATE_LANGUAGE || 'es';
+  process.env.WHATSAPP_LOGIN_TEMPLATE_LANGUAGE;
 
 // Send WhatsApp OTP using the otpcode template
 async function sendWhatsAppOTP(phoneNumber, otp) {
@@ -37,6 +37,17 @@ async function sendWhatsAppOTP(phoneNumber, otp) {
         components: [
           {
             type: 'body',
+            parameters: [
+              {
+                type: 'text',
+                text: otp
+              }
+            ]
+          },
+          {
+            type: 'button',
+            sub_type: 'url',
+            index: '0',
             parameters: [
               {
                 type: 'text',
@@ -63,7 +74,10 @@ async function sendWhatsAppOTP(phoneNumber, otp) {
   } catch (error) {
     logger.error('Failed to send WhatsApp OTP', {
       phoneNumber,
-      error: error.response?.data || error.message
+      error: error.response?.data || error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      fullError: error
     });
     return { success: false, error: error.response?.data || error.message };
   }

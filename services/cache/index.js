@@ -10,8 +10,8 @@ class ValkeyCache {
   async connect() {
     try {
       this.client = createClient({
-        url: process.env.REDIS_URL || 'redis://valkey:6379',
-        password: process.env.REDIS_PASSWORD,
+        url: process.env.VALKEY_URL || 'valkey://valkey:6379',
+        password: process.env.VALKEY_PASSWORD,
         socket: {
           reconnectStrategy: (retries) => Math.min(retries * 50, 500)
         }
@@ -229,3 +229,41 @@ class ValkeyCache {
 }
 
 module.exports = new ValkeyCache();
+
+// Start the cache service
+async function startCacheService() {
+  const cache = module.exports;
+  
+  try {
+    await cache.connect();
+    console.log('Cache service started successfully on port', process.env.PORT || 8600);
+    
+    // Keep the process alive
+    process.on('SIGTERM', async () => {
+      console.log('Received SIGTERM, shutting down gracefully');
+      await cache.disconnect();
+      process.exit(0);
+    });
+    
+    process.on('SIGINT', async () => {
+      console.log('Received SIGINT, shutting down gracefully');
+      await cache.disconnect();
+      process.exit(0);
+    });
+    
+    // Keep process alive
+    setInterval(() => {
+      // Periodic cleanup every 5 minutes
+      cache.cleanup();
+    }, 5 * 60 * 1000);
+    
+  } catch (error) {
+    console.error('Failed to start cache service:', error);
+    process.exit(1);
+  }
+}
+
+// Start the service if this file is run directly
+if (require.main === module) {
+  startCacheService();
+}

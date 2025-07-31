@@ -46,8 +46,16 @@ async function _sendWithSmtp(config, email) {
 
   const transporter = nodemailer.createTransport({
     host: config.server,
-    port: config.ports,
-    secure: config.secure,
+    port: parseInt(config.port),
+    secure: config.secure === true || config.secure === 'true', // Convert string to boolean
+    requireTLS: true, // Always require TLS for SMTP
+    tls: {
+      // Do not fail on invalid certs for development
+      rejectUnauthorized: process.env.NODE_ENV === 'production',
+      // Force TLS version for Amazon SES compatibility
+      minVersion: 'TLSv1.2',
+      ciphers: 'HIGH:!aNULL:!MD5'
+    },
     auth
   });
 

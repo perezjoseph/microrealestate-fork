@@ -2,9 +2,31 @@ import { useState } from 'react';
 import { Button, CircularProgress, Tooltip } from '@material-ui/core';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { useTheme } from '@microrealestate/commonui/hooks/useTheme';
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '../ui/chart';
-import { Bar, BarChart, Legend, RadialBar, RadialBarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent
+} from '../ui/chart';
+import {
+  Bar,
+  BarChart,
+  Legend,
+  RadialBar,
+  RadialBarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis
+} from 'recharts';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '../ui/table';
 
 const testData = [
   { name: 'Jan', value: 400, paid: 300, notPaid: 100 },
@@ -13,16 +35,49 @@ const testData = [
   { name: 'Apr', value: 800, paid: 700, notPaid: 100 }
 ];
 
-const radialData = [
-  { paid: 1200, notPaid: 300 }
-];
+const radialData = [{ paid: 1200, notPaid: 300 }];
 
 const tableData = [
-  { id: 1, tenant: 'John Doe', property: 'Apt 101', rent: 1200, status: 'Paid', balance: 0 },
-  { id: 2, tenant: 'Jane Smith', property: 'Apt 102', rent: 1100, status: 'Overdue', balance: -150 },
-  { id: 3, tenant: 'Bob Johnson', property: 'Apt 103', rent: 1300, status: 'Paid', balance: 0 },
-  { id: 4, tenant: 'Alice Brown', property: 'Apt 104', rent: 1000, status: 'Partial', balance: -500 },
-  { id: 5, tenant: 'Charlie Wilson', property: 'Apt 105', rent: 1250, status: 'Paid', balance: 0 }
+  {
+    id: 1,
+    tenant: 'John Doe',
+    property: 'Apt 101',
+    rent: 1200,
+    status: 'Paid',
+    balance: 0
+  },
+  {
+    id: 2,
+    tenant: 'Jane Smith',
+    property: 'Apt 102',
+    rent: 1100,
+    status: 'Overdue',
+    balance: -150
+  },
+  {
+    id: 3,
+    tenant: 'Bob Johnson',
+    property: 'Apt 103',
+    rent: 1300,
+    status: 'Paid',
+    balance: 0
+  },
+  {
+    id: 4,
+    tenant: 'Alice Brown',
+    property: 'Apt 104',
+    rent: 1000,
+    status: 'Partial',
+    balance: -500
+  },
+  {
+    id: 5,
+    tenant: 'Charlie Wilson',
+    property: 'Apt 105',
+    rent: 1250,
+    status: 'Paid',
+    balance: 0
+  }
 ];
 
 export default function DarkModeTest() {
@@ -70,13 +125,13 @@ export default function DarkModeTest() {
             <h3 className="font-medium">Bar Chart Component</h3>
             <ChartContainer
               config={{
-                paid: { 
+                paid: {
                   label: 'Paid',
-                  color: 'hsl(var(--chart-2))' 
+                  color: 'hsl(var(--chart-2))'
                 },
-                notPaid: { 
+                notPaid: {
                   label: 'Not Paid',
-                  color: 'hsl(var(--chart-1))' 
+                  color: 'hsl(var(--chart-1))'
                 }
               }}
               className="h-[250px] w-full"
@@ -97,13 +152,13 @@ export default function DarkModeTest() {
             <h3 className="font-medium">Radial Chart Component</h3>
             <ChartContainer
               config={{
-                paid: { 
+                paid: {
                   label: 'Paid',
-                  color: 'hsl(var(--chart-2))' 
+                  color: 'hsl(var(--chart-2))'
                 },
-                notPaid: { 
+                notPaid: {
                   label: 'Not Paid',
-                  color: 'hsl(var(--chart-1))' 
+                  color: 'hsl(var(--chart-1))'
                 }
               }}
               className="h-[220px] w-full"
@@ -164,7 +219,7 @@ export default function DarkModeTest() {
               </TableHeader>
               <TableBody>
                 {tableData.map((row, index) => (
-                  <TableRow 
+                  <TableRow
                     key={row.id}
                     className={index % 2 === 0 ? 'bg-muted/30' : ''}
                   >
@@ -172,21 +227,25 @@ export default function DarkModeTest() {
                     <TableCell>{row.property}</TableCell>
                     <TableCell className="text-right">${row.rent}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        row.status === 'Paid' 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                          : row.status === 'Overdue'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${
+                          row.status === 'Paid'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                            : row.status === 'Overdue'
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                        }`}
+                      >
                         {row.status}
                       </span>
                     </TableCell>
-                    <TableCell className={`text-right font-medium ${
-                      row.balance < 0 
-                        ? 'text-red-600 dark:text-red-400' 
-                        : 'text-green-600 dark:text-green-400'
-                    }`}>
+                    <TableCell
+                      className={`text-right font-medium ${
+                        row.balance < 0
+                          ? 'text-red-600 dark:text-red-400'
+                          : 'text-green-600 dark:text-green-400'
+                      }`}
+                    >
                       {row.balance < 0 ? `-$${Math.abs(row.balance)}` : '$0'}
                     </TableCell>
                   </TableRow>
@@ -203,7 +262,9 @@ export default function DarkModeTest() {
               onClick={handleToggle}
               disabled={loading}
             >
-              {loading ? 'Switching...' : `Switch to ${resolvedTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
+              {loading
+                ? 'Switching...'
+                : `Switch to ${resolvedTheme === 'dark' ? 'Light' : 'Dark'} Mode`}
             </Button>
           </div>
         </CardContent>

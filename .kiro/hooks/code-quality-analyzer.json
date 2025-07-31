@@ -1,0 +1,38 @@
+{
+  "name": "Code Quality Analyzer",
+  "description": "Analyzes modified source code files for potential improvements, code smells, design patterns, and best practices",
+  "trigger": {
+    "type": "file",
+    "events": ["save"],
+    "patterns": [
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.vue",
+      "**/*.py",
+      "**/*.java",
+      "**/*.cs",
+      "**/*.go",
+      "**/*.rs",
+      "**/*.php",
+      "**/*.rb",
+      "**/*.swift",
+      "**/*.kt"
+    ],
+    "excludePatterns": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/.next/**",
+      "**/coverage/**",
+      "**/*.min.js",
+      "**/*.bundle.js",
+      "**/vendor/**",
+      "**/.yarn/**"
+    ]
+  },
+  "request": "I've detected changes to source code files. Please analyze the modified code for potential improvements while maintaining existing functionality. Focus on:\n\n## Code Quality Areas to Analyze:\n\n### 1. Code Smells\n- Long methods/functions (>20-30 lines)\n- Large classes with too many responsibilities\n- Duplicate code patterns\n- Complex conditional logic that could be simplified\n- Magic numbers and hardcoded values\n- Inconsistent naming conventions\n- Dead or unused code\n\n### 2. Design Patterns & Architecture\n- Opportunities to apply common design patterns (Strategy, Factory, Observer, etc.)\n- Separation of concerns violations\n- Single Responsibility Principle adherence\n- Dependency injection opportunities\n- Interface segregation improvements\n\n### 3. Performance Optimizations\n- Inefficient loops or data structures\n- Unnecessary re-renders (React/Vue)\n- Memory leaks potential\n- Database query optimization opportunities\n- Caching opportunities\n- Bundle size optimizations\n\n### 4. Best Practices\n- Error handling improvements\n- Input validation and sanitization\n- Security vulnerabilities (XSS, injection, etc.)\n- Accessibility improvements\n- Type safety enhancements\n- Documentation and comments\n\n### 5. Maintainability\n- Code readability improvements\n- Consistent formatting and style\n- Modularization opportunities\n- Test coverage gaps\n- Configuration externalization\n\n### 6. Technology-Specific Improvements\n\n**For JavaScript/TypeScript:**\n- Modern ES6+ features usage\n- Async/await vs Promise chains\n- Type definitions and interfaces\n- React hooks optimization\n- Next.js best practices\n\n**For Backend Services:**\n- API design improvements\n- Database schema optimizations\n- Middleware usage\n- Authentication/authorization patterns\n- Logging and monitoring\n\n**For Frontend:**\n- Component composition\n- State management patterns\n- UI/UX improvements\n- Responsive design\n- Performance metrics\n\n## Analysis Format:\n\nFor each file analyzed, provide:\n\n1. **File Summary**: Brief overview of what the file does\n2. **Strengths**: What's already well-implemented\n3. **Improvement Opportunities**: Specific suggestions with:\n   - Issue description\n   - Impact level (High/Medium/Low)\n   - Suggested solution with code examples\n   - Rationale for the improvement\n4. **Priority Recommendations**: Top 3 most impactful changes\n\n## Guidelines:\n- Maintain backward compatibility\n- Consider the existing codebase patterns and conventions\n- Suggest incremental improvements rather than major rewrites\n- Focus on practical, actionable suggestions\n- Consider the project's technology stack and constraints\n- Prioritize improvements that enhance readability, maintainability, and performance\n\nPlease analyze the changed files and provide specific, actionable recommendations for improving code quality while preserving existing functionality.",
+  "enabled": true,
+  "autoApprove": false
+}

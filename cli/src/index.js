@@ -68,12 +68,12 @@ function migrateEnvConfig(envConfig) {
   }
 
   if (envConfig?.AUTHENTICATOR_TOKEN_DB_URL) {
-    envConfig.REDIS_URL = envConfig.AUTHENTICATOR_TOKEN_DB_URL;
+    envConfig.VALKEY_URL = envConfig.AUTHENTICATOR_TOKEN_DB_URL;
     delete envConfig.AUTHENTICATOR_TOKEN_DB_URL;
   }
 
   if (envConfig?.AUTHENTICATOR_TOKEN_DB_PASSWORD) {
-    envConfig.REDIS_PASSWORD = envConfig.AUTHENTICATOR_TOKEN_DB_PASSWORD;
+    envConfig.VALKEY_PASSWORD = envConfig.AUTHENTICATOR_TOKEN_DB_PASSWORD;
     delete envConfig.AUTHENTICATOR_TOKEN_DB_PASSWORD;
   }
 

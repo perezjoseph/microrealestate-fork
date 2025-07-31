@@ -16,57 +16,121 @@ import useTranslation from 'next-translate/useTranslation';
 const timeRanges = ['days', 'weeks', 'months', 'years'];
 
 function initValues(lease) {
-  return {
+  const values = {
     name: lease?.name || '',
     description: lease?.description || '',
     numberOfTerms: lease?.numberOfTerms || '',
     timeRange: lease?.timeRange || '',
     active: lease?.active || true
   };
+
+  console.log('=== INIT VALUES DEBUG ===');
+  console.log('Input lease:', JSON.stringify(lease, null, 2));
+  console.log('Initialized values:', JSON.stringify(values, null, 2));
+
+  return values;
 }
 
 function getValidationSchema(newLease, existingLeases) {
-  return Yup.object().shape({
-    name: Yup.string()
-      .notOneOf(
-        existingLeases
-          .filter(({ _id }) => newLease?._id !== _id)
-          .map(({ name }) => name)
-      )
-      .required(),
+  const existingNames = existingLeases
+    .filter(({ _id }) => newLease?._id !== _id)
+    .map(({ name }) => name);
+
+  console.log('Lease validation - Existing lease names:', existingNames);
+  console.log('Lease validation - Current lease:', newLease);
+
+  const schema = Yup.object().shape({
+    name: Yup.string().notOneOf(existingNames).required(),
     description: Yup.string(),
     numberOfTerms: Yup.number().integer().min(1).required(),
     timeRange: Yup.string().required(),
     active: Yup.boolean().required()
   });
+
+  console.log('Lease validation schema created');
+  return schema;
 }
 
 export const validate = (newLease, existingLeases) => {
-  return getValidationSchema(newLease, existingLeases).validate(
-    initValues(newLease)
-  );
+  const values = initValues(newLease);
+  const schema = getValidationSchema(newLease, existingLeases);
+
+  console.log('=== LEASE FORM VALIDATION DEBUG ===');
+  console.log('Values being validated:', JSON.stringify(values, null, 2));
+  console.log('New lease data:', JSON.stringify(newLease, null, 2));
+
+  return schema.validate(values, { abortEarly: false }).catch((error) => {
+    console.error('=== VALIDATION ERRORS DETAILS ===');
+    console.error('Error type:', error.name);
+    console.error('Error message:', error.message);
+    if (error.inner) {
+      console.error('Individual field errors:');
+      error.inner.forEach((err, index) => {
+        console.error(
+          `  ${index + 1}. Field: ${err.path}, Error: ${err.message}`
+        );
+      });
+    }
+    console.error('Full error object:', error);
+    throw error;
+  });
 };
 
 const LeaseForm = ({ onSubmit }) => {
   const { t } = useTranslation('common');
   const store = useContext(StoreContext);
 
-  const validationSchema = useMemo(
-    () => getValidationSchema(store.lease.selected, store.lease.items),
-    [store.lease.selected, store.lease.items]
+  console.log('=== LEASE FORM COMPONENT DEBUG ===');
+  console.log(
+    'Store lease selected:',
+    JSON.stringify(store.lease.selected, null, 2)
   );
+  console.log('Store lease items:', store.lease.items?.length || 0, 'items');
+
+  const validationSchema = useMemo(() => {
+    try {
+      const schema = getValidationSchema(
+        store.lease.selected,
+        store.lease.items
+      );
+      console.log('Validation schema created successfully');
+      return schema;
+    } catch (error) {
+      console.error('Error creating validation schema:', error);
+      throw error;
+    }
+  }, [store.lease.selected, store.lease.items]);
 
   const initialValues = useMemo(() => {
-    return initValues(store.lease.selected);
+    try {
+      const values = initValues(store.lease.selected);
+      console.log('Initial values created successfully:', values);
+      return values;
+    } catch (error) {
+      console.error('Error creating initial values:', error);
+      throw error;
+    }
   }, [store.lease.selected]);
 
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values, actions) => {
+        console.log('Lease form submission - Values:', values);
+        console.log('Lease form submission - Errors:', actions.errors);
+        console.log('Lease form validation schema:', validationSchema);
+        onSubmit(values, actions);
+      }}
     >
-      {({ values, isSubmitting }) => {
+      {({ values, isSubmitting, errors, touched }) => {
+        // Debug logging for form state
+        if (Object.keys(errors).length > 0) {
+          console.log('Lease form validation errors:', errors);
+          console.log('Lease form touched fields:', touched);
+          console.log('Lease form current values:', values);
+        }
+
         return (
           <>
             {values.usedByTenants && (

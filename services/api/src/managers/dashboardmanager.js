@@ -26,9 +26,9 @@ export async function all(req, res) {
   const tenantCount = activeTenants.length;
 
   // count properties
-  const propertyCount = await Collections.Property.find({
+  const propertyCount = await Collections.Property.countDocuments({
     realmId: req.headers.organizationid
-  }).count();
+  });
 
   // compute occupancyRate
   let occupancyRate;
