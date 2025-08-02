@@ -1,10 +1,8 @@
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { apiFetcher } from '../../utils/fetch';
 import { Button } from '../ui/button';
 import Loading from '../Loading';
-import { printPlugin } from '@react-pdf-viewer/print';
 import { RiPrinterFill } from 'react-icons/ri';
 import { StoreContext } from '../../store';
 import { toast } from 'sonner';
@@ -14,9 +12,35 @@ export default function PdfViewer({ open, setOpen, pdfDoc }) {
   const { t } = useTranslation('common');
   const store = useContext(StoreContext);
   const [pdfSrc, setPdfSrc] = useState();
+  const [pdfComponents, setPdfComponents] = useState(null);
+  const [printPluginInstance, setPrintPluginInstance] = useState(null);
 
-  const printPluginInstance = printPlugin();
-  const { Print } = printPluginInstance;
+  // Dynamically load PDF viewer components
+  useEffect(() => {
+    const loadPdfComponents = async () => {
+      try {
+        const [
+          { Viewer, Worker },
+          { printPlugin }
+        ] = await Promise.all([
+          import('@react-pdf-viewer/core'),
+          import('@react-pdf-viewer/print')
+        ]);
+        
+        const pluginInstance = printPlugin();
+        
+        setPdfComponents({ Viewer, Worker });
+        setPrintPluginInstance(pluginInstance);
+      } catch (error) {
+        console.error('Failed to load PDF components:', error);
+        toast.error(t('Failed to load PDF viewer'));
+      }
+    };
+
+    if (open) {
+      loadPdfComponents();
+    }
+  }, [open, t]);
 
   const handleClose = useCallback(() => {
     setPdfSrc();
@@ -40,7 +64,15 @@ export default function PdfViewer({ open, setOpen, pdfDoc }) {
     })();
   }, [t, pdfDoc, store, handleClose]);
 
-  if (open && pdfSrc) {
+  // Show loading while PDF components are loading or PDF source is loading
+  if (open && (!pdfComponents || !printPluginInstance || !pdfSrc)) {
+    return <Loading />;
+  }
+
+  if (open && pdfSrc && pdfComponents && printPluginInstance) {
+    const { Viewer, Worker } = pdfComponents;
+    const { Print } = printPluginInstance;
+    
     return (
       <Drawer open={open} onOpenChange={setOpen} dismissible={false}>
         <DrawerContent className="w-full h-full p-4">
@@ -80,10 +112,6 @@ export default function PdfViewer({ open, setOpen, pdfDoc }) {
         </DrawerContent>
       </Drawer>
     );
-  }
-
-  if (open && !pdfSrc) {
-    return <Loading />;
   }
 
   return null;
