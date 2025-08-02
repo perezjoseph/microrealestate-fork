@@ -34,7 +34,6 @@ async function Main() {
         PDFGENERATOR_URL: process.env.PDFGENERATOR_URL,
         EMAILER_URL: process.env.EMAILER_URL,
         WHATSAPP_URL: process.env.WHATSAPP_URL,
-        RESETSERVICE_URL: process.env.RESETSERVICE_URL,
         LANDLORD_FRONTEND_URL: process.env.LANDLORD_FRONTEND_URL,
         LANDLORD_BASE_PATH: process.env.LANDLORD_BASE_PATH,
         TENANT_FRONTEND_URL: process.env.TENANT_FRONTEND_URL,
@@ -213,17 +212,6 @@ function exposeServices(application: Express.Application) {
       pathRewrite: { '^/tenantapi': '' }
     })
   );
-
-  // Do not expose reset api on Prod
-  if (!config.PRODUCTION) {
-    application.use(
-      '/api/reset',
-      createProxyMiddleware({
-        target: config.RESETSERVICE_URL,
-        pathRewrite: { '^/api': '' }
-      })
-    );
-  }
 }
 
 function exposeHealthCheck(application: Express.Application) {
@@ -240,10 +228,6 @@ function exposeHealthCheck(application: Express.Application) {
         config.EMAILER_URL,
         config.WHATSAPP_URL
       ];
-
-      if (!config.PRODUCTION) {
-        serviceEndpoints.push(config.RESETSERVICE_URL);
-      }
 
       const notDefinedEnpoints = serviceEndpoints.filter(
         (endpoint) => !endpoint

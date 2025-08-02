@@ -136,7 +136,6 @@ services:
       APP_DOMAIN: localhost:8080
       CORS_ENABLED: '${CORS_ENABLED:-true}'
       TENANTAPI_URL: http://tenantapi:8250/tenantapi
-      RESETSERVICE_URL: http://api:8200/api/v2
     expose:
       - '8080'
     ports:
