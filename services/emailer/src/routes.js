@@ -7,6 +7,7 @@ import {
 } from '@microrealestate/common';
 import express from 'express';
 import locale from 'locale';
+import rateLimit from 'express-rate-limit';
 
 async function _send(req, res) {
   const { templateName, recordId, params } = req.body;
@@ -55,7 +56,21 @@ async function _send(req, res) {
 
 export default function routes() {
   const { ACCESS_TOKEN_SECRET } = Service.getInstance().envConfig.getValues();
+  
+  // Rate limiting middleware
+  const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 30, // limit each IP to 30 requests per windowMs (lower for email sending)
+    message: 'Too many email requests from this IP, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
   const apiRouter = express.Router();
+  
+  // Apply rate limiting first
+  apiRouter.use(generalLimiter);
+  
   // parse locale
   apiRouter.use(locale(['fr-FR', 'en', 'pt-BR', 'de-DE', 'es-CO'], 'en')); // used when organization is not set
   apiRouter.post('/emailer/resetpassword', Middlewares.asyncWrapper(_send)); // allow this route even there is no access token
