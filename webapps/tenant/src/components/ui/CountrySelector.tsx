@@ -45,7 +45,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = memo(function Cou
   showFlag = true,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   groupByRegion = false
-}) => {
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -228,7 +228,7 @@ export const CountrySelector: React.FC<CountrySelectorProps> = memo(function Cou
       </PopoverContent>
     </Popover>
   );
-});
+}); // Close the memo function call
 
 // Compact version for use in phone input fields
 export interface CompactCountrySelectorProps {
