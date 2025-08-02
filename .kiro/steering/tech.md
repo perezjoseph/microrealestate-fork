@@ -79,9 +79,6 @@ yarn lint
 
 # Format code across all workspaces
 yarn format
-
-# Run CI pipeline
-yarn ci
 ```
 
 ### Service-Specific Commands
@@ -126,3 +123,10 @@ docker-compose down
 - **Prettier**: Automated code formatting
 - **Husky**: Git hooks for pre-commit linting and formatting
 - **TypeScript**: Type safety for backend services and shared types
+
+## CI/CD Pipeline
+- **GitHub Actions**: Automated testing, building, and deployment
+- **Docker Images**: Automated building and publishing to GitHub Container Registry
+- **Pull Request Validation**: Automated linting and testing on PRs
+- **Release Automation**: Automated release creation with deployment packages
+- **Security Scanning**: CodeQL analysis for vulnerability detection

@@ -167,7 +167,11 @@ function getSessionId() {
 
   let sessionId = sessionStorage.getItem('ssr_session_id');
   if (!sessionId) {
-    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Use cryptographically secure random values
+    const randomBytes = new Uint8Array(9);
+    crypto.getRandomValues(randomBytes);
+    const randomString = Array.from(randomBytes, byte => byte.toString(36)).join('').substr(0, 9);
+    sessionId = `session_${Date.now()}_${randomString}`;
     try {
       sessionStorage.setItem('ssr_session_id', sessionId);
     } catch (e) {

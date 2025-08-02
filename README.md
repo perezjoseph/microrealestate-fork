@@ -156,9 +156,6 @@ yarn lint
 
 # Format code
 yarn format
-
-# Run CI pipeline
-yarn ci
 ```
 
 ### Service-Specific Development
@@ -286,6 +283,35 @@ The system includes comprehensive monitoring:
 - **Error Tracking**: Detailed error reporting and tracking
 
 Access monitoring dashboard at: http://localhost:8800
+
+## 🚀 CI/CD Pipeline
+
+The project uses GitHub Actions for automated testing, building, and deployment:
+
+### Workflows
+
+- **`docker-images.yml`**: Main CI/CD pipeline that builds and publishes Docker images on push to master and releases
+- **`pr-ci.yml`**: Pull request validation with linting and testing
+- **`release.yml`**: Automated release creation with deployment packages
+- **`codeql-analysis.yml`**: Security analysis and vulnerability scanning
+
+### Docker Images
+
+All services are automatically built and published to GitHub Container Registry:
+
+```bash
+# Pull latest images
+docker pull ghcr.io/microrealestate/microrealestate/api:latest
+docker pull ghcr.io/microrealestate/microrealestate/gateway:latest
+# ... and all other services
+```
+
+### Release Process
+
+1. Create a version tag: `git tag v1.2.3 && git push origin v1.2.3`
+2. GitHub Actions automatically builds and publishes Docker images
+3. Release notes and deployment packages are generated
+4. Images are tagged with both version and `latest`
 
 ## 🤝 Contributing
 

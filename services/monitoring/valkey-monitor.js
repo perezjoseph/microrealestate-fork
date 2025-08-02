@@ -1,8 +1,23 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { createClient } = require('redis');
 
 const app = express();
 const port = process.env.MONITOR_PORT || 8800;
+
+// Rate limiting configuration
+const createRateLimiter = (windowMs, max, message) => rateLimit({
+  windowMs,
+  max,
+  message: { error: message },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Different rate limits for different endpoints
+const generalLimiter = createRateLimiter(15 * 60 * 1000, 100, 'Too many requests, please try again later'); // 100 requests per 15 minutes
+const statsLimiter = createRateLimiter(1 * 60 * 1000, 30, 'Too many stats requests, please try again later'); // 30 requests per minute
+const healthLimiter = createRateLimiter(1 * 60 * 1000, 60, 'Too many health check requests'); // 60 requests per minute
 
 let valkeyClient;
 
@@ -23,9 +38,10 @@ async function initValkey() {
 
 // Middleware
 app.use(express.json());
+app.use(generalLimiter); // Apply general rate limiting to all routes
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', healthLimiter, (req, res) => {
   res.json({
     status: 'OK',
     service: 'Valkey Monitor',
@@ -35,7 +51,7 @@ app.get('/health', (req, res) => {
 });
 
 // Valkey statistics
-app.get('/valkey/stats', async (req, res) => {
+app.get('/valkey/stats', statsLimiter, async (req, res) => {
   try {
     if (!valkeyClient?.isReady) {
       return res.status(503).json({ error: 'Valkey not connected' });
@@ -86,7 +102,7 @@ app.get('/valkey/stats', async (req, res) => {
 });
 
 // Get cached properties
-app.get('/cache/properties', async (req, res) => {
+app.get('/cache/properties', statsLimiter, async (req, res) => {
   try {
     if (!valkeyClient?.isReady) {
       return res.status(503).json({ error: 'Valkey not connected' });
@@ -121,7 +137,7 @@ app.get('/cache/properties', async (req, res) => {
 });
 
 // Clear cache by pattern
-app.delete('/cache/:pattern', async (req, res) => {
+app.delete('/cache/:pattern', statsLimiter, async (req, res) => {
   try {
     if (!valkeyClient?.isReady) {
       return res.status(503).json({ error: 'Valkey not connected' });

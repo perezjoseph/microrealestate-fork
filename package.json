@@ -78,7 +78,9 @@
   },
   "packageManager": "yarn@3.3.0",
   "dependencies": {
+    "@babel/core": "latest",
     "dotenv": "^17.2.1",
+    "form-data": "latest",
     "mongodb": "^6.18.0",
     "mongoose": "^8.8.4",
     "node-fetch": "^3.3.2",

@@ -63,8 +63,8 @@ export const suspiciousActivityDetector = (req, res, next) => {
   const suspiciousPatterns = [
     // SQL injection patterns
     /(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)/i,
-    // XSS patterns
-    /<script[^>]*>.*?<\/script>/gi,
+    // XSS patterns - improved regex to avoid catastrophic backtracking
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
     // Path traversal
     /\.\.[/\\]/,
     // Command injection
