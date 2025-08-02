@@ -1,0 +1,106 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Queue workflow if already running
+        uses: ahmadnassri/action-workflow-queue@v1
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Lint
+        run: yarn lint
+
+  build-push-images:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        include:
+          # Backend Services
+          - appname: api
+            image: ghcr.io/${{ github.repository }}/api
+            dockerfile: services/api/Dockerfile
+          - appname: authenticator
+            image: ghcr.io/${{ github.repository }}/authenticator
+            dockerfile: services/authenticator/Dockerfile
+          - appname: cache
+            image: ghcr.io/${{ github.repository }}/cache
+            dockerfile: services/cache/Dockerfile
+          - appname: emailer
+            image: ghcr.io/${{ github.repository }}/emailer
+            dockerfile: services/emailer/Dockerfile
+          - appname: gateway
+            image: ghcr.io/${{ github.repository }}/gateway
+            dockerfile: services/gateway/Dockerfile
+          - appname: monitoring
+            image: ghcr.io/${{ github.repository }}/monitoring
+            dockerfile: services/monitoring/Dockerfile
+          - appname: pdfgenerator
+            image: ghcr.io/${{ github.repository }}/pdfgenerator
+            dockerfile: services/pdfgenerator/Dockerfile
+
+          - appname: tenantapi
+            image: ghcr.io/${{ github.repository }}/tenantapi
+            dockerfile: services/tenantapi/Dockerfile
+          - appname: whatsapp
+            image: ghcr.io/${{ github.repository }}/whatsapp
+            dockerfile: services/whatsapp/Dockerfile
+          # Frontend Applications
+          - appname: landlord-frontend
+            image: ghcr.io/${{ github.repository }}/landlord-frontend
+            dockerfile: webapps/landlord/Dockerfile
+          - appname: tenant-frontend
+            image: ghcr.io/${{ github.repository }}/tenant-frontend
+            dockerfile: webapps/tenant/Dockerfile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ matrix.image }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push to GitHub Container Registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
