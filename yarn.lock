@@ -2479,6 +2479,7 @@ __metadata:
     eslint-plugin-import: 2.29.1
     express: 4.21.1
     express-mongo-sanitize: 2.2.0
+    express-rate-limit: 7.1.5
     express-winston: 4.2.0
     jsonwebtoken: 9.0.0
     lodash: 4.17.21
