@@ -16,9 +16,9 @@ export class StandardRateLimit {
   } = {}) {
     const isDemoMode = process.env.DEMO_MODE === 'true';
     const isProduction = process.env.NODE_ENV === 'production';
-    
+
     // Apply demo mode multiplier (more conservative in production)
-    const effectiveMax = isDemoMode 
+    const effectiveMax = isDemoMode
       ? Math.floor(max * (isProduction ? Math.min(demoModeMultiplier, 3) : demoModeMultiplier))
       : max;
 
@@ -41,7 +41,7 @@ export class StandardRateLimit {
           userAgent: req.get('User-Agent'),
           service: process.env.SERVICE_NAME || 'unknown'
         });
-        
+
         res.status(429).json({
           error: message,
           retryAfter: Math.floor(windowMs / 1000)
