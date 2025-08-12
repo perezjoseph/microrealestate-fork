@@ -1,4 +1,4 @@
-import { logger } from '../logger/index.js';
+import logger from '../utils/logger.js';
 import { rateLimit } from 'express-rate-limit';
 
 /**
@@ -45,14 +45,6 @@ export class StandardRateLimit {
         res.status(429).json({
           error: message,
           retryAfter: Math.floor(windowMs / 1000)
-        });
-      },
-      onLimitReached: (req) => {
-        const identifier = keyGenerator ? keyGenerator(req) : req.ip;
-        logger.info(`${logPrefix} rate limit reached`, {
-          identifier,
-          path: req.path,
-          service: process.env.SERVICE_NAME || 'unknown'
         });
       }
     });
