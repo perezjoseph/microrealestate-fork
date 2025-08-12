@@ -110,13 +110,23 @@ docker-compose logs -f [service-name]
 # Stop all services
 docker-compose down
 ```
+```bash
+#Disable SElinux to Run in Dev mode
+
+sudo setenforce 0      # reverts on reboot
+
+```
 
 ## Environment Configuration
-- Environment variables managed through `.env` files
+- Environment variables managed through `.env` files with `base.env` providing defaults
 - Separate configurations for development and production
 - Docker Compose handles service orchestration and networking
 - All services communicate through internal Docker network
 - **Database Configuration**: Unified `MONGO_URL` used by all services for consistency (consolidated December 2024)
+- **Configuration Standardization**: Recent update (January 2025) standardized all environment variables across Docker Compose configurations
+- **Flexible Port Configuration**: All service ports now configurable via environment variables
+- **Valkey Integration**: Migrated from Redis to Valkey (Redis-compatible) for caching and session management
+- **Demo Mode Configuration**: Added `DEMO_MODE` environment variable support to all services (authenticator, API, frontend) for consistent demo mode behavior across the entire application stack
 
 ## Code Quality
 - **ESLint**: Consistent code style across all workspaces (now includes all services including cache)

@@ -3,35 +3,53 @@ import {
   logger,
   Middlewares,
   Service,
-  ServiceError
+  ServiceError,
+  StandardRateLimit
 } from '@microrealestate/common';
 import express from 'express';
 import locale from 'locale';
-import rateLimit from 'express-rate-limit';
+
+// Template validation configuration
+const TEMPLATE_PERMISSIONS = {
+  '/emailer/resetpassword': ['reset_password'],
+  '/emailer/otp': ['otp'],
+  'default': [
+    'invoice',
+    'rentcall',
+    'rentcall_last_reminder',
+    'rentcall_reminder'
+  ]
+};
+
+function validateTemplate(path, templateName) {
+  const allowedTemplates = TEMPLATE_PERMISSIONS[path] || TEMPLATE_PERMISSIONS.default;
+  
+  if (!allowedTemplates.includes(templateName)) {
+    logger.warn('Template validation failed', {
+      path,
+      templateName,
+      allowedTemplates
+    });
+    throw new ServiceError(`Template '${templateName}' not allowed for path '${path}'`, 404);
+  }
+  
+  return true;
+}
 
 async function _send(req, res) {
   const { templateName, recordId, params } = req.body;
-  let allowedTemplates;
-  switch (req.path) {
-    case '/emailer/resetpassword':
-      allowedTemplates = ['reset_password'];
-      break;
-    case '/emailer/otp':
-      allowedTemplates = ['otp'];
-      break;
-    default:
-      allowedTemplates = [
-        'invoice',
-        'rentcall',
-        'rentcall_last_reminder',
-        'rentcall_reminder'
-      ];
-      break;
+  
+  // Input validation
+  if (!templateName) {
+    throw new ServiceError('templateName is required', 400);
   }
-  if (!allowedTemplates.includes(templateName)) {
-    logger.warn(`template not found ${templateName}`);
-    throw new ServiceError('template not found', 404);
+  
+  if (!recordId) {
+    throw new ServiceError('recordId is required', 400);
   }
+  
+  // Validate template permissions
+  validateTemplate(req.path, templateName);
 
   // TODO: pass headers in params
   const results = await Emailer.send(
@@ -58,13 +76,7 @@ export default function routes() {
   const { ACCESS_TOKEN_SECRET } = Service.getInstance().envConfig.getValues();
   
   // Rate limiting middleware
-  const generalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 30, // limit each IP to 30 requests per windowMs (lower for email sending)
-    message: 'Too many email requests from this IP, please try again later.',
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
+  const generalLimiter = StandardRateLimit.emailService();
 
   const apiRouter = express.Router();
   

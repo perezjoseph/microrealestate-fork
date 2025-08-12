@@ -91,10 +91,12 @@ app.use((req, res, next) => {
 });
 
 // Rate limiting
+const isDemoMode = process.env.DEMO_MODE === 'true';
+console.log('WhatsApp Service - Demo mode detected:', isDemoMode);
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: isDemoMode ? 1000 : 100, // Much higher limit in demo mode
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false
@@ -102,7 +104,7 @@ const generalLimiter = rateLimit({
 
 const messageLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 10, // limit each IP to 10 message requests per minute
+  max: isDemoMode ? 100 : 10, // Much higher limit in demo mode
   message: 'Too many message requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false

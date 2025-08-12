@@ -16,10 +16,14 @@ import { slowDown } from 'express-slow-down';
 
 console.log(' LANDLORD MODULE: Loading successfully...');
 
+// Check if we're in demo mode
+const isDemoMode = process.env.DEMO_MODE === 'true';
+console.log(' LANDLORD MODULE: Demo mode detected:', isDemoMode);
+
 // Create rate limiting middleware directly in this file
 const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
+  max: isDemoMode ? 100 : 5, // Much higher limit in demo mode
   message: {
     error:
       'Too many login attempts. Please wait 15 minutes before trying again.',
@@ -53,7 +57,7 @@ const authRateLimit = rateLimit({
 
 const passwordResetRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // Limit each IP to 3 password reset requests per hour
+  max: isDemoMode ? 50 : 3, // Much higher limit in demo mode
   message: {
     error:
       'Too many password reset requests. Please wait 1 hour before trying again.',
@@ -81,7 +85,7 @@ const passwordResetRateLimit = rateLimit({
 
 const signupRateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 signup attempts per hour
+  max: isDemoMode ? 50 : 5, // Much higher limit in demo mode
   message: {
     error:
       'Too many account creation attempts. Please wait 1 hour before trying again.',
@@ -125,7 +129,7 @@ const authSlowDown = slowDown({
 
 const tokenRefreshRateLimit = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 20, // Allow more frequent token refreshes
+  max: isDemoMode ? 200 : 20, // Much higher limit in demo mode
   message: {
     error:
       'Too many token refresh attempts. Please wait 5 minutes before trying again.',

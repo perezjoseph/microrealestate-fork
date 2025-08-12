@@ -13,7 +13,6 @@
 ./documentation
 ./e2e
 ./data
-base.env
 dist
 node_modules
 tmp

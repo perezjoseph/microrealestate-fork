@@ -217,6 +217,7 @@ services:
       WHATSAPP_BUSINESS_ACCOUNT_ID: ${WHATSAPP_BUSINESS_ACCOUNT_ID}
       WHATSAPP_LOGIN_TEMPLATE_NAME: ${WHATSAPP_LOGIN_TEMPLATE_NAME:-otpcode}
       WHATSAPP_LOGIN_TEMPLATE_LANGUAGE: ${WHATSAPP_LOGIN_TEMPLATE_LANGUAGE:-es}
+      DEMO_MODE: ${DEMO_MODE}
     expose:
       - '8000'
     networks:
@@ -374,6 +375,7 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       SIGNUP: 'true'
       FEEDBACK_EMAIL: ${FEEDBACK_EMAIL:-feedback@microrealestate.com}
+      DEMO_MODE: ${DEMO_MODE}
     expose:
       - '8180'
     networks:

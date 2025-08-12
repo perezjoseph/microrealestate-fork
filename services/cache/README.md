@@ -90,6 +90,8 @@ cache:
       condition: service_healthy
 ```
 
+**Note**: In the simplified development environment (`docker-compose.dev.yml`), the backend uses Redis Alpine for faster startup and lower resource usage, while maintaining full compatibility with the Valkey protocol.
+
 ## API Endpoints
 
 ### Health Check

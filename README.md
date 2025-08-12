@@ -2,6 +2,8 @@
 
 An open-source property management application that helps landlords manage their property rents and tenant relationships with automated WhatsApp and email notifications.
 
+> **📢 Recent Updates (January 2025)**: Configuration has been standardized across all Docker Compose files for improved flexibility and consistency. See [Configuration Standardization Guide](CONFIGURATION_STANDARDIZATION.md) for migration details.
+
 ## 🏠 Overview
 
 MicroRealEstate is a comprehensive property management solution built with a microservices architecture. It provides landlords with tools to manage properties, track rent payments, and communicate with tenants through automated notifications via WhatsApp Business API and email.
@@ -55,22 +57,25 @@ MicroRealEstate follows a microservices architecture with the following services
 
 3. **Configure environment variables**
    ```bash
-   # Copy example environment files
-   cp .env.example .env
-   cp services/whatsapp/.env.example services/whatsapp/.env
+   # Copy base configuration to create your local environment
+   cp base.env .env
    
-   # Edit configuration files with your settings
+   # Edit .env with your specific settings (required for security tokens and passwords)
+   # See CONFIGURATION_STANDARDIZATION.md for detailed configuration guide
    ```
 
 4. **Start the development environment**
    ```bash
-   # Start all services with Docker Compose (recommended for development)
-   docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
+   # Recommended: Start with simplified development setup (includes hot-reload)
+   docker-compose -f docker-compose.dev.yml up -d
+   
+   # Alternative: Start all services with microservices architecture
+   docker-compose -f docker-compose.microservices.base.yml -f docker-compose.microservices.dev.yml up -d
    
    # Or start individual services for development
    yarn dev
    
-   # Verify all services are running
+   # Verify all services are running and healthy
    docker-compose ps
    ```
 
@@ -126,15 +131,47 @@ microrealestate/
 
 ### Docker Compose Configuration
 
-The project uses two Docker Compose files:
-- `docker-compose.yml`: Production configuration with pre-built images
-- `docker-compose.local.yml`: Development overrides with local volumes and build contexts
+The project uses multiple Docker Compose files for different deployment scenarios:
 
-Key features of the development setup:
-- **Health Checks**: MongoDB and Valkey services include health checks for reliable startup
-- **Service Dependencies**: Proper dependency ordering ensures services start in the correct sequence
-- **Volume Mounting**: Local code is mounted for hot-reload development
-- **Network Isolation**: All services communicate through a dedicated Docker network
+#### Base Infrastructure (`docker-compose.microservices.base.yml`)
+- **Valkey (Redis-compatible)**: Caching and session storage with health checks
+- **MongoDB**: Primary database with health checks and optimized configuration
+- **Shared Network**: Common network configuration for service communication
+
+#### Development Configuration (`docker-compose.microservices.dev.yml`)
+- Extends base infrastructure with all application services
+- Local build contexts for development with hot-reload
+- Volume mounting for real-time code changes
+- Debug logging and development-optimized settings
+
+#### Production Configuration (`docker-compose.prod.yml`)
+- Pre-built Docker images from GitHub Container Registry
+- Production-optimized settings and logging levels
+- Reverse proxy configuration with Caddy
+- Health checks and restart policies
+
+#### Simplified Development (`docker-compose.dev.yml`)
+- **Streamlined Setup**: Single-file configuration for rapid development
+- **Valkey Integration**: Uses Valkey 7.2-alpine for Redis-compatible caching
+- **Environment Variable Consistency**: All services use standardized environment variables without hardcoded defaults
+- **Hot-Reload Support**: Volume mounting for real-time code changes across all services
+- **Flexible Configuration**: Fully configurable through environment variables for different development scenarios
+- **Health Checks**: Comprehensive health checks for database and cache services
+- **Service Dependencies**: Proper dependency ordering ensures reliable startup sequence
+
+#### Recent Configuration Improvements (Latest Update)
+- **Standardized Environment Variables**: Removed hardcoded defaults in favor of environment variable consistency
+- **Flexible Port Configuration**: All service ports now configurable via environment variables
+- **Unified Database URLs**: Consistent MongoDB and Valkey URL configuration across all services
+- **Enhanced Service Communication**: Internal service URLs now use environment variables for better flexibility
+- **Improved Development Experience**: Better alignment between development and production configurations
+
+Key features across all configurations:
+- **Health Checks**: MongoDB and Valkey services include comprehensive health checks
+- **Service Dependencies**: Proper dependency ordering ensures reliable startup sequence
+- **Network Isolation**: All services communicate through dedicated Docker networks
+- **Modular Architecture**: Base infrastructure can be extended for different deployment needs
+- **Environment Flexibility**: Consistent environment variable usage across all deployment scenarios
 
 ### Available Commands
 
@@ -180,11 +217,14 @@ npm run lint
 ### Docker Commands
 
 ```bash
-# Start all services (production)
-docker-compose up -d
+# Production deployment with pre-built images
+docker-compose -f docker-compose.microservices.base.yml -f docker-compose.prod.yml up -d
 
-# Start with local development overrides
-docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
+# Development with local builds and hot-reload (full microservices)
+docker-compose -f docker-compose.microservices.base.yml -f docker-compose.microservices.dev.yml up -d
+
+# Alternative local development setup (simplified with hot-reload)
+docker-compose -f docker-compose.dev.yml up -d
 
 # View logs for specific service
 docker-compose logs -f [service-name]
@@ -195,8 +235,14 @@ docker-compose logs -f
 # Stop all services
 docker-compose down
 
-# Rebuild and start services
-docker-compose up -d --build
+# Rebuild and start services (development)
+docker-compose -f docker-compose.microservices.base.yml -f docker-compose.microservices.dev.yml up -d --build
+
+# Rebuild simplified development setup
+docker-compose -f docker-compose.dev.yml up -d --build
+
+# Check service health status
+docker-compose ps
 ```
 
 ## 📚 Documentation
@@ -207,12 +253,16 @@ docker-compose up -d --build
 - [WhatsApp API](services/whatsapp/API.md) - Complete API documentation
 
 ### Architecture Documentation
+- [Development Guide](DEVELOPMENT_GUIDE.md) - Complete development workflow and hot-reload setup
+- [Docker Compose Architecture](DOCKER_COMPOSE_ARCHITECTURE.md) - Comprehensive Docker configuration and deployment guide
 - [Project Structure](.kiro/steering/structure.md) - Detailed project organization
 - [Technology Stack](.kiro/steering/tech.md) - Complete technology overview
 - [Product Overview](.kiro/steering/product.md) - Business domain and features
 
 ### Migration Documentation
-- [Configuration Standardization](CONFIGURATION_STANDARDIZATION.md) - Recent environment variable standardization
+- [Configuration Standardization](CONFIGURATION_STANDARDIZATION.md) - **NEW**: Environment variable standardization guide (January 2025)
+- [Frontend Demo Mode Update](FRONTEND_DEMO_MODE_UPDATE.md) - **NEW**: Demo mode configuration for frontend services (January 2025)
+- [Docker Compose Migration](DOCKER_COMPOSE_MIGRATION.md) - Migration guide for new modular Docker Compose architecture
 - [Mongoose Upgrade Notes](MONGOOSE_UPGRADE_NOTES.md) - Mongoose 6.x to 8.x upgrade details
 - [WhatsApp Migration](MIGRATION_WHATSAPP.md) - WhatsApp configuration migration guide
 - [Database Consolidation](DATABASE_CONSOLIDATION_UPDATE.md) - Database configuration consolidation details
@@ -223,32 +273,98 @@ docker-compose up -d --build
 
 Key configuration variables for the main services:
 
-#### Database (Consolidated Configuration)
+#### Core Infrastructure
 ```bash
-# Primary database connection (used by all services)
-MONGO_URL=mongodb://localhost:27017/mredb
+# Database configuration (unified across all services)
+MONGO_URL=mongodb://mongo:27017/demodb
+MONGO_PORT=27017
 
-# Cache/Session storage
-REDIS_URL=redis://localhost:6379
+# Cache/Session storage (Valkey - Redis compatible)
+VALKEY_URL=redis://valkey:6379
+VALKEY_PORT=6379
+VALKEY_PASSWORD=your_valkey_password
+
+# General service configuration
+NODE_ENV=development
+LOGGER_LEVEL=debug
 ```
 
-#### WhatsApp Service
+#### Service Ports (All Configurable)
 ```bash
-WHATSAPP_API_URL=https://graph.facebook.com/v18.0
-WHATSAPP_ACCESS_TOKEN=your_access_token
-WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-WHATSAPP_TEMPLATE_LANGUAGE=es
+GATEWAY_PORT=8080
+AUTHENTICATOR_PORT=8000
+API_PORT=8200
+TENANTAPI_PORT=8250
+PDFGENERATOR_PORT=8300
+EMAILER_PORT=8400
+WHATSAPP_PORT=8500
+CACHE_PORT=8600
+MONITORING_PORT=8800
+LANDLORD_FRONTEND_PORT=8180
+TENANT_FRONTEND_PORT=8190
 ```
 
-#### Authentication
+#### Service URLs (Internal Docker Network)
+```bash
+AUTHENTICATOR_URL=http://authenticator:8000
+API_URL=http://api:8200/api/v2
+TENANTAPI_URL=http://tenantapi:8250/tenantapi
+PDFGENERATOR_URL=http://pdfgenerator:8300/pdfgenerator
+EMAILER_URL=http://emailer:8400/emailer
+WHATSAPP_URL=http://whatsapp:8500
+DOCKER_GATEWAY_URL=http://gateway:8080
+LANDLORD_FRONTEND_URL=http://landlord-frontend:8180
+TENANT_FRONTEND_URL=http://tenant-frontend:8190
+```
+
+#### Authentication & Security
 ```bash
 ACCESS_TOKEN_SECRET=your_jwt_secret
 REFRESH_TOKEN_SECRET=your_refresh_secret
 RESET_TOKEN_SECRET=your_reset_secret
 APPCREDZ_TOKEN_SECRET=your_appcredz_secret
+CIPHER_KEY=your_cipher_key_32_chars
+CIPHER_IV_KEY=your_cipher_iv_16_chars
 ```
 
-**Note**: All services now use a unified database configuration via `MONGO_URL` for improved consistency and simplified management. Authentication configuration has been standardized to use consistent environment variable names across all services, eliminating duplicate configurations.
+#### WhatsApp Business API
+```bash
+WHATSAPP_API_URL=https://graph.facebook.com/v18.0
+WHATSAPP_ACCESS_TOKEN=your_access_token
+WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
+WHATSAPP_BUSINESS_ACCOUNT_ID=your_business_account_id
+WHATSAPP_TEMPLATE_LANGUAGE=es
+WHATSAPP_LOGIN_TEMPLATE_NAME=otpcode
+WHATSAPP_WEBHOOK_VERIFY_TOKEN=your_webhook_token
+```
+
+#### Application Configuration
+```bash
+APP_DOMAIN=localhost:8080
+APP_PROTOCOL=http
+CORS_ENABLED=true
+SIGNUP=true
+DEMO_MODE=true                    # Enable demo mode across all services (backend and frontend)
+RESTORE_DB=true
+ALLOW_SENDING_EMAILS=true
+```
+
+#### Frontend Configuration
+```bash
+LANDLORD_BASE_PATH=/landlord
+TENANT_BASE_PATH=/tenant
+LANDLORD_APP_URL=http://localhost:8080/landlord
+TENANT_APP_URL=http://localhost:8080/tenant
+GATEWAY_URL=http://localhost:8080
+```
+
+**Recent Configuration Updates**:
+- **Standardized Environment Variables**: All hardcoded values replaced with configurable environment variables
+- **Flexible Port Configuration**: Every service port is now configurable via environment variables
+- **Consistent Service URLs**: Internal service communication uses environment variables for better flexibility
+- **Unified Database Configuration**: All services use consistent `MONGO_URL` and `VALKEY_URL` patterns
+- **Enhanced Development Experience**: Better alignment between `base.env`, `.env`, and Docker Compose configurations
+- **Demo Mode Configuration**: Added `DEMO_MODE` environment variable to all services (authenticator, frontend) for consistent demo mode control across development and production
 
 See individual service documentation for complete configuration options.
 
@@ -300,10 +416,15 @@ The project uses GitHub Actions for automated testing, building, and deployment:
 All services are automatically built and published to GitHub Container Registry:
 
 ```bash
-# Pull latest images
-docker pull ghcr.io/microrealestate/microrealestate/api:latest
-docker pull ghcr.io/microrealestate/microrealestate/gateway:latest
+# Pull latest images for production deployment
+docker pull ghcr.io/perezjoseph/microrealestate-fork/api:latest
+docker pull ghcr.io/perezjoseph/microrealestate-fork/gateway:latest
+docker pull ghcr.io/perezjoseph/microrealestate-fork/whatsapp:latest
 # ... and all other services
+
+# Start production environment with latest images
+docker-compose -f docker-compose.microservices.base.yml -f docker-compose.prod.yml pull
+docker-compose -f docker-compose.microservices.base.yml -f docker-compose.prod.yml up -d
 ```
 
 ### Release Process

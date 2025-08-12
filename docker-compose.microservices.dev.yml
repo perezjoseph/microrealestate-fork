@@ -3,18 +3,22 @@ services:
   # Valkey
   ###############################################################################
   valkey:
-    image: valkey/valkey:7.2-alpine
+    image: valkey/valkey:7.2-bookworm
     environment:
-      VALKEY_PORT: ${VALKEY_PORT}
+      VALKEY_PORT: ${VALKEY_PORT:-6379}
     expose:
-      - '${VALKEY_PORT}'
+      - '6379'
     volumes:
-      - valkey-data:/data
-    command: valkey-server --requirepass ${VALKEY_PASSWORD} --loglevel warning
+      - ./data/valkey:/data
+    command: [
+        'sh',
+        '-c',
+        'docker-entrypoint.sh --requirepass ${VALKEY_PASSWORD} --loglevel warning'
+      ]
     networks:
       - net
     healthcheck:
-      test: ["CMD", "valkey-cli", "-a", "${VALKEY_PASSWORD}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${VALKEY_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -26,12 +30,12 @@ services:
   mongo:
     image: mongo:7
     environment:
-      MONGO_PORT: ${MONGO_PORT}
+      MONGO_PORT: ${MONGO_PORT:-27017}
     command: mongod --quiet --logpath /dev/null --wiredTigerCacheSizeGB 1
     expose:
-      - '${MONGO_PORT}'
+      - '27017'
     volumes:
-      - mongo-data:/data/db
+      - ./data/mongodb:/data/db
       - ./backup:/backup
     networks:
       - net
@@ -54,14 +58,14 @@ services:
       - ./services/cache:/usr/app/services/cache
       - ./services/common:/usr/app/services/common
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${CACHE_PORT:-8600}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 8600
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     expose:
-      - '${CACHE_PORT:-8600}'
+      - '8600'
     networks:
       - net
     depends_on:
@@ -80,15 +84,15 @@ services:
       - ./services/monitoring:/usr/app/services/monitoring
       - ./services/common:/usr/app/services/common
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${MONITORING_PORT:-8800}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      MONGO_URL: ${MONGO_URL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 8800
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     expose:
-      - '${MONITORING_PORT:-8800}'
+      - '8800'
     networks:
       - net
     depends_on:
@@ -106,36 +110,36 @@ services:
       context: .
       dockerfile: services/gateway/Dockerfile
     volumes:
-      - ./services/gateway/src:/usr/app/services/gateway/src
-      - ./services/common/src:/usr/app/services/common/src
-      - ./types/src:/usr/app/types/src
+      - ./services/gateway:/usr/app/services/gateway
+      - ./services/common:/usr/app/services/common
+      - ./types:/usr/app/types
     environment:
-      NODE_ENV: ${NODE_ENV}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      PORT: ${GATEWAY_PORT}
-      MONGO_URL: ${MONGO_URL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      PORT: ${GATEWAY_PORT:-8080}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
-      EXPOSE_FRONTENDS: ${GATEWAY_EXPOSE_FRONTENDS:-true}
-      AUTHENTICATOR_URL: ${AUTHENTICATOR_URL}
-      API_URL: ${API_URL}
-      PDFGENERATOR_URL: ${PDFGENERATOR_URL}
-      EMAILER_URL: ${EMAILER_URL}
-      WHATSAPP_URL: ${WHATSAPP_URL}
-      CACHE_URL: http://cache:${CACHE_PORT:-8600}
-      MONITORING_URL: http://monitoring:${MONITORING_PORT:-8800}
-      LANDLORD_FRONTEND_URL: ${LANDLORD_FRONTEND_URL}
-      LANDLORD_BASE_PATH: ${LANDLORD_BASE_PATH}
-      TENANT_FRONTEND_URL: ${TENANT_FRONTEND_URL}
-      TENANT_BASE_PATH: ${TENANT_BASE_PATH}
-      APP_DOMAIN: ${APP_DOMAIN}
-      CORS_ENABLED: ${CORS_ENABLED}
-      TENANTAPI_URL: ${TENANTAPI_URL}
+      EXPOSE_FRONTENDS: 'true'
+      AUTHENTICATOR_URL: ${AUTHENTICATOR_URL:-http://authenticator:8000}
+      API_URL: http://api:8200/api/v2
+      PDFGENERATOR_URL: http://pdfgenerator:8300/pdfgenerator
+      EMAILER_URL: http://emailer:8400/emailer
+      WHATSAPP_URL: http://whatsapp:8500
+      CACHE_URL: http://cache:8600
+      MONITORING_URL: http://monitoring:8800
+      LANDLORD_FRONTEND_URL: http://landlord-frontend:8180
+      LANDLORD_BASE_PATH: /landlord
+      TENANT_FRONTEND_URL: http://tenant-frontend:8190
+      TENANT_BASE_PATH: /tenant
+      APP_DOMAIN: localhost:8080
+      CORS_ENABLED: '${CORS_ENABLED:-true}'
+      TENANTAPI_URL: http://tenantapi:8250/tenantapi
     expose:
-      - '${GATEWAY_PORT}'
+      - '8080'
     ports:
-      - '${GATEWAY_PORT}:${GATEWAY_PORT}'
+      - '8080:8080'
     networks:
       - net
     depends_on:
@@ -165,26 +169,25 @@ services:
       context: .
       dockerfile: services/authenticator/Dockerfile
     volumes:
-      - ./services/authenticator/src:/usr/app/services/authenticator/src
-      - ./services/authenticator/package.json:/usr/app/services/authenticator/package.json
-      - ./services/common/src:/usr/app/services/common/src
-      - ./types/src:/usr/app/types/src
+      - ./services/authenticator:/usr/app/services/authenticator
+      - ./services/common:/usr/app/services/common
+      - ./types:/usr/app/types
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${AUTHENTICATOR_PORT}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${AUTHENTICATOR_PORT:-8000}
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
       RESET_TOKEN_SECRET: ${RESET_TOKEN_SECRET}
       APPCREDZ_TOKEN_SECRET: ${APPCREDZ_TOKEN_SECRET}
-      MONGO_URL: ${MONGO_URL}
-      EMAILER_URL: ${EMAILER_URL}
-      SIGNUP: ${SIGNUP}
-      APP_DOMAIN: ${APP_DOMAIN}
-      APP_PROTOCOL: ${APP_PROTOCOL}
-      WHATSAPP_API_URL: ${WHATSAPP_API_URL}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      EMAILER_URL: http://emailer:8400/emailer
+      SIGNUP: 'true'
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+      APP_PROTOCOL: ${APP_PROTOCOL:-http}
+      WHATSAPP_API_URL: ${WHATSAPP_API_URL:-https://graph.facebook.com/v23.0}
       WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN}
       WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID}
       WHATSAPP_BUSINESS_ACCOUNT_ID: ${WHATSAPP_BUSINESS_ACCOUNT_ID}
@@ -192,7 +195,7 @@ services:
       WHATSAPP_LOGIN_TEMPLATE_LANGUAGE: ${WHATSAPP_LOGIN_TEMPLATE_LANGUAGE}
       DEMO_MODE: ${DEMO_MODE}
     expose:
-      - '${AUTHENTICATOR_PORT}'
+      - '8000'
     networks:
       - net
     depends_on:
@@ -212,24 +215,22 @@ services:
       context: .
       dockerfile: services/pdfgenerator/Dockerfile
     volumes:
-      - ./services/pdfgenerator/src:/usr/app/services/pdfgenerator/src
-      - ./services/pdfgenerator/package.json:/usr/app/services/pdfgenerator/package.json
-      - ./services/common/src:/usr/app/services/common/src
-      - ./types/src:/usr/app/types/src
+      - ./services/pdfgenerator:/usr/app/services/pdfgenerator
+      - ./services/common:/usr/app/services/common
+      - ./types:/usr/app/types
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${PDFGENERATOR_PORT:-8300}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      MONGO_URL: ${MONGO_URL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 8300
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       CIPHER_KEY: ${CIPHER_KEY}
       CIPHER_IV_KEY: ${CIPHER_IV_KEY}
-      UPLOAD_MAX_SIZE: ${UPLOAD_MAX_SIZE}
-      DEMO_MODE: ${DEMO_MODE}
+      UPLOAD_MAX_SIZE: ${UPLOAD_MAX_SIZE:-2000000000}
     expose:
-      - '${PDFGENERATOR_PORT:-8300}'
+      - '8300'
     networks:
       - net
     depends_on:
@@ -247,23 +248,22 @@ services:
       context: .
       dockerfile: services/emailer/Dockerfile
     volumes:
-      - ./services/emailer/src:/usr/app/services/emailer/src
-      - ./services/emailer/package.json:/usr/app/services/emailer/package.json
-      - ./services/common/src:/usr/app/services/common/src
-      - ./types/src:/usr/app/types/src
+      - ./services/emailer:/usr/app/services/emailer
+      - ./services/common:/usr/app/services/common
+      - ./types:/usr/app/types
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${EMAILER_PORT:-8400}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      MONGO_URL: ${MONGO_URL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 8400
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       CIPHER_KEY: ${CIPHER_KEY}
       CIPHER_IV_KEY: ${CIPHER_IV_KEY}
-      ALLOW_SENDING_EMAILS: ${ALLOW_SENDING_EMAILS}
-      LANDLORD_APP_URL: ${LANDLORD_APP_URL}
-      TENANT_APP_URL: ${TENANT_APP_URL}
+      ALLOW_SENDING_EMAILS: ${ALLOW_SENDING_EMAILS:-true}
+      LANDLORD_APP_URL: ${GATEWAY_URL}/landlord
+      TENANT_APP_URL: ${GATEWAY_URL}/tenant
       EMAIL_FROM: ${EMAIL_FROM}
       EMAIL_REPLY_TO: ${EMAIL_REPLY_TO}
       EMAIL_BCC: ${EMAIL_BCC}
@@ -276,10 +276,9 @@ services:
       GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
       MAILGUN_API_KEY: ${MAILGUN_API_KEY}
       MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}
-      PDFGENERATOR_URL: ${PDFGENERATOR_URL}
-      DEMO_MODE: ${DEMO_MODE}
+      PDFGENERATOR_URL: http://pdfgenerator:8300/pdfgenerator
     expose:
-      - '${EMAILER_PORT:-8400}'
+      - '8400'
     networks:
       - net
     depends_on:
@@ -299,23 +298,27 @@ services:
       context: .
       dockerfile: services/api/Dockerfile
     volumes:
+      - ./services/api/src:/usr/app/services/api/src
+      - ./services/api/scripts:/usr/app/services/api/scripts
+      - ./services/api/package.json:/usr/app/services/api/package.json
+      - ./services/common/src:/usr/app/services/common/src
+      - ./types/src:/usr/app/types/src
       - ./backup:/usr/app/backup
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${API_PORT:-8200}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      MONGO_URL: ${MONGO_URL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 8200
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       CIPHER_KEY: ${CIPHER_KEY}
       CIPHER_IV_KEY: ${CIPHER_IV_KEY}
-      EMAILER_URL: ${EMAILER_URL}
-      PDFGENERATOR_URL: ${PDFGENERATOR_URL}
-      DEMO_MODE: ${DEMO_MODE}
-      RESTORE_DB: ${RESTORE_DB}
+      EMAILER_URL: http://emailer:8400/emailer
+      PDFGENERATOR_URL: http://pdfgenerator:8300/pdfgenerator
+      RESTORE_DB: 'false'
     expose:
-      - '${API_PORT:-8200}'
+      - '8200'
     networks:
       - net
     depends_on:
@@ -337,20 +340,19 @@ services:
       context: .
       dockerfile: services/tenantapi/Dockerfile
     volumes:
-      - ./services/tenantapi/src:/usr/app/services/tenantapi/src
-      - ./services/tenantapi/package.json:/usr/app/services/tenantapi/package.json
-      - ./services/common/src:/usr/app/services/common/src
-      - ./types/src:/usr/app/types/src
+      - ./services/tenantapi:/usr/app/services/tenantapi
+      - ./services/common:/usr/app/services/common
+      - ./types:/usr/app/types
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${TENANTAPI_PORT:-8250}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      MONGO_URL: ${MONGO_URL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 8250
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     expose:
-      - '${TENANTAPI_PORT:-8250}'
+      - '8250'
     networks:
       - net
     depends_on:
@@ -368,21 +370,20 @@ services:
       context: .
       dockerfile: services/whatsapp/Dockerfile
     volumes:
-      - ./services/whatsapp/src:/usr/app/services/whatsapp/src
-      - ./services/whatsapp/package.json:/usr/app/services/whatsapp/package.json
-      - ./services/common/src:/usr/app/services/common/src
+      - ./services/whatsapp:/usr/app/services/whatsapp
+      - ./services/common:/usr/app/services/common
     environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${WHATSAPP_PORT}
-      LOGGER_LEVEL: ${LOGGER_LEVEL}
-      MONGO_URL: ${MONGO_URL}
-      VALKEY_URL: ${VALKEY_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${WHATSAPP_PORT:-8500}
+      LOGGER_LEVEL: ${LOGGER_LEVEL:-debug}
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      VALKEY_URL: redis://valkey:6379
       VALKEY_PASSWORD: ${VALKEY_PASSWORD}
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
-      AUTHENTICATOR_URL: ${AUTHENTICATOR_URL}
+      AUTHENTICATOR_URL: ${AUTHENTICATOR_URL:-http://authenticator:8000}
       CIPHER_KEY: ${CIPHER_KEY}
       CIPHER_IV_KEY: ${CIPHER_IV_KEY}
-      WHATSAPP_API_URL: ${WHATSAPP_API_URL}
+      WHATSAPP_API_URL: ${WHATSAPP_API_URL:-https://graph.facebook.com/v18.0}
       WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN}
       WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID}
       WHATSAPP_BUSINESS_ACCOUNT_ID: ${WHATSAPP_BUSINESS_ACCOUNT_ID}
@@ -396,11 +397,10 @@ services:
       WHATSAPP_LOGIN_TEMPLATE_NAME: ${WHATSAPP_LOGIN_TEMPLATE_NAME}
       WHATSAPP_LOGIN_TEMPLATE_LANGUAGE: ${WHATSAPP_LOGIN_TEMPLATE_LANGUAGE}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
-      DEMO_MODE: ${DEMO_MODE}
     expose:
-      - '${WHATSAPP_PORT}'
+      - '8500'
     ports:
-      - "${WHATSAPP_PORT}:${WHATSAPP_PORT}"
+      - "8500:8500"
     networks:
       - net
     depends_on:
@@ -444,20 +444,19 @@ services:
       - landlord-next-cache:/usr/app/.next
       - landlord-node-modules:/usr/app/node_modules
     environment:
-      BASE_PATH: ${LANDLORD_BASE_PATH}
-      LANDLORD_BASE_PATH: ${LANDLORD_BASE_PATH}
-      LANDLORD_FRONTEND_PORT: ${LANDLORD_FRONTEND_PORT}
-      PORT: ${LANDLORD_FRONTEND_PORT}
-      DOCKER_GATEWAY_URL: ${DOCKER_GATEWAY_URL}
-      MONGO_URL: ${MONGO_URL}
-      CORS_ENABLED: ${CORS_ENABLED}
-      GATEWAY_URL: ${GATEWAY_URL}
-      NODE_ENV: ${NODE_ENV}
-      SIGNUP: ${SIGNUP}
-      FEEDBACK_EMAIL: ${FEEDBACK_EMAIL}
-      DEMO_MODE: ${DEMO_MODE}
+      BASE_PATH: /landlord
+      LANDLORD_BASE_PATH: /landlord
+      LANDLORD_FRONTEND_PORT: ${LANDLORD_FRONTEND_PORT:-8180}
+      PORT: ${LANDLORD_FRONTEND_PORT:-8180}
+      DOCKER_GATEWAY_URL: http://gateway:8080
+      MONGO_URL: ${MONGO_URL:-mongodb://mongo:27017/mredb}
+      CORS_ENABLED: '${CORS_ENABLED:-true}'
+      GATEWAY_URL: ${GATEWAY_URL:-http://localhost:8080}
+      NODE_ENV: ${NODE_ENV:-development}
+      SIGNUP: 'true'
+      FEEDBACK_EMAIL: ${FEEDBACK_EMAIL:-feedback@localhost}
     expose:
-      - '${LANDLORD_FRONTEND_PORT}'
+      - '8180'
     networks:
       - net
     depends_on:
@@ -500,17 +499,16 @@ services:
       - tenant-next-cache:/usr/app/.next
       - tenant-node-modules:/usr/app/node_modules
     environment:
-      BASE_PATH: ${TENANT_BASE_PATH}
-      TENANT_BASE_PATH: ${TENANT_BASE_PATH}
-      TENANT_FRONTEND_PORT: ${TENANT_FRONTEND_PORT}
-      PORT: ${TENANT_FRONTEND_PORT}
-      DOCKER_GATEWAY_URL: ${DOCKER_GATEWAY_URL}
-      CORS_ENABLED: ${CORS_ENABLED}
-      GATEWAY_URL: ${GATEWAY_URL}
-      NODE_ENV: ${NODE_ENV}
-      DEMO_MODE: ${DEMO_MODE}
+      BASE_PATH: /tenant
+      TENANT_BASE_PATH: /tenant
+      TENANT_FRONTEND_PORT: ${TENANT_FRONTEND_PORT:-8190}
+      PORT: ${TENANT_FRONTEND_PORT:-8190}
+      DOCKER_GATEWAY_URL: http://gateway:8080
+      CORS_ENABLED: '${CORS_ENABLED:-true}'
+      GATEWAY_URL: ${GATEWAY_URL:-http://localhost:8080}
+      NODE_ENV: ${NODE_ENV:-development}
     expose:
-      - '${TENANT_FRONTEND_PORT}'
+      - '8190'
     networks:
       - net
     depends_on:
@@ -528,12 +526,6 @@ networks:
 # Named volumes for frontend debugging and development
 ###############################################################################
 volumes:
-  # Database volumes
-  valkey-data:
-    driver: local
-  mongo-data:
-    driver: local
-  
   # Landlord frontend build cache
   landlord-next-cache:
     driver: local
