@@ -1,5 +1,5 @@
-import { rateLimit } from 'express-rate-limit';
 import { logger } from '../logger/index.js';
+import { rateLimit } from 'express-rate-limit';
 
 /**
  * Standard rate limiting configuration for MicroRealEstate services
