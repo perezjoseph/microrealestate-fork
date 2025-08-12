@@ -2,7 +2,6 @@
 
 An open-source property management application that helps landlords manage their property rents and tenant relationships with automated WhatsApp and email notifications.
 
-> **📢 Recent Updates (January 2025)**: Configuration has been standardized across all Docker Compose files for improved flexibility and consistency. See [Configuration Standardization Guide](CONFIGURATION_STANDARDIZATION.md) for migration details.
 
 ## 🏠 Overview
 
